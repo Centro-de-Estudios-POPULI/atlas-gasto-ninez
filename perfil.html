@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfil municipal · Atlas del Gasto en Niñez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="lib/echarts.min.js"></script>
+<style>
+:root{--f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;
+  --red:#c71e1d;--amber:#ee9b00;--teal:#0a9396;--teal-dk:#005f73;--ink:#001219;--tenue:#c9cdce;
+  --topbar:#5c1618;--topline:#3f0e10;--fondo:#f2efe8;--card:#fff;--linea:#ddd6c9;--linea-2:#eae4d7;
+  --tx:#16232c;--suave:#5f6f79;--faint:#93a3ac;--foco-tx:#c71e1d;--ref:#001219;--ctx:#c9cdce;--grid:#eae4d7}
+body.dark{--fondo:#0b1318;--card:#141414;--linea:#26343d;--linea-2:#1d2a32;--tx:#e2e8f0;--suave:#9aabb5;--faint:#6e7a7d;
+  --foco-tx:#e8706b;--ref:#e2e8f0;--ctx:#3a4549;--grid:#22313a;--topbar:#3d0e10;--topline:#5c1618}
+*,*::before,*::after{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.5}
+a{color:var(--teal-dk)}body.dark a{color:#5cc3c9}
+#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--topbar);color:#fff;border-bottom:1px solid var(--topline)}
+#top .logo{width:30px;height:30px;flex:0 0 30px}
+#top .t-h{font-weight:700;font-size:15px;line-height:1.2}#top .t-h b{color:var(--amber);font-weight:700}
+#top .t-n{font-size:11.5px;opacity:.8}
+#top .sp{flex:1}
+#top a.volver{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);padding:5px 10px;white-space:nowrap}
+#top a.volver:hover{background:rgba(255,255,255,.1)}
+.yr{display:flex;align-items:stretch;border:1px solid rgba(255,255,255,.35)}
+.yr button{background:none;border:0;color:#fff;font:inherit;font-size:16px;padding:0 10px;cursor:pointer}
+.yr button:disabled{opacity:.3;cursor:default}
+.yr .yv{font-weight:700;color:var(--amber);font-size:17px;padding:3px 6px;min-width:52px;text-align:center}
+.tema{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:34px;height:32px;cursor:pointer;font-size:15px}
+main{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
+.kick{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:600}
+h1{font-family:var(--fd);font-weight:700;font-size:clamp(30px,4.2vw,46px);line-height:1.05;margin:6px 0 10px}
+.lede{font-size:17px;max-width:62rem;margin:0 0 18px;color:var(--tx)}
+.lede b{font-weight:700}
+.aviso{border-left:3px solid var(--amber);background:var(--card);padding:10px 14px;margin:0 0 16px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--linea);border:1px solid var(--linea);margin:0 0 28px}
+.kpi{background:var(--card);padding:14px 14px 12px;min-width:0}
+.kpi .kl{font-size:12px;color:var(--suave);line-height:1.3;min-height:31px}
+.kpi .kv{font-size:26px;font-weight:700;line-height:1.1;margin:6px 0 2px;letter-spacing:-.01em;white-space:nowrap}
+.kpi .ku{font-size:12px;color:var(--suave)}
+.kpi .kc{font-size:12px;color:var(--suave);margin-top:8px;border-top:1px solid var(--linea-2);padding-top:6px}
+.kpi .kc b{color:var(--tx);font-weight:600}
+.kpi.est{background:linear-gradient(var(--card),var(--card)) padding-box}
+.kpi.est .kl::after{content:" · estimación";color:var(--amber);font-weight:600}
+section{background:var(--card);border:1px solid var(--linea);padding:18px 18px 10px;margin:0 0 18px}
+h2{font-family:var(--fd);font-weight:700;font-size:22px;margin:0 0 4px}
+h2 em{font-style:italic;font-weight:400;color:var(--suave)}
+.nota{font-size:13px;color:var(--suave);margin:0 0 10px;max-width:60rem}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g{width:100%;height:320px}
+.gt{font-size:13px;font-weight:600;margin:6px 0 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--linea-2);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11.5px;color:var(--suave);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.lineas td:first-child{white-space:normal;min-width:14rem}
+.lineas td.sub{color:var(--suave);font-size:12px;white-space:normal;text-align:left}
+.scroll{overflow-x:auto}
+.btn{background:none;border:1px solid var(--linea);color:var(--tx);font:inherit;font-size:13px;padding:6px 12px;cursor:pointer;margin:0 0 10px}
+.btn:hover{border-color:var(--teal)}
+footer{font-size:12.5px;color:var(--suave);margin-top:26px;border-top:1px solid var(--linea);padding-top:12px}
+.tt span{border-radius:0!important}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dos{grid-template-columns:1fr}}
+@media (max-width:560px){#top{flex-wrap:wrap;gap:8px 10px;padding:8px 12px}#top .t-n{display:none}#top .sp{display:none}
+  main{padding:16px 12px 30px}.kpis{grid-template-columns:1fr 1fr}.kpi .kv{font-size:21px}.lede{font-size:15.5px}.g{height:280px}
+  section{padding:14px 12px 8px}}
+</style>
+</head>
+<body>
+<header id="top">
+  <svg class="logo" viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="Inter,sans-serif">NNA</text></svg>
+  <div><div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div><div class="t-n">Perfil municipal</div></div>
+  <div class="sp"></div>
+  <div class="yr"><button id="y-prev" aria-label="Año anterior">‹</button><div class="yv" id="y-val">—</div><button id="y-next" aria-label="Año siguiente">›</button></div>
+  <a class="volver" id="volver" href="index.html">‹ Volver al mapa</a>
+  <button class="tema" id="tema" aria-label="Cambiar tema">◐</button>
+</header>
+<main>
+  <div class="kick" id="kick">Perfil municipal</div>
+  <h1 id="nombre">Cargando…</h1>
+  <p class="lede" id="lede"></p>
+  <div id="aviso"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <section><h2>Cuánto gasta la alcaldía en la niñez, y en qué</h2>
+    <p class="nota">Gasto específico: programas dirigidos sólo a niñas, niños y adolescentes. Millones de bolivianos de 2025. Los años sin barra son años sin presupuesto publicado para esta alcaldía.</p>
+    <div class="dos"><div><div class="gt">Por componente</div><div class="g" id="g-comp"></div></div>
+      <div><div class="gt">Por cada niño, niña o adolescente, frente al departamento y a Bolivia</div><div class="g" id="g-nna"></div></div></div></section>
+
+  <section><h2>En qué partidas se fue, <span class="anio"></span></h2>
+    <p class="nota">Gasto específico de la alcaldía según el objeto del gasto, en millones de bolivianos del año. A la derecha, las líneas presupuestarias más grandes.</p>
+    <div class="dos"><div class="g" id="g-rubro"></div><div class="scroll"><table class="lineas" id="t-lineas"></table></div></div></section>
+
+  <section><h2>Cómo se ejecuta y con qué se paga</h2>
+    <p class="nota">Presupuesto inicial, vigente (con las modificaciones del año) y devengado del gasto específico, en millones de bolivianos del año; y de dónde vino el dinero.</p>
+    <div class="dos"><div><div class="gt">Inicial, vigente y ejecutado</div><div class="g" id="g-ejec"></div></div>
+      <div><div class="gt">Fuente de financiamiento (% del gasto específico)</div><div class="g" id="g-fin"></div></div></div></section>
+
+  <section><h2>Todo el gasto en niñez en el municipio <em>(estimación)</em></h2>
+    <p class="nota" id="nota-ter"></p>
+    <div class="g" id="g-ter"></div></section>
+
+  <section><h2>Niñas, niños y estudiantes</h2>
+    <p class="nota">Población por tramo de edad (INE, a mitad de año) y matrícula de educación regular (Ministerio de Educación, SEIE; 2025 repite 2024).</p>
+    <div class="dos"><div><div class="gt">Población de 0 a 17 años</div><div class="g" id="g-pob"></div></div>
+      <div><div class="gt">Estudiantes de inicial, primaria y secundaria</div><div class="g" id="g-mat"></div></div></div></section>
+
+  <section><h2>Los datos</h2>
+    <p class="nota">Serie completa de los indicadores del perfil. Montos por niño y por estudiante en bolivianos de 2025.</p>
+    <button class="btn" id="csv">Descargar CSV</button><div class="scroll"><table id="tabla"></table></div></section>
+
+  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto (devengado consolidado 2016-2025); INE, proyecciones de población y censos 2012 y 2024; Ministerio de Educación, SEIE. Clasificación del gasto en niñez: metodología MEFP-UNICEF con ponderadores UNICEF Bolivia 2023. <a href="nacional.html#metodo">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script>
+const COL={rojo:"#C71E1D",oro:"#EE9B00",turq:"#0A9396",petr:"#005F73"};
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.body).getPropertyValue(v).trim();
+const nf=(v,d=0)=>v==null||!isFinite(v)?"s/d":v.toLocaleString("es-BO",{minimumFractionDigits:d,maximumFractionDigits:d});
+const bs=v=>v==null||!isFinite(v)?"s/d":nf(v,0)+" Bs";
+const mm=v=>v==null||!isFinite(v)?"s/d":nf(v,v<10?2:1)+" MM Bs";
+const pc=v=>v==null||!isFinite(v)?"s/d":nf(v,1)+" %";
+function applyTheme(dark,save){document.body.classList.toggle("dark",dark);
+  if(save){try{localStorage.setItem("atlas-tema",dark?"dark":"light");}catch(_){}}}
+(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}applyTheme(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
+const cod=new URLSearchParams(location.search).get("m")||"020105";
+Promise.all([fetch(`perfiles/${cod}.json`).then(r=>{if(!r.ok)throw new Error("sin perfil");return r.json();}),fetch("catalogo.json").then(r=>r.json())])
+.then(([P,CAT])=>{
+  const Y=P.anios,IND={};CAT.grupos.forEach(g=>g.indicadores.forEach(i=>IND[i.key]=i));
+  let yi=Y.length-1;while(yi>0&&!P.dato[yi])yi--;
+  const q=new URLSearchParams(location.search).get("g");if(q&&Y.indexOf(+q)>=0)yi=Y.indexOf(+q);
+  document.title=`${P.nombre} · Atlas del Gasto en Niñez`;
+  $("nombre").textContent=P.nombre;
+  $("kick").textContent=`Perfil municipal · ${P.dpto} · provincia ${P.prov}${P.es_gaioc?" · Autonomía indígena originaria campesina":""}`;
+  const real=(arr)=>arr.map((v,i)=>v==null?null:v*P.deflactor[i]);
+  const charts=[];const mk=id=>{const c=echarts.init($(id),null,{renderer:"canvas"});charts.push(c);return c;};
+  const gComp=mk("g-comp"),gNna=mk("g-nna"),gRub=mk("g-rubro"),gEj=mk("g-ejec"),gFin=mk("g-fin"),gTer=mk("g-ter"),gPob=mk("g-pob"),gMat=mk("g-mat");
+  const base=()=>({textStyle:{fontFamily:"Inter",color:css("--suave")},animationDuration:500,
+    grid:{left:8,right:14,top:38,bottom:8,containLabel:true},
+    tooltip:{trigger:"axis",className:"tt",confine:true,backgroundColor:css("--card"),borderColor:css("--linea"),
+      textStyle:{color:css("--tx"),fontSize:12},extraCssText:"border-radius:0;box-shadow:0 6px 18px rgba(0,0,0,.12)"},
+    legend:{top:0,left:0,itemWidth:12,itemHeight:10,icon:"rect",textStyle:{color:css("--tx"),fontSize:12}}});
+  const ejeX=(data)=>({type:"category",data,axisLine:{lineStyle:{color:css("--linea")}},axisTick:{show:false},axisLabel:{color:css("--suave")}});
+  const ejeY=(fmtr)=>({type:"value",splitLine:{lineStyle:{color:css("--grid")}},axisLabel:{color:css("--suave"),formatter:fmtr}});
+  const barra=(name,data,color,stack)=>({name,type:"bar",stack,data,itemStyle:{color,borderColor:css("--card"),borderWidth:1},barMaxWidth:34,emphasis:{focus:"series"}});
+  const tipMM=(ps)=>ps[0].axisValueLabel+ps.filter(p=>p.value!=null).map(p=>`<br>${p.marker}${p.seriesName}: <b>${mm(p.value)}</b>`).join("");
+  const comp=()=>{const c=P.alc.comp,o=Y.map((_,i)=>["Salud infantil","Deporte estudiantil","Otros"].reduce((s,k)=>s+(c[k][i]||0),0));
+    return [["Alimentación escolar",c["Alimentación escolar"],COL.rojo],["Unidades educativas",c["Unidades educativas"],COL.oro],["Protección",c["Protección"],COL.turq],["Otros",o,css("--ctx")]]
+      .map(([n,a,col])=>barra(n,real(a).map((v,i)=>P.dato[i]?v:null),col,"c"));};
+  function kpis(){const i=yi,a=P.ind,rf=P.ref;
+    const card=(k,v,u,cmp,est)=>`<div class="kpi${est?" est":""}" title="${(IND[k]||{}).desc||""}"><div class="kl">${(IND[k]||{}).label||k}</div><div class="kv">${v}</div><div class="ku">${u}</div><div class="kc">${cmp}</div></div>`;
+    const vs=(v,r,lab)=>v==null||r==null?"":`${lab} <b>${nf(r,0)}</b> · ${v>=r?"▲":"▼"} ${nf(Math.abs(v-r),0)}`;
+    $("kpis").innerHTML=
+      card("a_esp_nna",nf(a.a_esp_nna[i]),"Bs por niño (de 2025)",vs(a.a_esp_nna[i],rf.dpto.a_esp_nna[i],P.dpto)+"<br>"+vs(a.a_esp_nna[i],rf.pais.a_esp_nna[i],"Bolivia"))
+     +card("a_esp_pct",nf(a.a_esp_pct[i],1)+" %","de todo lo que ejecuta la alcaldía","")
+     +card("a_ace_est",nf(a.a_ace_est[i]),"Bs por estudiante fiscal al año",a.a_ace_est[i]!=null?`≈ <b>${nf(a.a_ace_est[i]/200,2)} Bs</b> por día de clase`:"")
+     +card("a_prot_nna",nf(a.a_prot_nna[i]),"Bs por niño (de 2025)",a.a_prot_nna[i]===0?"<b>sin gasto en protección</b> ese año":"")
+     +card("t_esp_nna",nf(a.t_esp_nna[i]),"Bs por niño (de 2025)",vs(a.t_esp_nna[i],rf.pais.t_esp_nna[i],"Bolivia")+`<br>alcaldía: <b>${nf(a.t_alc_pct[i],1)} %</b> del total`,true);}
+  function lede(){const i=yi,a=P.ind,y=Y[i];
+    if(!P.dato[i]){$("lede").innerHTML="";$("aviso").innerHTML=`<div class="aviso">La alcaldía no tiene presupuesto publicado en el Presupuesto Abierto para ${y}. Los indicadores de «todo el gasto en el municipio» sí se muestran: vienen de la gobernación y del nivel central.</div>`;return;}
+    $("aviso").innerHTML="";
+    const e=P.alc.esp[i],c=P.alc.comp,ace=c["Alimentación escolar"][i]||0,rd=P.ref.dpto.a_esp_nna[i],rp=P.ref.pais.a_esp_nna[i],v=a.a_esp_nna[i];
+    $("lede").innerHTML=`En ${y}, la alcaldía gastó <b>${mm(e)}</b> en programas dirigidos a la niñez: <b>${bs(v)}</b> (de 2025) por cada niña, niño o adolescente, `
+      +`frente a ${bs(rd)} del conjunto de las alcaldías de ${P.dpto} y ${bs(rp)} del de todo el país. `
+      +(e>0?`El ${nf(100*ace/e,0)} % fue alimentación escolar. `:"")
+      +`Sumando la gobernación y el nivel central —sobre todo la planilla de los maestros—, el gasto en niñez en el municipio llega a unos <b>${bs(a.t_esp_nna[i])}</b> por niño.`;}
+  function pintar(){const dark=document.body.classList.contains("dark"),i=yi,y=String(Y[i]);
+    document.querySelectorAll(".anio").forEach(e=>e.textContent=y);$("y-val").textContent=y;
+    $("y-prev").disabled=i===0;$("y-next").disabled=i===Y.length-1;
+    $("volver").href=`index.html#i=a_esp_nna&g=${y}&m=${cod}`;
+    kpis();lede();
+    const yl=Y.map(String);
+    gComp.setOption({...base(),tooltip:{...base().tooltip,formatter:tipMM},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v,v<10?1:0)),series:comp()},true);
+    const L=(n,d,col,dash,w)=>({name:n,type:"line",data:d,symbol:"circle",symbolSize:7,showSymbol:true,connectNulls:false,lineStyle:{color:col,width:w||2,type:dash||"solid"},itemStyle:{color:col},emphasis:{focus:"series"}});
+    gNna.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>bs(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:[L(P.nombre,P.ind.a_esp_nna,COL.rojo,null,2.5),L("Alcaldías de "+P.dpto,P.ref.dpto.a_esp_nna,css("--ctx"),null,2),L("Bolivia",P.ref.pais.a_esp_nna,css("--ref"),"dashed",1.6)]},true);
+    const R=P.alc.rubro,rb=Object.keys(R).map(k=>[k,R[k][i]||0]).filter(x=>x[1]>0).sort((a,b)=>a[1]-b[1]);
+    gRub.setOption({...base(),legend:{show:false},grid:{left:168,right:44,top:8,bottom:24,containLabel:false},tooltip:{...base().tooltip,trigger:"item",formatter:p=>`${p.name}: <b>${mm(p.value)}</b>`},
+      xAxis:{...ejeY(v=>nf(v,1)),type:"value"},yAxis:{type:"category",data:rb.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:css("--linea")}},axisLabel:{color:css("--tx"),fontSize:12}},
+      series:[{type:"bar",data:rb.map(x=>x[1]),itemStyle:{color:COL.turq},barMaxWidth:18,label:{show:true,position:"right",color:css("--suave"),fontSize:11,formatter:p=>nf(p.value,p.value<10?2:1)}}]},true);
+    const li=(P.lineas[Y[i]]||[]);
+    $("t-lineas").innerHTML=li.length?`<tr><th>Línea presupuestaria</th><th>MM Bs</th></tr>`+li.map(l=>`<tr><td>${l[0]}<br><span class="sub">${l[1]}</span></td><td>${nf(l[2],2)}</td></tr>`).join(""):`<tr><td>Sin líneas de gasto específico en ${y}.</td></tr>`;
+    gEj.setOption({...base(),tooltip:{...base().tooltip,formatter:ps=>tipMM(ps)+(()=>{const k=ps[0].dataIndex,v=P.alc.vig[k],d=P.alc.esp[k];return v?`<br>ejecución: <b>${pc(100*d/v)}</b>`:"";})()},
+      xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v,v<10?1:0)),
+      series:[L("Inicial",P.alc.ini.map((v,k)=>P.dato[k]?v:null),css("--ctx"),null,2),L("Vigente",P.alc.vig.map((v,k)=>P.dato[k]?v:null),css("--ref"),"dashed",1.6),L("Devengado",P.alc.esp.map((v,k)=>P.dato[k]?v:null),COL.rojo,null,2.5)]},true);
+    const F=P.alc.fin,tot=Y.map((_,k)=>Object.values(F).reduce((s,a)=>s+(a[k]||0),0));
+    const sh=a=>a.map((v,k)=>tot[k]>0?100*(v||0)/tot[k]:null),otros=Y.map((_,k)=>["Otros del TGN","Crédito y donación","Otros"].reduce((s,n)=>s+((F[n]||[])[k]||0),0));
+    gFin.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>pc(v)},xAxis:ejeX(yl),yAxis:{...ejeY(v=>v+" %"),max:100},
+      series:[barra("Coparticipación",sh(F["Coparticipación"]),COL.rojo,"f"),barra("IDH",sh(F["IDH"]),COL.oro,"f"),barra("Recursos propios",sh(F["Recursos propios"]),COL.turq,"f"),barra("Regalías",sh(F["Regalías"]),COL.petr,"f"),barra("Otros",sh(otros),css("--ctx"),"f")]},true);
+    const T=P.ter,pn=P.pob.pob_0_17,por=a=>real(a).map((v,k)=>pn[k]?1e6*v/pn[k]:null);
+    gTer.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>bs(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:[barra("Alcaldía",por(T["Alcaldía"]),COL.rojo,"t"),barra("Gobernación",por(T["Gobernación"]),COL.oro,"t"),barra("Nivel central",por(T["Nivel central"]),COL.turq,"t")]},true);
+    const tr=T.repartido[i],tg=T.registrado[i];
+    $("nota-ter").innerHTML=`Gasto específico en niñez de todos los niveles de gobierno, por cada habitante de 0 a 17 años, en bolivianos de 2025. `
+      +`En ${y}, el <b>${nf(100*tr/(tr+tg),0)} %</b> no trae ubicación en el presupuesto y se asignó con una llave de reparto: la planilla docente por la matrícula fiscal de cada nivel, el Juancito Pinto por la de primaria y secundaria, los programas materno-infantiles por la población de 0 a 5 años. <a href="nacional.html#metodo">Cómo se estima</a>.`;
+    const pb=P.pob;
+    gPob.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:[L("0 a 5 años",pb["0_5"],COL.rojo),L("6 a 11",pb["6_11"],COL.oro),L("12 a 17",pb["12_17"],COL.turq)]},true);
+    const M=P.mat,priv=Y.map((_,k)=>(M.privada_inicial[k]||0)+(M.privada_primaria[k]||0)+(M.privada_secundaria[k]||0));
+    gMat.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:[barra("Inicial fiscal",M.fiscal_inicial,COL.rojo,"m"),barra("Primaria fiscal",M.fiscal_primaria,COL.oro,"m"),barra("Secundaria fiscal",M.fiscal_secundaria,COL.turq,"m"),barra("Privada",priv,css("--ctx"),"m")]},true);
+    tabla();}
+  const COLS=[["a_esp_nna","Gasto específico por niño (Bs)",0],["a_esp_pct","% del presupuesto",1],["a_ace_est","Alim. escolar por estudiante (Bs)",0],["a_prot_nna","Protección por niño (Bs)",0],["a_ejec","Ejecución (%)",1],["t_esp_nna","Todos los niveles por niño (Bs, estim.)",0],["t_tot_nna","Con indirecto y ampliado (Bs, estim.)",0]];
+  function tabla(){$("tabla").innerHTML=`<tr><th>Gestión</th><th>Gasto específico (MM Bs)</th>${COLS.map(c=>`<th>${c[1]}</th>`).join("")}<th>Población 0-17</th></tr>`
+    +Y.map((y,k)=>`<tr><td>${y}</td><td>${P.dato[k]?nf(P.alc.esp[k],2):"s/d"}</td>${COLS.map(c=>`<td>${nf(P.ind[c[0]][k],c[2])}</td>`).join("")}<td>${nf(P.pob.pob_0_17[k])}</td></tr>`).join("");}
+  $("csv").onclick=()=>{const cab=["gestion","gasto_especifico_mm_bs",...COLS.map(c=>c[0]),"poblacion_0_17"];
+    const filas=Y.map((y,k)=>[y,P.dato[k]?P.alc.esp[k]:"",...COLS.map(c=>P.ind[c[0]][k]??""),P.pob.pob_0_17[k]]);
+    const b=new Blob(["﻿"+[cab,...filas].map(r=>r.join(";")).join("\n")],{type:"text/csv"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`gasto-ninez-${cod}-${P.nombre.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-")}.csv`;a.click();};
+  $("y-prev").onclick=()=>{if(yi>0){yi--;pintar();}};$("y-next").onclick=()=>{if(yi<Y.length-1){yi++;pintar();}};
+  $("tema").onclick=()=>{applyTheme(!document.body.classList.contains("dark"),true);pintar();};
+  addEventListener("resize",()=>charts.forEach(c=>c.resize()));
+  // ECharts mide las leyendas al pintar: si Inter todavía no cargó, las mide con la fuente de reserva y quedan cortadas
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(pintar);
+}).catch(e=>{$("nombre").textContent="Municipio no encontrado";$("lede").textContent="Revisá el código del municipio en la dirección (?m=código INE de 6 dígitos).";console.error(e);});
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bolivia y departamentos · Atlas del Gasto en Niñez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="lib/echarts.min.js"></script>
+<style>
+:root{--f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;
+  --red:#c71e1d;--amber:#ee9b00;--teal:#0a9396;--teal-dk:#005f73;--ink:#001219;
+  --topbar:#5c1618;--topline:#3f0e10;--fondo:#f2efe8;--card:#fff;--linea:#ddd6c9;--linea-2:#eae4d7;
+  --tx:#16232c;--suave:#5f6f79;--faint:#93a3ac;--ref:#001219;--ctx:#c9cdce;--grid:#eae4d7}
+body.dark{--fondo:#0b1318;--card:#141414;--linea:#26343d;--linea-2:#1d2a32;--tx:#e2e8f0;--suave:#9aabb5;--faint:#6e7a7d;
+  --ref:#e2e8f0;--ctx:#3a4549;--grid:#22313a;--topbar:#3d0e10;--topline:#5c1618}
+*,*::before,*::after{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.55}
+a{color:var(--teal-dk)}body.dark a{color:#5cc3c9}
+#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--topbar);color:#fff;border-bottom:1px solid var(--topline)}
+#top .logo{width:30px;height:30px;flex:0 0 30px}
+#top .t-h{font-weight:700;font-size:15px;line-height:1.2}#top .t-h b{color:var(--amber)}
+#top .t-n{font-size:11.5px;opacity:.8}#top .sp{flex:1}
+#top a.volver{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);padding:5px 10px;white-space:nowrap}
+.yr{display:flex;align-items:stretch;border:1px solid rgba(255,255,255,.35)}
+.yr button{background:none;border:0;color:#fff;font:inherit;font-size:16px;padding:0 10px;cursor:pointer}.yr button:disabled{opacity:.3}
+.yr .yv{font-weight:700;color:var(--amber);font-size:17px;padding:3px 6px;min-width:52px;text-align:center}
+.tema{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:34px;height:32px;cursor:pointer}
+main{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
+.kick{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:600}
+h1{font-family:var(--fd);font-weight:700;font-size:clamp(28px,4vw,44px);line-height:1.08;margin:6px 0 10px}
+.lede{font-size:17px;max-width:62rem;margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--linea);border:1px solid var(--linea);margin:0 0 28px}
+.kpi{background:var(--card);padding:14px 14px 12px;min-width:0}
+.kpi .kl{font-size:12px;color:var(--suave);line-height:1.3;min-height:31px}
+.kpi .kv{font-size:26px;font-weight:700;line-height:1.1;margin:6px 0 2px;white-space:nowrap}
+.kpi .ku{font-size:12px;color:var(--suave)}
+section{background:var(--card);border:1px solid var(--linea);padding:18px 18px 10px;margin:0 0 18px}
+h2{font-family:var(--fd);font-weight:700;font-size:22px;margin:0 0 4px}
+h3{font-size:15px;margin:18px 0 4px}
+.nota{font-size:13px;color:var(--suave);margin:0 0 10px;max-width:62rem}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g{width:100%;height:330px}.g.alto{height:380px}
+.gt{font-size:13px;font-weight:600;margin:6px 0 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--linea-2);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11.5px;color:var(--suave);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+tr.tot td{font-weight:700}
+.scroll{overflow-x:auto}
+.metodo p,.metodo li{max-width:62rem;font-size:14.5px}
+.metodo ul{padding-left:20px}
+.metodo table td,.metodo table th{white-space:normal;text-align:left}
+footer{font-size:12.5px;color:var(--suave);margin-top:26px;border-top:1px solid var(--linea);padding-top:12px}
+.tt span{border-radius:0!important}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dos{grid-template-columns:1fr}}
+@media (max-width:560px){#top{flex-wrap:wrap;gap:8px 10px;padding:8px 12px}#top .t-n,#top .sp{display:none}
+  main{padding:16px 12px 30px}.kpi .kv{font-size:21px}.lede{font-size:15.5px}.g,.g.alto{height:290px}section{padding:14px 12px 8px}}
+</style>
+</head>
+<body>
+<header id="top">
+  <svg class="logo" viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="Inter,sans-serif">NNA</text></svg>
+  <div><div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div><div class="t-n">Bolivia y departamentos</div></div>
+  <div class="sp"></div>
+  <div class="yr"><button id="y-prev" aria-label="Año anterior">‹</button><div class="yv" id="y-val">—</div><button id="y-next" aria-label="Año siguiente">›</button></div>
+  <a class="volver" href="index.html">Mapa municipal ›</a>
+  <button class="tema" id="tema" aria-label="Cambiar tema">◐</button>
+</header>
+<main>
+  <div class="kick">Bolivia · todos los niveles de gobierno</div>
+  <h1>Cuánto gasta el Estado en niñas, niños y adolescentes</h1>
+  <p class="lede" id="lede"></p>
+  <div class="kpis" id="kpis"></div>
+
+  <section><h2>Quién gasta y cuánto, 2016-2025</h2>
+    <p class="nota">Gasto específico en niñez (programas dirigidos sólo a NNA) según el nivel de gobierno que lo ejecuta, en millones de bolivianos de 2025. Consolidado: cada boliviano se cuenta una vez, en quien lo ejecuta.</p>
+    <div class="dos"><div><div class="gt">Por nivel de gobierno (MM Bs de 2025)</div><div class="g" id="g-nivel"></div></div>
+      <div><div class="gt">Por cada niña, niño o adolescente (Bs de 2025)</div><div class="g" id="g-nna"></div></div></div></section>
+
+  <section><h2>En qué se gasta, <span class="anio"></span></h2>
+    <p class="nota">Gasto específico, indirecto y ampliado ponderado (metodología UNICEF Bolivia 2023), por categoría del catálogo UDAPE-UNICEF, en millones de bolivianos del año.</p>
+    <div class="g" id="g-cat"></div></section>
+
+  <section><h2>Departamentos, <span class="anio"></span></h2>
+    <p class="nota">Gasto específico en niñez de todos los niveles en cada departamento, por habitante de 0 a 17 años (bolivianos de 2025). La planilla de las Direcciones Departamentales de Educación es dato; los programas nacionales sin ubicación (bonos, subsidio prenatal, ministerios) se reparten con la misma llave que en el mapa municipal.</p>
+    <div class="g alto" id="g-dep"></div><div class="scroll"><table id="t-dep"></table></div></section>
+
+  <section><h2>Con qué se paga el gasto de alcaldías y gobernaciones</h2>
+    <p class="nota">Fuente de financiamiento del gasto específico en niñez de los gobiernos subnacionales, en % del total de cada año.</p>
+    <div class="dos"><div><div class="gt">Alcaldías</div><div class="g" id="g-fin-a"></div></div><div><div class="gt">Gobernaciones</div><div class="g" id="g-fin-g"></div></div></div></section>
+
+  <section class="metodo" id="metodo"><h2>Metodología</h2>
+    <h3>Fuente y consolidación</h3>
+    <p>Presupuesto Abierto del Ministerio de Economía y Finanzas Públicas: base histórica 2016-2025, momento devengado, con el detalle de entidad, dirección administrativa, programa, proyecto o actividad, partida, fuente, organismo financiador y ubicación. Para no contar dos veces el mismo boliviano se descartan los activos financieros, la deuda y las transferencias entre entidades públicas (partidas 72-74 y 77-79): el gasto se cuenta en la entidad que lo ejecuta. Lo pagado y lo recibido como transferencia pública cuadran con diferencias menores al 1 % todos los años. Las transferencias a personas (bonos) sí se cuentan. Este atlas no incluye a las empresas municipales.</p>
+    <h3>Qué es gasto en niñez</h3>
+    <p>Se sigue la metodología del Ministerio de Economía con UNICEF y la Red Parlamentaria por la Niñez (2017), con los ponderadores que propone UNICEF Bolivia (2023). Cada línea del presupuesto se clasifica con reglas explícitas y auditadas en una de tres clases:</p>
+    <table><tr><th>Clase</th><th>Qué incluye</th><th>Cuánto se cuenta</th></tr>
+      <tr><td>Específico</td><td>Programas dirigidos sólo a NNA: educación inicial, primaria y secundaria (planilla docente, unidades educativas), alimentación complementaria escolar, defensorías y protección, salud infantil, Bono Juancito Pinto, deporte estudiantil.</td><td>100 %</td></tr>
+      <tr><td>Indirecto</td><td>Programas para la madre y el niño (Bono Juana Azurduy, subsidio prenatal y de lactancia, salud materna) o para la familia.</td><td>50 % (madre-niño) · 33 % (familia)</td></tr>
+      <tr><td>Ampliado</td><td>Programas para toda la población que también llegan a la niñez: salud general, agua y saneamiento, deporte y cultura, asistencia social.</td><td>La proporción de 0 a 17 años en la población del departamento, cada año</td></tr></table>
+    <p>Quedan fuera la educación superior y técnica, la educación de adultos, los programas del adulto mayor y de mujer, la seguridad social contributiva, las universidades y las empresas públicas.</p>
+    <h3>Dónde se gasta: lo que es dato y lo que es estimación</h3>
+    <p>Lo que ejecutan las <b>alcaldías</b> y las <b>gobernaciones</b> es dato: la entidad es el municipio o el departamento. Para el piso «todo el gasto en el municipio», lo que el presupuesto no ubica —la planilla docente se registra en la capital del departamento y los bonos no tienen territorio— se reparte así:</p>
+    <ul><li>Planilla de las Direcciones Departamentales de Educación por nivel: matrícula fiscal y de convenio de ese nivel en cada municipio del departamento (Ministerio de Educación, SEIE).</li>
+      <li>Bono Juancito Pinto: matrícula fiscal de primaria y secundaria. Bono Familia 2020 y demás gasto educativo nacional: matrícula fiscal total.</li>
+      <li>Juana Azurduy, subsidio prenatal y de lactancia, salud materna e infantil nacional: población de 0 a 5 años.</li>
+      <li>Proyectos de inversión con ubicación: su municipio. Gasto de la gobernación sin ubicación: población de 0 a 17 años del departamento.</li>
+      <li>Lo demás: población de 0 a 17 años.</li></ul>
+    <p>La suma de los 343 municipios reproduce exactamente el total nacional de cada año.</p>
+    <h3>Denominadores y precios</h3>
+    <p>Población por municipio y tramo de edad a mitad de año: estructura por edad de los censos 2012 y 2024 interpolada, aplicada a las proyecciones municipales del INE (Rev. 2020 y Rev. 2025 empalmadas) y cuadrada con las proyecciones departamentales por edad. Matrícula: SEIE 2016-2024 (2025 repite 2024). Precios: bolivianos de 2025 con el IPC promedio anual. El PIB de 2016 existe sólo en la base 1990 y no se usa.</p>
+    <h3>Limitaciones</h3>
+    <ul><li>El presupuesto dice cuánto se gastó, no a cuántos niños llegó: el gasto por niño es por habitante de 0 a 17 años, no por beneficiario.</li>
+      <li>Las reglas leen el texto libre de programas y actividades: puede quedar error de clasificación en líneas chicas.</li>
+      <li>Municipios sin presupuesto publicado en algunos años: Uru Chipaya (2019-2022), Salinas de Garci Mendoza (2022-2024), Huacaya (2025), Raqaypampa (salvo 2024), Jatun Ayllu Yura (antes de 2025), San Pedro de Macha (antes de 2021) y el Territorio Indígena Multiétnico (nunca).</li></ul>
+  </section>
+  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto; INE; Ministerio de Educación, SEIE. Referencias: MEFP, UNICEF y Red Parlamentaria por la Niñez (2017), <i>Presupuesto público para niñas, niños y adolescentes en Bolivia</i>; UNICEF Bolivia (2023), <i>Marco conceptual y metodología de estimación</i>; CEPAL (2012), <i>Gasto público dirigido a la niñez en América Latina y el Caribe</i>. Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script>
+const COL={rojo:"#C71E1D",oro:"#EE9B00",turq:"#0A9396",petr:"#005F73"};
+const CORTO={"Protección de la niñez y adolescencia":"Protección de NNA","Transferencias condicionadas":"Transferencias condic.","Nutrición y alimentación":"Nutrición y alimentación"};
+const $=id=>document.getElementById(id),css=v=>getComputedStyle(document.body).getPropertyValue(v).trim();
+const nf=(v,d=0)=>v==null||!isFinite(v)?"s/d":v.toLocaleString("es-BO",{minimumFractionDigits:d,maximumFractionDigits:d});
+function applyTheme(dark,save){document.body.classList.toggle("dark",dark);if(save){try{localStorage.setItem("atlas-tema",dark?"dark":"light");}catch(_){}}}
+(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}applyTheme(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
+fetch("nacional.json").then(r=>r.json()).then(N=>{
+  const Y=N.anios;let yi=Y.length-1;const D=N.deflactor,real=a=>a.map((v,i)=>v*D[i]);
+  const charts=[],mk=id=>{const c=echarts.init($(id));charts.push(c);return c;};
+  const gNiv=mk("g-nivel"),gNna=mk("g-nna"),gCat=mk("g-cat"),gDep=mk("g-dep"),gFa=mk("g-fin-a"),gFg=mk("g-fin-g");
+  const base=()=>({textStyle:{fontFamily:"Inter",color:css("--suave")},grid:{left:8,right:14,top:38,bottom:8,containLabel:true},
+    tooltip:{trigger:"axis",className:"tt",confine:true,backgroundColor:css("--card"),borderColor:css("--linea"),textStyle:{color:css("--tx"),fontSize:12},extraCssText:"border-radius:0"},
+    legend:{top:0,left:0,itemWidth:12,itemHeight:10,icon:"rect",textStyle:{color:css("--tx"),fontSize:12}}});
+  const ejeX=d=>({type:"category",data:d,axisTick:{show:false},axisLine:{lineStyle:{color:css("--linea")}},axisLabel:{color:css("--suave")}});
+  const ejeY=f=>({type:"value",splitLine:{lineStyle:{color:css("--grid")}},axisLabel:{color:css("--suave"),formatter:f}});
+  const barra=(n,d,c,s)=>({name:n,type:"bar",stack:s,data:d,itemStyle:{color:c,borderColor:css("--card"),borderWidth:1},barMaxWidth:36,emphasis:{focus:"series"}});
+  const L=(n,d,c,dash,w)=>({name:n,type:"line",data:d,symbol:"circle",symbolSize:7,lineStyle:{color:c,width:w||2,type:dash||"solid"},itemStyle:{color:c},emphasis:{focus:"series"}});
+  const NIV=[["Alcaldías",COL.rojo],["Gobernaciones",COL.oro],["Nivel central",COL.turq]];
+  function pintar(){const i=yi,y=String(Y[i]),yl=Y.map(String);
+    document.querySelectorAll(".anio").forEach(e=>e.textContent=y);$("y-val").textContent=y;$("y-prev").disabled=i===0;$("y-next").disabled=i===Y.length-1;
+    const esp=N.esp[i],l2=N.l2[i],pob=N.pob_0_17[i],porN=1e6*esp*D[i]/pob,tot=esp+l2;
+    const k=(l,v,u)=>`<div class="kpi"><div class="kl">${l}</div><div class="kv">${v}</div><div class="ku">${u}</div></div>`;
+    $("kpis").innerHTML=k("Gasto específico en niñez",nf(esp,0),"millones de Bs de "+y)+k("Por cada niña, niño o adolescente",nf(porN),"Bs de 2025")
+      +k("Gasto total en niñez (con indirecto y ampliado)",nf(N.pib[i]?100*tot/N.pib[i]:null,1)+" %","del PIB"+(N.pib[i]?"":" (s/d)"))
+      +k("Parte del gasto del gobierno general",nf(100*tot/N.gasto_gob_general[i],1)+" %","consolidado, con indirecto y ampliado")
+      +k("Lo que ejecutan las alcaldías",nf(100*N.nivel_esp["Alcaldías"][i]/esp,1)+" %","del gasto específico");
+    const p0=1e6*N.esp[0]*D[0]/N.pob_0_17[0];
+    $("lede").innerHTML=`En ${y} el Estado boliviano gastó <b>Bs ${nf(esp,0)} millones</b> en programas dirigidos sólo a la niñez y la adolescencia: <b>Bs ${nf(porN)}</b> por cada habitante de 0 a 17 años, en bolivianos de 2025 `
+      +`(${porN>=p0?"más":"menos"} que los Bs ${nf(p0)} de 2016). El nivel central pone el ${nf(100*N.nivel_esp["Nivel central"][i]/esp,0)} %, casi todo la planilla de los maestros; las alcaldías, el ${nf(100*N.nivel_esp["Alcaldías"][i]/esp,0)} %; las gobernaciones, el ${nf(100*N.nivel_esp["Gobernaciones"][i]/esp,1)} %.`;
+    gNiv.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v,0)+" MM Bs"},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:NIV.map(([n,c])=>barra(n,real(N.nivel_esp[n]),c,"n"))},true);
+    const pn=(a)=>real(a).map((v,k)=>1e6*v/N.pob_0_17[k]);
+    gNna.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)+" Bs"},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
+      series:[L("Específico",pn(N.esp),COL.rojo,null,2.5),L("Con indirecto y ampliado",pn(N.esp.map((v,k)=>v+N.l2[k])),css("--ref"),"dashed",1.6)]},true);
+    const cats=Object.keys(N.categoria).map(c=>[c,N.categoria[c][i]]).filter(x=>x[1]>0).sort((a,b)=>a[1]-b[1]);
+    gCat.setOption({...base(),legend:{show:false},grid:{left:176,right:60,top:8,bottom:24,containLabel:false},tooltip:{...base().tooltip,trigger:"item",formatter:p=>`${p.name}: <b>${nf(p.value,1)} MM Bs</b>`},
+      xAxis:ejeY(v=>nf(v)),yAxis:{type:"category",data:cats.map(x=>CORTO[x[0]]||x[0]),axisTick:{show:false},axisLabel:{color:css("--tx")}},
+      series:[{type:"bar",data:cats.map(x=>x[1]),itemStyle:{color:COL.turq},barMaxWidth:20,label:{show:true,position:"right",color:css("--suave"),fontSize:11,formatter:p=>nf(p.value,0)}}]},true);
+    const deps=N.departamentos.map(d=>{const p=d.pob_0_17[i],f=D[i]*1e6/p;return {n:d.nombre,a:d.ter["Alcaldías"][i]*f,g:d.ter["Gobernación"][i]*f,c:d.ter["Nivel central"][i]*f,gob:d.gob_esp[i]*f,l2:d.ter_l2[i]*f,p};})
+      .sort((a,b)=>(a.a+a.g+a.c)-(b.a+b.g+b.c));
+    gDep.setOption({...base(),grid:{left:8,right:14,top:38,bottom:8,containLabel:true},tooltip:{...base().tooltip,valueFormatter:v=>nf(v)+" Bs"},
+      xAxis:ejeY(v=>nf(v)),yAxis:{type:"category",data:deps.map(d=>d.n),axisTick:{show:false},axisLabel:{color:css("--tx")}},
+      series:[barra("Alcaldías",deps.map(d=>d.a),COL.rojo,"d"),barra("Gobernación",deps.map(d=>d.g),COL.oro,"d"),barra("Nivel central",deps.map(d=>d.c),COL.turq,"d")]},true);
+    const t=deps.slice().reverse();
+    $("t-dep").innerHTML=`<tr><th>Departamento</th><th>Todos los niveles</th><th>Gobernación</th><th>Con ampliado</th><th>NNA</th></tr>`
+      +t.map(d=>`<tr><td>${d.n}</td><td>${nf(d.a+d.g+d.c)}</td><td>${nf(d.gob)}</td><td>${nf(d.a+d.g+d.c+d.l2)}</td><td>${nf(d.p)}</td></tr>`).join("")
+      +`<tr class="tot"><td>Bolivia</td><td>${nf(porN)}</td><td>${nf(1e6*D[i]*N.nivel_esp["Gobernaciones"][i]/pob)}</td><td>${nf(1e6*D[i]*tot/pob)}</td><td>${nf(pob)}</td></tr>`;
+    const fin=(F,g)=>{const tt=Y.map((_,k)=>Object.values(F).reduce((s,a)=>s+a[k],0)),sh=a=>(a||Y.map(()=>0)).map((v,k)=>tt[k]?100*v/tt[k]:null);
+      const otros=Y.map((_,k)=>Object.keys(F).filter(n=>!["Coparticipación","IDH","Recursos propios","Regalías"].includes(n)).reduce((s,n)=>s+F[n][k],0));
+      g.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v,1)+" %"},xAxis:ejeX(yl),yAxis:{...ejeY(v=>v+" %"),max:100},
+        series:[barra("Coparticipación",sh(F["Coparticipación"]),COL.rojo,"f"),barra("IDH",sh(F["IDH"]),COL.oro,"f"),barra("Recursos propios",sh(F["Recursos propios"]),COL.turq,"f"),barra("Regalías",sh(F["Regalías"]),COL.petr,"f"),barra("Otros",sh(otros),css("--ctx"),"f")]},true);};
+    fin(N.fin_subnacional["Alcaldías"],gFa);fin(N.fin_subnacional["Gobernaciones"],gFg);}
+  $("y-prev").onclick=()=>{if(yi>0){yi--;pintar();}};$("y-next").onclick=()=>{if(yi<Y.length-1){yi++;pintar();}};
+  $("tema").onclick=()=>{applyTheme(!document.body.classList.contains("dark"),true);pintar();};
+  addEventListener("resize",()=>charts.forEach(c=>c.resize()));
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(pintar);
+});
+</script>
+</body>
+</html>
