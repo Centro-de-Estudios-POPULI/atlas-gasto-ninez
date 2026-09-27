@@ -111,7 +111,7 @@ footer{font-size:12.5px;color:var(--suave);margin-top:26px;border-top:1px solid 
     <p class="nota">Serie completa de los indicadores del perfil. Montos por niño y por estudiante en bolivianos de 2025.</p>
     <button class="btn" id="csv">Descargar CSV</button><div class="scroll"><table id="tabla"></table></div></section>
 
-  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto (devengado consolidado 2016-2025); INE, proyecciones de población y censos 2012 y 2024; Ministerio de Educación, SEIE. Clasificación del gasto en niñez: metodología MEFP-UNICEF con ponderadores UNICEF Bolivia 2023. <a href="nacional.html#metodo">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto (devengado consolidado 2016-2025); INE, proyecciones de población y censos 2012 y 2024; Ministerio de Educación, SEIE. Clasificación del gasto en niñez: metodología MEFP-UNICEF con ponderadores UNICEF Bolivia 2023. <a href="metodologia.html">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
 </main>
 <script>
 const COL={rojo:"#C71E1D",oro:"#EE9B00",turq:"#0A9396",petr:"#005F73"};
@@ -193,7 +193,7 @@ Promise.all([fetch(`perfiles/${cod}.json`).then(r=>{if(!r.ok)throw new Error("si
       series:[barra("Alcaldía",por(T["Alcaldía"]),COL.rojo,"t"),barra("Gobernación",por(T["Gobernación"]),COL.oro,"t"),barra("Nivel central",por(T["Nivel central"]),COL.turq,"t")]},true);
     const tr=T.repartido[i],tg=T.registrado[i];
     $("nota-ter").innerHTML=`Gasto específico en niñez de todos los niveles de gobierno, por cada habitante de 0 a 17 años, en bolivianos de 2025. `
-      +`En ${y}, el <b>${nf(100*tr/(tr+tg),0)} %</b> no trae ubicación en el presupuesto y se asignó con una llave de reparto: la planilla docente por la matrícula fiscal de cada nivel, el Juancito Pinto por la de primaria y secundaria, los programas materno-infantiles por la población de 0 a 5 años. <a href="nacional.html#metodo">Cómo se estima</a>.`;
+      +`En ${y}, el <b>${nf(100*tr/(tr+tg),0)} %</b> no trae ubicación en el presupuesto y se asignó con una llave de reparto: la planilla docente por la matrícula fiscal de cada nivel, el Juancito Pinto por la de primaria y secundaria, los programas materno-infantiles por la población de 0 a 5 años. <a href="metodologia.html">Cómo se estima</a>.`;
     const pb=P.pob;
     gPob.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
       series:[L("0 a 5 años",pb["0_5"],COL.rojo),L("6 a 11",pb["6_11"],COL.oro),L("12 a 17",pb["12_17"],COL.turq)]},true);

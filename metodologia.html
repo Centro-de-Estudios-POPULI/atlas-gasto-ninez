@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metodología · Atlas del Gasto en Niñez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;--amber:#ee9b00;--teal-dk:#005f73;--topbar:#5c1618;--topline:#3f0e10;
+  --fondo:#f2efe8;--card:#fff;--linea:#ddd6c9;--linea-2:#eae4d7;--tx:#16232c;--suave:#5f6f79;--code:#f6f3ec}
+body.dark{--fondo:#0b1318;--card:#141414;--linea:#26343d;--linea-2:#1d2a32;--tx:#e2e8f0;--suave:#9aabb5;--topbar:#3d0e10;--topline:#5c1618;--code:#1b252c}
+*,*::before,*::after{box-sizing:border-box;border-radius:0}
+html,body{margin:0;background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:15.5px;line-height:1.6}
+a{color:var(--teal-dk)}body.dark a{color:#5cc3c9}
+#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--topbar);color:#fff;border-bottom:1px solid var(--topline)}
+#top svg{width:30px;height:30px;flex:0 0 30px}#top .t-h{font-weight:700;font-size:15px;line-height:1.2}#top .t-h b{color:var(--amber)}
+#top .t-n{font-size:11.5px;opacity:.8}#top .sp{flex:1}
+#top a.nav{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);padding:5px 10px;white-space:nowrap}
+.tema{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:34px;height:32px;cursor:pointer}
+.env{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1180px;margin:0 auto;padding:26px 18px 50px}
+nav.indice{position:sticky;top:70px;align-self:start;font-size:13px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--linea);padding-left:12px}
+nav.indice a{color:var(--suave);text-decoration:none}nav.indice a:hover{color:var(--tx)}
+article{background:var(--card);border:1px solid var(--linea);padding:26px 30px 30px;min-width:0}
+h1{font-family:var(--fd);font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin:0 0 14px}
+h2{font-family:var(--fd);font-size:23px;margin:34px 0 8px;padding-top:14px;border-top:1px solid var(--linea-2)}
+h3{font-size:15.5px;margin:22px 0 6px}
+p,li{max-width:62rem}blockquote{margin:0 0 16px;padding:8px 14px;border-left:3px solid var(--amber);background:var(--code);color:var(--suave);font-size:13.5px}
+blockquote p{margin:0}
+.scroll{overflow-x:auto;margin:10px 0 16px}
+table{border-collapse:collapse;font-size:13px;width:100%}
+th,td{padding:7px 9px;border-bottom:1px solid var(--linea-2);text-align:left;vertical-align:top}
+th{font-size:11.5px;color:var(--suave);font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 4px}
+pre{background:var(--code);padding:12px 14px;overflow-x:auto;font-size:12.5px;line-height:1.5}pre code{background:none;padding:0}
+@media (max-width:900px){.env{grid-template-columns:1fr}nav.indice{display:none}article{padding:18px 16px 24px}}
+@media (max-width:560px){#top{flex-wrap:wrap;gap:8px}#top .t-n,#top .sp{display:none}.env{padding:14px 10px 30px}}
+</style></head><body>
+<header id="top"><svg viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="Inter,sans-serif">NNA</text></svg>
+<div><div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div><div class="t-n">Metodología</div></div><div class="sp"></div>
+<a class="nav" href="index.html">Mapa municipal</a><a class="nav" href="nacional.html">Bolivia y departamentos</a>
+<button class="tema" id="tema" aria-label="Cambiar tema">◐</button></header>
+<div class="env"><nav class="indice"><a href="#1-alcance">1. Alcance</a><a href="#2-fuentes">2. Fuentes</a><a href="#3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</a><a href="#4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</a><a href="#5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</a><a href="#6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</a><a href="#7-denominadores-y-precios">7. Denominadores y precios</a><a href="#8-variables">8. Variables</a><a href="#9-indicadores-del-atlas">9. Indicadores del atlas</a><a href="#10-controles">10. Controles</a><a href="#11-limitaciones">11. Limitaciones</a></nav>
+<article><h1>Gasto público en niñas, niños y adolescentes: metodología</h1><h2 id="1-alcance">1. Alcance</h2>
+<p>Gasto público <strong>devengado</strong> del Estado boliviano —nivel central, gobernaciones y alcaldías— dirigido a la población de
+<strong>0 a 17 años</strong> (Ley 548, Código Niña, Niño y Adolescente), 2016-2025. Tres pisos: lo que <strong>ejecuta cada alcaldía</strong>, lo que
+<strong>ejecuta cada gobernación</strong> y <strong>todo lo que se gasta en cada municipio y departamento</strong> sumando niveles (estimación).</p>
+<h2 id="2-fuentes">2. Fuentes</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Fuente</th>
+<th>Qué aporta</th>
+<th>Cobertura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Presupuesto Abierto, Ministerio de Economía y Finanzas Públicas (base histórica, Parquet)</td>
+<td>Gasto por entidad, dirección administrativa, programa, proyecto/actividad, partida, fuente, organismo financiador, finalidad-función y ubicación; momentos inicial, vigente, devengado</td>
+<td>2016-2025, 4,48 millones de filas</td>
+</tr>
+<tr>
+<td>INE, proyecciones de población (Rev. 2020 y Rev. 2025) y censos 2012 y 2024</td>
+<td>Población por municipio y tramo de edad</td>
+<td>343 municipios, 2016-2025</td>
+</tr>
+<tr>
+<td>Ministerio de Educación, SEIE</td>
+<td>Matrícula de educación regular por municipio, dependencia y nivel</td>
+<td>339 municipios, 2016-2024</td>
+</tr>
+<tr>
+<td>INE / Banco Mundial (IPC); populi-fiscal (PIB)</td>
+<td>Precios de 2025 y % del PIB</td>
+<td>2016-2025 (PIB desde 2017)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</h2>
+<p>Se trabaja sobre el gasto <strong>consolidado</strong>: se descartan los activos financieros (grupo 50000), el servicio de la deuda
+(60000) y las <strong>transferencias entre entidades públicas</strong> (partidas 72xxx-74xxx y 77xxx-79xxx), que la entidad receptora
+vuelve a ejecutar. Se conservan las transferencias al sector privado (71xxx, 75xxx), donde están los bonos. Así el gasto se
+cuenta en quien lo ejecuta y los pisos se pueden sumar. Las transferencias públicas pagadas y las recibidas (ingresos
+19200, 19300, 23200, 23300) difieren menos de 1 % todos los años. El atlas no incluye a las empresas municipales.</p>
+<h2 id="4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</h2>
+<p>Metodología MEFP-UNICEF-Red Parlamentaria por la Niñez (2017) con los ponderadores de UNICEF Bolivia (2023). Cada fila
+del presupuesto se clasifica con reglas explícitas, en orden (la primera que calza gana), leyendo el programa, la
+actividad o proyecto, la dirección administrativa, la partida, la finalidad-función y la actividad económica.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Clase</th>
+<th>Qué es</th>
+<th>Versión A (MEFP 2017)</th>
+<th>Versión B (UNICEF 2023, medida)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Específico</td>
+<td>Programas dirigidos sólo a NNA</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>Indirecto</td>
+<td>Programas para la madre y el niño, o para la familia</td>
+<td>0,5</td>
+<td>50 % madre-niño · 33 % familia</td>
+</tr>
+<tr>
+<td>Ampliado</td>
+<td>Programas para toda la población que también llegan a NNA</td>
+<td>0,2 (0,5 en salud general, agua y deporte, como el MEFP)</td>
+<td>Proporción de 0-17 en la población del departamento, cada año</td>
+</tr>
+</tbody>
+</table></div>
+<p>El atlas usa la <strong>versión B</strong>. La capa principal es el gasto <strong>específico</strong>; indirecto y ampliado van en una capa aparte.</p>
+<h3 id="reglas-de-clasificacion">Reglas de clasificación</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Regla</th>
+<th>Subcategoría</th>
+<th>Clase</th>
+<th>Categoría UDAPE-UNICEF</th>
+<th>Criterio</th>
+<th>Peso A</th>
+<th>Peso B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R01</td>
+<td>Bono Juancito Pinto</td>
+<td>Específico</td>
+<td>Transferencias condicionadas</td>
+<td>Actividad «Bono Juancito Pinto» del Ministerio de Educación (pago a estudiantes).</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R02</td>
+<td>Bono Juana Azurduy (madre-niño)</td>
+<td>Indirecto</td>
+<td>Transferencias condicionadas</td>
+<td>Actividad o dirección administrativa del Bono Juana Azurduy: pago a madres y costo de operación del programa.</td>
+<td>0,5</td>
+<td>50 % (madre-niño)</td>
+</tr>
+<tr>
+<td>R03</td>
+<td>Subsidio prenatal y de lactancia</td>
+<td>Indirecto</td>
+<td>Nutrición y alimentación</td>
+<td>Subsidio prenatal y de lactancia y subsidio universal prenatal: compra y reparto de paquetes (SEDEM; antes EBA y LACTEOSBOL).</td>
+<td>0,5</td>
+<td>50 % (madre-niño)</td>
+</tr>
+<tr>
+<td>R04</td>
+<td>Bono Familia (por estudiante, pandemia)</td>
+<td>Específico</td>
+<td>Transferencias condicionadas</td>
+<td>Bono Familia 2020: pago por estudiante del Ministerio de Educación, registrado bajo «coronavirus».</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>X01</td>
+<td>Fuera del alcance (seguridad social, empresas, universidades)</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Seguridad social contributiva, empresas públicas y universidades: fuera del alcance (salvo el subsidio prenatal, que va antes).</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>X02</td>
+<td>Otros grupos: adulto mayor</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Programas del adulto mayor: Renta Dignidad, canastas y centros de la tercera edad.</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>R05</td>
+<td>Alimentación complementaria escolar</td>
+<td>Específico</td>
+<td>Nutrición y alimentación</td>
+<td>Subpartida 31130 «Alimentación complementaria escolar» o actividad de desayuno o alimentación complementaria escolar.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R06</td>
+<td>Educación regular: docencia y gestión por nivel (DDE)</td>
+<td>Específico</td>
+<td>Educación</td>
+<td>Planilla y gestión de las Direcciones Departamentales de Educación por nivel: docencia y administración de inicial, primaria y secundaria.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>X03</td>
+<td>Educación superior, técnica y formación docente</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Educación superior, técnica y formación docente (finalidad 9.3-9.4, actividad o actividad económica de educación superior).</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>R07</td>
+<td>Educación alternativa y de adultos</td>
+<td>Indirecto</td>
+<td>Educación</td>
+<td>Educación alternativa, alfabetización y educación de jóvenes y adultos.</td>
+<td>0,5</td>
+<td>0</td>
+</tr>
+<tr>
+<td>R08</td>
+<td>Educación especial</td>
+<td>Indirecto</td>
+<td>Educación</td>
+<td>Educación especial.</td>
+<td>0,5</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R09</td>
+<td>Juegos estudiantiles y olimpiadas</td>
+<td>Específico</td>
+<td>Deportes y cultura</td>
+<td>Juegos estudiantiles, olimpiadas científicas y deporte formativo de niñas, niños y adolescentes.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>Salud infantil (hospitales del niño, vacunas, nutrición)</td>
+<td>Específico</td>
+<td>Salud</td>
+<td>Salud infantil: hospitales del niño, pediatría, neonatología, inmunizaciones (PAI), Nutribebé, desnutrición, desarrollo infantil temprano.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R11</td>
+<td>Salud materna y materno-infantil</td>
+<td>Indirecto</td>
+<td>Salud</td>
+<td>Salud materna y materno-infantil: hospitales materno-infantiles y de la mujer, maternidad, SUMI.</td>
+<td>0,5</td>
+<td>50 % (madre-niño)</td>
+</tr>
+<tr>
+<td>R12</td>
+<td>Programa de defensa y protección de NNA</td>
+<td>Específico</td>
+<td>Protección de la niñez y adolescencia</td>
+<td>Programa 26 «Defensa y protección de la niñez y adolescencia» de alcaldías y gobernaciones; función 10.4 (niñez, primera infancia).</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R13</td>
+<td>Protección compartida (DNA-SLIM, familia)</td>
+<td>Indirecto</td>
+<td>Protección de la niñez y adolescencia</td>
+<td>Protección compartida con la mujer y la familia (DNA-SLIM).</td>
+<td>0,5</td>
+<td>33 % (familia)</td>
+</tr>
+<tr>
+<td>R14</td>
+<td>Protección, cuidado y primera infancia (fuera del programa 26)</td>
+<td>Específico</td>
+<td>Protección de la niñez y adolescencia</td>
+<td>Protección y cuidado fuera del programa 26: defensorías, centros infantiles, guarderías, primera infancia, reintegración, trabajo infantil.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R15</td>
+<td>Unidades educativas: infraestructura, equipamiento y servicios</td>
+<td>Específico</td>
+<td>Educación</td>
+<td>Educación de alcaldías y gobernaciones (programas 21 y 41) y del nivel central ligada a unidades educativas o a los niveles escolares: infraestructura, equipamiento, servicios, contenidos.</td>
+<td>1</td>
+<td>100 %</td>
+</tr>
+<tr>
+<td>R16</td>
+<td>Gestión educativa no atribuible a un nivel (prorrateada)</td>
+<td>Específico</td>
+<td>Educación</td>
+<td>Gestión educativa de las DDE y del Ministerio de Educación no atribuible a un nivel.</td>
+<td>1</td>
+<td>parte de la educación regular en la DDE</td>
+</tr>
+<tr>
+<td>X04</td>
+<td>Otros grupos: mujer y género</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Programas de mujer y género sin componente de niñez.</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>R17</td>
+<td>Discapacidad</td>
+<td>Ampliado</td>
+<td>Desarrollo e integración</td>
+<td>Discapacidad: ayuda económica a personas con discapacidad y servicios municipales.</td>
+<td>0,2</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R18</td>
+<td>Salud pública y prevención</td>
+<td>Ampliado</td>
+<td>Salud</td>
+<td>Salud pública y prevención: vigilancia, epidemiología, promoción de la salud (función 7.4).</td>
+<td>0,2</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R19</td>
+<td>Atención de salud (SUS, redes, hospitales)</td>
+<td>Ampliado</td>
+<td>Salud</td>
+<td>Atención de salud: SUS, redes, SEDES, hospitales generales, direcciones municipales de salud.</td>
+<td>0,5</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R20</td>
+<td>Agua, saneamiento y vivienda</td>
+<td>Ampliado</td>
+<td>Condiciones de vida</td>
+<td>Agua potable, alcantarillado, tratamiento de aguas y vivienda (actividad económica 26.x y 30.6), sin residuos sólidos.</td>
+<td>0,5</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R21</td>
+<td>Deporte, recreación y cultura</td>
+<td>Ampliado</td>
+<td>Deportes y cultura</td>
+<td>Deporte, recreación y cultura generales (programas 22-23 de alcaldías, 44 de gobernaciones; actividad económica 5.x y 8.x).</td>
+<td>0,5</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>R22</td>
+<td>Asistencia social, familia y grupos vulnerables</td>
+<td>Ampliado</td>
+<td>Desarrollo e integración</td>
+<td>Asistencia social, familia y grupos vulnerables (programa 25 de alcaldías, 42 de gobernaciones, función 10.7).</td>
+<td>0,2</td>
+<td>proporción 0-17 del departamento y año</td>
+</tr>
+<tr>
+<td>X99</td>
+<td>Sin relación directa con NNA</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Todo lo demás (administración general, deuda, caminos, seguridad…): bienes públicos que no se imputan a la niñez.</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<p>La gestión educativa no atribuible a un nivel (R16) se prorratea por la parte de la educación regular (inicial, primaria y
+secundaria) en el gasto educativo identificado por nivel de cada Dirección Departamental de Educación (91,6 % en 2025).</p>
+<h2 id="5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</h2>
+<p><strong>Rubros de partida</strong> (objeto del gasto; gana el primer prefijo que calza):</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Prefijo de partida</th>
+<th>Rubro</th>
+<th>Qué incluye</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31100</td>
+<td>Alimentos</td>
+<td>Alimentos y bebidas; en la niñez es casi todo el desayuno escolar (subpartida 31130)</td>
+</tr>
+<tr>
+<td>42</td>
+<td>Construcción y mejoras</td>
+<td>Construcciones y mejoras de bienes públicos: unidades educativas, centros infantiles</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Construcción y mejoras</td>
+<td>Estudios y proyectos para inversión</td>
+</tr>
+<tr>
+<td>43</td>
+<td>Equipamiento</td>
+<td>Maquinaria y equipo: mobiliario y equipo educacional, de computación, de oficina</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Servicios básicos</td>
+<td>Energía eléctrica, agua, telefonía e internet de las unidades</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Personal</td>
+<td>Servicios personales: planilla permanente y eventual</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Mantenimiento y servicios</td>
+<td>Servicios no personales: mantenimiento, consultorías, limpieza, fletes, alquileres</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Materiales</td>
+<td>Materiales y suministros distintos de alimentos</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Transferencias a personas</td>
+<td>Transferencias al sector privado: ayudas económicas, becas</td>
+</tr>
+<tr>
+<td>resto</td>
+<td>Otros</td>
+<td>Lo demás</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Componentes</strong> del gasto específico de la alcaldía:</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Reglas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alimentación escolar</td>
+<td>R05</td>
+</tr>
+<tr>
+<td>Unidades educativas</td>
+<td>R15, R16, R06</td>
+</tr>
+<tr>
+<td>Protección</td>
+<td>R12, R14</td>
+</tr>
+<tr>
+<td>Salud infantil</td>
+<td>R10</td>
+</tr>
+<tr>
+<td>Deporte estudiantil</td>
+<td>R09</td>
+</tr>
+<tr>
+<td>Otros</td>
+<td>resto de las reglas específicas</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Fuente de financiamiento</strong> (gana la primera que calza):</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Fuente</th>
+<th>Se reconoce por</th>
+<th>Texto buscado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coparticipación</td>
+<td>organismo financiador</td>
+<td><code>Coparticipaci</code></td>
+</tr>
+<tr>
+<td>IDH</td>
+<td>organismo financiador</td>
+<td><code>Directo a los Hidrocarburos</code></td>
+</tr>
+<tr>
+<td>Recursos propios</td>
+<td>organismo financiador</td>
+<td><code>Recursos Espec</code></td>
+</tr>
+<tr>
+<td>Regalías</td>
+<td>organismo financiador</td>
+<td><code>Regal</code></td>
+</tr>
+<tr>
+<td>Crédito y donación</td>
+<td>grupo de fuente</td>
+<td><code>CREDITO\|DONACION</code></td>
+</tr>
+<tr>
+<td>Otros del TGN</td>
+<td>organismo financiador</td>
+<td><code>Tesoro\|T\.G\.N\.</code></td>
+</tr>
+<tr>
+<td>Otros</td>
+<td>—</td>
+<td>resto</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</h2>
+<p>Lo que ejecutan alcaldías y gobernaciones es <strong>dato</strong>. Del nivel central, la planilla docente se registra en la capital
+del departamento y los bonos no tienen territorio: en 2025 sólo el 1,7 % del gasto central en niñez fueron proyectos de inversión, los únicos que traen ubicación. Lo
+que no trae ubicación se <strong>reparte</strong> con una llave declarada (columna <code>llave</code> del panel):</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Gasto</th>
+<th>Se asigna por</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alcaldía</td>
+<td>Su municipio (dato)</td>
+</tr>
+<tr>
+<td>Proyectos de inversión de la gobernación o del nivel central con ubicación</td>
+<td>Su municipio (dato)</td>
+</tr>
+<tr>
+<td>Gobernación sin ubicación de inversión</td>
+<td>Población 0-17 de los municipios del departamento (Gran Chaco: sus municipios)</td>
+</tr>
+<tr>
+<td>Planilla de las Direcciones Departamentales de Educación por nivel</td>
+<td>Matrícula fiscal y de convenio de ese nivel, dentro del departamento</td>
+</tr>
+<tr>
+<td>Resto del gasto de las DDE</td>
+<td>Matrícula fiscal total del departamento</td>
+</tr>
+<tr>
+<td>Bono Juancito Pinto</td>
+<td>Matrícula fiscal de primaria y secundaria</td>
+</tr>
+<tr>
+<td>Bono Familia 2020 y educación nacional</td>
+<td>Matrícula fiscal total</td>
+</tr>
+<tr>
+<td>Juana Azurduy, subsidio prenatal, salud materna e infantil nacional</td>
+<td>Población 0-5</td>
+</tr>
+<tr>
+<td>Resto del nivel central</td>
+<td>Población 0-17</td>
+</tr>
+</tbody>
+</table></div>
+<p>La suma de los 343 municipios reproduce el total nacional. Los cuatro municipios que el SEIE todavía cuenta dentro de su
+municipio de origen (Raqaypampa, Jatun Ayllu Yura, San Pedro de Macha, Territorio Indígena Multiétnico) reciben matrícula
+en proporción a su población de 6 a 17 años.</p>
+<h2 id="7-denominadores-y-precios">7. Denominadores y precios</h2>
+<ul>
+<li><strong>Población por municipio y tramo de edad</strong> (0-5, 6-11, 12-17): la parte de cada tramo en la población del municipio se
+  interpola entre el censo 2012 y el censo 2024, se aplica a la población municipal del INE a mitad de año (Rev. 2020 y
+  Rev. 2025 empalmadas) y se cuadra con la población departamental por edad del INE.</li>
+<li><strong>Matrícula</strong>: SEIE, unidades fiscales (incluye convenio) y privadas; 2025 repite 2024.</li>
+<li><strong>Precios</strong>: bolivianos de 2025 con el IPC promedio anual. El PIB de 2016 existe sólo en base 1990: no se usa.</li>
+<li><strong>Municipios con cambio de código</strong> (autonomías indígenas): la entidad vieja se empalma con la nueva; los años sin
+  presupuesto publicado quedan vacíos (Uru Chipaya 2019-2022, Salinas 2022-2024, Huacaya 2025, Raqaypampa salvo 2024,
+  Jatun Ayllu Yura antes de 2025, San Pedro de Macha antes de 2021, Territorio Indígena Multiétnico siempre).</li>
+</ul>
+<h2 id="8-variables">8. Variables</h2>
+<p><code>datos/final/panel_municipal.csv</code> (una fila por municipio y año):</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cod_ine</code></td>
+<td>Código INE del municipio (6 dígitos)</td>
+</tr>
+<tr>
+<td><code>gestion</code></td>
+<td>Año (2016-2025)</td>
+</tr>
+<tr>
+<td><code>esp</code></td>
+<td>Devengado específico en NNA de la alcaldía</td>
+</tr>
+<tr>
+<td><code>esp_vig</code></td>
+<td>Presupuesto vigente específico de la alcaldía</td>
+</tr>
+<tr>
+<td><code>esp_ini</code></td>
+<td>Presupuesto inicial específico de la alcaldía</td>
+</tr>
+<tr>
+<td><code>c_ace</code></td>
+<td>Devengado específico de la alcaldía en el componente «ace»</td>
+</tr>
+<tr>
+<td><code>c_deporte</code></td>
+<td>Devengado específico de la alcaldía en el componente «deporte»</td>
+</tr>
+<tr>
+<td><code>c_educacion</code></td>
+<td>Devengado específico de la alcaldía en el componente «educacion»</td>
+</tr>
+<tr>
+<td><code>c_otros</code></td>
+<td>Devengado específico de la alcaldía en el componente «otros»</td>
+</tr>
+<tr>
+<td><code>c_proteccion</code></td>
+<td>Devengado específico de la alcaldía en el componente «proteccion»</td>
+</tr>
+<tr>
+<td><code>c_salud</code></td>
+<td>Devengado específico de la alcaldía en el componente «salud»</td>
+</tr>
+<tr>
+<td><code>r_alimentos</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «alimentos»</td>
+</tr>
+<tr>
+<td><code>r_construccion</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «construccion»</td>
+</tr>
+<tr>
+<td><code>r_equipamiento</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «equipamiento»</td>
+</tr>
+<tr>
+<td><code>r_materiales</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «materiales»</td>
+</tr>
+<tr>
+<td><code>r_otros</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «otros»</td>
+</tr>
+<tr>
+<td><code>r_personal</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «personal»</td>
+</tr>
+<tr>
+<td><code>r_servicios</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «servicios»</td>
+</tr>
+<tr>
+<td><code>r_servicios_basicos</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «servicios basicos»</td>
+</tr>
+<tr>
+<td><code>r_transferencias</code></td>
+<td>Devengado específico de la alcaldía en el rubro de partida «transferencias»</td>
+</tr>
+<tr>
+<td><code>f_copart</code></td>
+<td>Devengado específico de la alcaldía financiado con «copart»</td>
+</tr>
+<tr>
+<td><code>f_externo</code></td>
+<td>Devengado específico de la alcaldía financiado con «externo»</td>
+</tr>
+<tr>
+<td><code>f_idh</code></td>
+<td>Devengado específico de la alcaldía financiado con «idh»</td>
+</tr>
+<tr>
+<td><code>f_otros</code></td>
+<td>Devengado específico de la alcaldía financiado con «otros»</td>
+</tr>
+<tr>
+<td><code>f_propios</code></td>
+<td>Devengado específico de la alcaldía financiado con «propios»</td>
+</tr>
+<tr>
+<td><code>f_regalias</code></td>
+<td>Devengado específico de la alcaldía financiado con «regalias»</td>
+</tr>
+<tr>
+<td><code>f_tgn</code></td>
+<td>Devengado específico de la alcaldía financiado con «tgn»</td>
+</tr>
+<tr>
+<td><code>t_Corriente</code></td>
+<td>Devengado específico de la alcaldía de tipo «Corriente» (corriente o inversión de proyecto)</td>
+</tr>
+<tr>
+<td><code>t_Inversión</code></td>
+<td>Devengado específico de la alcaldía de tipo «Inversión» (corriente o inversión de proyecto)</td>
+</tr>
+<tr>
+<td><code>l2</code></td>
+<td>Indirecto + ampliado ponderado (versión B) de la alcaldía</td>
+</tr>
+<tr>
+<td><code>gasto</code></td>
+<td>Gasto consolidado total de la alcaldía (todo su presupuesto, sin deuda, activos financieros ni transferencias públicas)</td>
+</tr>
+<tr>
+<td><code>0_5</code></td>
+<td>Población de 0 a 5 años (mitad de año)</td>
+</tr>
+<tr>
+<td><code>6_11</code></td>
+<td>Población de 6 a 11 años</td>
+</tr>
+<tr>
+<td><code>12_17</code></td>
+<td>Población de 12 a 17 años</td>
+</tr>
+<tr>
+<td><code>pob_0_17</code></td>
+<td>Población de 0 a 17 años</td>
+</tr>
+<tr>
+<td><code>total</code></td>
+<td>Población total</td>
+</tr>
+<tr>
+<td><code>fiscal_inicial</code></td>
+<td>Matrícula de inicial en unidades fiscales y de convenio (SEIE)</td>
+</tr>
+<tr>
+<td><code>fiscal_primaria</code></td>
+<td>Matrícula de primaria fiscal y de convenio</td>
+</tr>
+<tr>
+<td><code>fiscal_secundaria</code></td>
+<td>Matrícula de secundaria fiscal y de convenio</td>
+</tr>
+<tr>
+<td><code>privada_inicial</code></td>
+<td>Matrícula de inicial privada</td>
+</tr>
+<tr>
+<td><code>privada_primaria</code></td>
+<td>Matrícula de primaria privada</td>
+</tr>
+<tr>
+<td><code>privada_secundaria</code></td>
+<td>Matrícula de secundaria privada</td>
+</tr>
+<tr>
+<td><code>fiscal_total</code></td>
+<td>Matrícula fiscal y de convenio total</td>
+</tr>
+<tr>
+<td><code>fiscal_prim_sec</code></td>
+<td>Matrícula fiscal y de convenio de primaria y secundaria</td>
+</tr>
+<tr>
+<td><code>dep</code></td>
+<td>Código del departamento (1-9)</td>
+</tr>
+<tr>
+<td><code>gran_chaco</code></td>
+<td>El municipio pertenece a la Región Autónoma del Gran Chaco</td>
+</tr>
+<tr>
+<td><code>dato</code></td>
+<td>La alcaldía tiene presupuesto publicado ese año</td>
+</tr>
+<tr>
+<td><code>ter_esp_alcaldia</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «alcaldia»</td>
+</tr>
+<tr>
+<td><code>ter_esp_central</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «central»</td>
+</tr>
+<tr>
+<td><code>ter_esp_gobernacion</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «gobernacion»</td>
+</tr>
+<tr>
+<td><code>ter_l2_alcaldia</code></td>
+<td>Indirecto + ampliado en el territorio de «alcaldia»</td>
+</tr>
+<tr>
+<td><code>ter_l2_central</code></td>
+<td>Indirecto + ampliado en el territorio de «central»</td>
+</tr>
+<tr>
+<td><code>ter_l2_gobernacion</code></td>
+<td>Indirecto + ampliado en el territorio de «gobernacion»</td>
+</tr>
+<tr>
+<td><code>ter_esp_registrado</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «registrado»</td>
+</tr>
+<tr>
+<td><code>ter_esp_repartido</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «repartido»</td>
+</tr>
+<tr>
+<td><code>ter_l2_registrado</code></td>
+<td>Indirecto + ampliado en el territorio de «registrado»</td>
+</tr>
+<tr>
+<td><code>ter_l2_repartido</code></td>
+<td>Indirecto + ampliado en el territorio de «repartido»</td>
+</tr>
+<tr>
+<td><code>ter_esp</code></td>
+<td>Gasto específico en NNA de todos los niveles en el territorio (estimación)</td>
+</tr>
+<tr>
+<td><code>ter_l2</code></td>
+<td>Indirecto + ampliado de todos los niveles en el territorio (estimación)</td>
+</tr>
+<tr>
+<td><code>deflactor</code></td>
+<td>Factor para llevar a bolivianos de 2025 (IPC promedio anual)</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>datos/final/panel_departamental.csv</code> (una fila por departamento y año):</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dep</code></td>
+<td>Código del departamento (1-9)</td>
+</tr>
+<tr>
+<td><code>gestion</code></td>
+<td>Año (2016-2025)</td>
+</tr>
+<tr>
+<td><code>0_5</code></td>
+<td>Población de 0 a 5 años (mitad de año)</td>
+</tr>
+<tr>
+<td><code>6_11</code></td>
+<td>Población de 6 a 11 años</td>
+</tr>
+<tr>
+<td><code>12_17</code></td>
+<td>Población de 12 a 17 años</td>
+</tr>
+<tr>
+<td><code>pob_0_17</code></td>
+<td>Población de 0 a 17 años</td>
+</tr>
+<tr>
+<td><code>total</code></td>
+<td>Población total</td>
+</tr>
+<tr>
+<td><code>fiscal_total</code></td>
+<td>Matrícula fiscal y de convenio total</td>
+</tr>
+<tr>
+<td><code>gob_esp</code></td>
+<td>Devengado específico en NNA de la gobernación (y del Gran Chaco en Tarija)</td>
+</tr>
+<tr>
+<td><code>gob_l2</code></td>
+<td>Indirecto + ampliado ponderado de la gobernación</td>
+</tr>
+<tr>
+<td><code>gob_esp_vig</code></td>
+<td>Presupuesto vigente específico de la gobernación</td>
+</tr>
+<tr>
+<td><code>gob_sub_Alimentación complementaria escolar</code></td>
+<td>Devengado específico de la gobernación en «Alimentación complementaria escolar»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Juegos estudiantiles y olimpiadas</code></td>
+<td>Devengado específico de la gobernación en «Juegos estudiantiles y olimpiadas»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Programa de defensa y protección de NNA</code></td>
+<td>Devengado específico de la gobernación en «Programa de defensa y protección de NNA»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Protección, cuidado y primera infancia (fuera del programa 26)</code></td>
+<td>Devengado específico de la gobernación en «Protección, cuidado y primera infancia (fuera del programa 26)»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Salud infantil (hospitales del niño, vacunas, nutrición)</code></td>
+<td>Devengado específico de la gobernación en «Salud infantil (hospitales del niño, vacunas, nutrición)»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Unidades educativas: infraestructura, equipamiento y servicios</code></td>
+<td>Devengado específico de la gobernación en «Unidades educativas: infraestructura, equipamiento y servicios»</td>
+</tr>
+<tr>
+<td><code>ter_esp_alcaldia</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «alcaldia»</td>
+</tr>
+<tr>
+<td><code>ter_esp_central</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «central»</td>
+</tr>
+<tr>
+<td><code>ter_esp_gobernacion</code></td>
+<td>Gasto específico en el territorio ejecutado o asignado a «gobernacion»</td>
+</tr>
+<tr>
+<td><code>ter_l2_alcaldia</code></td>
+<td>Indirecto + ampliado en el territorio de «alcaldia»</td>
+</tr>
+<tr>
+<td><code>ter_l2_central</code></td>
+<td>Indirecto + ampliado en el territorio de «central»</td>
+</tr>
+<tr>
+<td><code>ter_l2_gobernacion</code></td>
+<td>Indirecto + ampliado en el territorio de «gobernacion»</td>
+</tr>
+<tr>
+<td><code>departamento</code></td>
+<td>Nombre del departamento</td>
+</tr>
+<tr>
+<td><code>deflactor</code></td>
+<td>Factor para llevar a bolivianos de 2025 (IPC promedio anual)</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="9-indicadores-del-atlas">9. Indicadores del atlas</h2>
+<p>El valor de Bolivia y de cada departamento es el <strong>cociente de los totales</strong>: el atlas pondera cada indicador por su propio
+denominador (columna «Ponderador»); los montos se suman.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Clave</th>
+<th>Indicador</th>
+<th>Unidad</th>
+<th>Cómo se calcula</th>
+<th>Ponderador</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alcaldía: cuánto gasta</td>
+<td><code>a_esp_nna</code></td>
+<td>Gasto específico en NNA por niño</td>
+<td>Bs/NNA</td>
+<td>Devengado específico de la alcaldía (desayuno escolar, unidades educativas, defensorías y centros infantiles, salud infantil, deporte estudiantil) ÷ población de 0 a 17 años (INE, a mitad de año). En bolivianos de 2025.</td>
+<td>población 0-17</td>
+</tr>
+<tr>
+<td>Alcaldía: cuánto gasta</td>
+<td><code>a_esp_pct</code></td>
+<td>Parte del presupuesto municipal que va a la niñez</td>
+<td>%</td>
+<td>Devengado específico en NNA ÷ gasto consolidado de la alcaldía (sin deuda, activos financieros ni transferencias a otras entidades públicas).</td>
+<td>gasto consolidado de la alcaldía</td>
+</tr>
+<tr>
+<td>Alcaldía: cuánto gasta</td>
+<td><code>a_esp_mm</code></td>
+<td>Gasto específico en NNA (monto)</td>
+<td>MM Bs</td>
+<td>Suma del devengado específico en NNA de la alcaldía, en bolivianos de 2025 (IPC).</td>
+<td>suma de los municipios</td>
+</tr>
+<tr>
+<td>Alcaldía: en qué gasta</td>
+<td><code>a_ace_pct</code></td>
+<td>Alimentación escolar</td>
+<td>%</td>
+<td>Devengado en alimentación complementaria escolar (subpartida 31130 y líneas equivalentes) ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: en qué gasta</td>
+<td><code>a_edu_pct</code></td>
+<td>Unidades educativas</td>
+<td>%</td>
+<td>Devengado en infraestructura, equipamiento, mantenimiento, servicios básicos y material de las unidades educativas (programa municipal de educación) ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: en qué gasta</td>
+<td><code>a_prot_pct</code></td>
+<td>Protección de la niñez</td>
+<td>%</td>
+<td>Devengado del programa municipal 26 «Defensa y protección de la niñez y adolescencia» y líneas de protección fuera de él ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: en qué gasta</td>
+<td><code>a_inv_pct</code></td>
+<td>Inversión (proyectos)</td>
+<td>%</td>
+<td>Devengado específico registrado en proyectos de inversión ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: por beneficiario</td>
+<td><code>a_ace_est</code></td>
+<td>Alimentación escolar por estudiante</td>
+<td>Bs/est.</td>
+<td>Devengado en alimentación complementaria escolar ÷ matrícula de inicial, primaria y secundaria en unidades fiscales y de convenio (SEIE, Ministerio de Educación; 2025 = matrícula 2024). En bolivianos de 2025.</td>
+<td>matrícula fiscal</td>
+</tr>
+<tr>
+<td>Alcaldía: por beneficiario</td>
+<td><code>a_edu_est</code></td>
+<td>Unidades educativas por estudiante</td>
+<td>Bs/est.</td>
+<td>Devengado municipal en unidades educativas ÷ matrícula fiscal y de convenio (SEIE). En bolivianos de 2025.</td>
+<td>matrícula fiscal</td>
+</tr>
+<tr>
+<td>Alcaldía: por beneficiario</td>
+<td><code>a_prot_nna</code></td>
+<td>Protección por niño</td>
+<td>Bs/NNA</td>
+<td>Devengado en protección de NNA (programa 26 y líneas equivalentes) ÷ población de 0 a 17 años. En bolivianos de 2025.</td>
+<td>población 0-17</td>
+</tr>
+<tr>
+<td>Alcaldía: ejecución y financiamiento</td>
+<td><code>a_ejec</code></td>
+<td>Ejecución del gasto en niñez</td>
+<td>%</td>
+<td>Devengado específico en NNA ÷ presupuesto vigente específico en NNA.</td>
+<td>presupuesto vigente específico</td>
+</tr>
+<tr>
+<td>Alcaldía: ejecución y financiamiento</td>
+<td><code>a_modif</code></td>
+<td>Presupuesto vigente respecto del inicial</td>
+<td>%</td>
+<td>Presupuesto vigente específico en NNA ÷ presupuesto inicial específico en NNA.</td>
+<td>presupuesto inicial específico</td>
+</tr>
+<tr>
+<td>Alcaldía: ejecución y financiamiento</td>
+<td><code>a_fin_copart</code></td>
+<td>Financiado con coparticipación</td>
+<td>%</td>
+<td>Devengado específico con organismo financiador «TGN - Coparticipación Tributaria» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: ejecución y financiamiento</td>
+<td><code>a_fin_idh</code></td>
+<td>Financiado con IDH</td>
+<td>%</td>
+<td>Devengado específico con organismo «TGN - Impuesto Directo a los Hidrocarburos» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Alcaldía: ejecución y financiamiento</td>
+<td><code>a_fin_propios</code></td>
+<td>Financiado con recursos propios</td>
+<td>%</td>
+<td>Devengado específico con organismo «Recursos Específicos de los Gobiernos Autónomos Municipales» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>Todo el gasto en el municipio (estimación)</td>
+<td><code>t_esp_nna</code></td>
+<td>Gasto específico de todos los niveles por niño</td>
+<td>Bs/NNA</td>
+<td>Alcaldía (dato) + gobernación y nivel central: la inversión con ubicación va a su municipio; el resto se reparte (planilla docente por matrícula fiscal de cada nivel dentro del departamento; Juancito Pinto por matrícula fiscal de primaria y secundaria; programas materno-infantiles por población 0-5; lo demás por población 0-17) ÷ población 0-17. Bolivianos de 2025.</td>
+<td>población 0-17</td>
+</tr>
+<tr>
+<td>Todo el gasto en el municipio (estimación)</td>
+<td><code>t_alc_pct</code></td>
+<td>Parte que pone la alcaldía</td>
+<td>%</td>
+<td>Gasto específico de la alcaldía ÷ gasto específico de todos los niveles en el municipio.</td>
+<td>gasto específico de todos los niveles</td>
+</tr>
+<tr>
+<td>Todo el gasto en el municipio (estimación)</td>
+<td><code>t_rep_pct</code></td>
+<td>Parte estimada por reparto</td>
+<td>%</td>
+<td>Gasto repartido (planilla docente, bonos, programas nacionales, gasto departamental sin ubicación) ÷ gasto específico de todos los niveles.</td>
+<td>gasto específico de todos los niveles</td>
+</tr>
+<tr>
+<td>Todo el gasto en el municipio (estimación)</td>
+<td><code>t_tot_nna</code></td>
+<td>Gasto total en NNA por niño (con indirecto y ampliado)</td>
+<td>Bs/NNA</td>
+<td>Gasto específico de todos los niveles + gasto indirecto (×0,5 madre-niño, ×0,33 familia) y ampliado (× proporción de 0-17 del departamento), sin empresas municipales ÷ población 0-17. Bolivianos de 2025.</td>
+<td>población 0-17</td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td><code>x_nna_pct</code></td>
+<td>Niñas, niños y adolescentes en la población</td>
+<td>%</td>
+<td>Población 0-17 ÷ población total, a mitad de año (INE; estructura por edad de los censos 2012 y 2024).</td>
+<td>población total</td>
+</tr>
+<tr>
+<td>Contexto</td>
+<td><code>x_priv_pct</code></td>
+<td>Matrícula en unidades privadas</td>
+<td>%</td>
+<td>Matrícula privada ÷ matrícula total de educación regular (SEIE; 2025 = 2024).</td>
+<td>matrícula total</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-controles">10. Controles</h2>
+<pre><code>OK  suma de municipios (todos los niveles) = gasto específico nacional (MM Bs): dif. máx 0.0290
+OK  suma de alcaldías (perfiles) = alcaldías en la página nacional: dif. máx 0.0130
+OK  suma de departamentos = nacional por nivel (central): dif. máx 0.0020
+OK  suma de municipios, ampliado = nacional: dif. máx 0.0060
+OK  mapa: valor de Bolivia de a_esp_nna = total ÷ total: dif. máx 0.0896
+OK  mapa: valor de Bolivia de t_esp_nna = total ÷ total: dif. máx 0.0881
+MAL mapa: valor de Bolivia de a_esp_pct = total ÷ total: dif. máx 0.0108
+HAY CUADRES QUE FALLAN
+</code></pre>
+<h2 id="11-limitaciones">11. Limitaciones</h2>
+<ul>
+<li>El gasto por niño es por habitante de 0 a 17 años, no por beneficiario: el presupuesto no dice a cuántos niños llegó.</li>
+<li>Las reglas leen texto libre: puede quedar error de clasificación en líneas chicas. Las alcaldías-año sin alimentación
+  escolar o sin protección se listan en <code>salidas/revision_manual.csv</code> para revisión.</li>
+<li>El ampliado supone que la niñez usa salud, agua o deporte en proporción a su peso en la población.</li>
+<li>La capa «todo el gasto en el municipio» es una estimación: en 2024, el 86,4 % del gasto específico por municipio se asignó
+  por reparto (casi todo la planilla docente).</li>
+</ul>
+<p><strong>Referencias.</strong> MEFP, UNICEF y Red Parlamentaria por la Niñez (2017), <em>Presupuesto público para niñas, niños y adolescentes
+en Bolivia</em>. UNICEF Bolivia (2023), <em>Marco conceptual y metodología de estimación</em>. Curcio, Goldschmit y Robba (2012),
+<em>Gasto público dirigido a la niñez en América Latina y el Caribe</em>, CEPAL LC/W.482.</p></article></div>
+<script>
+function aplicar(d,g){document.body.classList.toggle("dark",d);if(g){try{localStorage.setItem("atlas-tema",d?"dark":"light");}catch(_){}}}
+(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}aplicar(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
+document.getElementById("tema").onclick=()=>aplicar(!document.body.classList.contains("dark"),true);
+</script></body></html>
