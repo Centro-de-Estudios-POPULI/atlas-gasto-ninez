@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indicador · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Cómo viven las niñas, niños y adolescentes de Bolivia, edad por edad y municipio por municipio.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo/identidad.css">
+<style>
+.elegir { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 0 0 14px; font-size: 13px }
+.elegir label { color: var(--suave) }
+.elegir select { max-width: 100% }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px }
+.chip { font-size: 11.5px; letter-spacing: .02em; border: 1px solid var(--linea); padding: 3px 8px; color: var(--suave); background: var(--superficie) }
+.chip b { color: var(--tinta); font-weight: 600 }
+.mapa-y-lista { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 22px; align-items: start }
+#mapa { width: 100%; height: 560px; position: relative }
+#mapa svg { width: 100%; height: 100%; display: block }
+#mapa path.m { stroke: var(--superficie); stroke-width: .4; cursor: pointer }
+#mapa path.m:hover { stroke: var(--titulo); stroke-width: 1.4 }
+#mapa path.sel { stroke: var(--titulo); stroke-width: 2.2 }
+#mapa path.dep { fill: none; stroke: var(--suave); stroke-width: .9; pointer-events: none }
+.ley-mapa { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 8px 0 4px; font-size: 11.5px }
+/* los seis cuadritos comparten el ancho (hasta 64 px cada uno): en el celular, la última cifra ya no baja sola de renglón */
+.ley-mapa .c { display: flex; flex-direction: column; flex: 1 1 40px; min-width: 0; max-width: 64px }
+.ley-mapa .c i { height: 12px; display: block; border: 1px solid var(--superficie) }
+.ley-mapa .c span { font-family: var(--fm); color: var(--suave); font-size: 10.5px; padding-top: 3px }
+.ley-mapa .ex { margin-left: 14px; display: flex; flex-direction: column }
+.ley-mapa .ex i { height: 12px; width: 34px; display: block }
+.ley-mapa .ex span { color: var(--suave); font-size: 10.5px; padding-top: 3px }
+.flot { position: absolute; pointer-events: none; background: var(--superficie); border: 1px solid var(--linea); padding: 7px 10px; font-size: 12.5px;
+  box-shadow: 0 6px 18px rgba(30, 24, 10, .14); display: none; z-index: 5; max-width: 260px }
+.flot b { font-family: var(--fm) }
+.lista h4 { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--suave); margin: 4px 0 4px; font-weight: 600 }
+.lista ol { list-style: none; margin: 0 0 14px; padding: 0 }
+.lista li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--grilla); font-size: 13px; cursor: pointer }
+.lista li:hover { background: var(--superficie-2) }
+.lista li .p { font-family: var(--fm); color: var(--suave); font-size: 11.5px }
+.lista li .n small { color: var(--suave) }
+.lista li .v { font-family: var(--fm); font-weight: 600; color: var(--titulo) }
+.buscar { width: 100%; font: inherit; font-size: 13px; padding: 6px 9px; border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta); margin: 0 0 10px }
+.ficha dt { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); font-weight: 600; margin-top: 12px }
+.ficha dd { margin: 3px 0 0; font-size: 14px; max-width: 62rem }
+.sel-mun { font-size: 13.5px; margin: 0 0 8px; min-height: 20px }
+.sel-mun b { font-family: var(--fm) }
+@media (max-width: 1000px) { .mapa-y-lista { grid-template-columns: 1fr } #mapa { height: 460px } }
+@media (max-width: 560px) { #mapa { height: 380px } .ley-mapa .ex { flex-basis: 100%; margin: 8px 0 0 } }
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · cómo viven</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html" aria-current="page">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <div class="elegir"><label for="ind">Indicador:</label><select id="ind"></select></div>
+  <div class="kick" id="kick">Cómo viven</div>
+  <h1 id="nombre">Cargando…</h1>
+  <p class="lede" id="lede"></p>
+  <div class="chips" id="chips"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="capitulo"><span class="n">1</span><h2>Edad por edad</h2><p id="sub-edad">Censo 2024 · con los tramos de la Ley 548</p></div>
+  <section class="tarjeta">
+    <div class="lectura" id="lectura-edad"></div>
+    <div class="ed-dos">
+      <div>
+        <div class="ed-cab">
+          <div class="ed-nombre"><i class="ed-sw"></i>Bolivia</div>
+          <div class="selector" id="ver" role="group" aria-label="Bolivia, abierta por"><button data-v="total" aria-pressed="true">Total</button><button data-v="sexo" aria-pressed="false">Mujeres y hombres</button><button data-v="area" aria-pressed="false">Urbana y rural</button></div>
+        </div>
+        <div class="g ed-g" id="g-edad" role="img" aria-label="Bolivia, edad por edad"></div>
+      </div>
+      <div>
+        <div class="ed-cab">
+          <label class="ed-ter"><i class="ed-sw"></i><input id="ter-a" list="lista-ter" autocomplete="off" spellcheck="false" aria-label="Municipio o departamento"></label>
+          <label class="ed-ter"><i class="ed-sw b"></i><input id="ter-b" list="lista-ter" autocomplete="off" spellcheck="false" placeholder="Comparar con…" aria-label="Comparar con otro municipio o departamento"><button type="button" class="ed-x" id="ter-x" aria-label="Quitar la comparación">×</button></label>
+          <datalist id="lista-ter"></datalist>
+        </div>
+        <div class="g ed-g" id="g-edad-2" role="img" aria-label="El territorio elegido, edad por edad"></div>
+      </div>
+    </div>
+    <p class="nota ed-nota" id="nota-edad"></p>
+  </section>
+
+  <div class="capitulo"><span class="n">2</span><h2>Dónde</h2><p>Los 343 municipios</p></div>
+  <section class="tarjeta">
+    <div class="selector" id="tramo" role="group" aria-label="Tramo de edad"></div>
+    <div class="mapa-y-lista">
+      <div>
+        <div class="sel-mun" id="sel-mun"></div>
+        <div id="mapa" aria-label="Mapa municipal"><div class="flot" id="flot"></div></div>
+        <div class="ley-mapa" id="ley-mapa"></div>
+        <p class="nota" id="nota-mapa"></p>
+      </div>
+      <div class="lista">
+        <input class="buscar" id="buscar" type="search" placeholder="Buscar un municipio…" aria-label="Buscar un municipio" list="lista-mun">
+        <datalist id="lista-mun"></datalist>
+        <h4 id="t-altos">Las cifras más altas</h4><ol id="altos"></ol>
+        <h4 id="t-bajos">Las más bajas</h4><ol id="bajos"></ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="capitulo"><span class="n">3</span><h2>Departamentos y brechas</h2><p>Censo 2024</p></div>
+  <section class="tarjeta">
+    <div class="dos">
+      <div><div class="gt">Por departamento <span id="nota-dep" style="font-weight:400;color:var(--suave)">· la línea punteada es Bolivia</span></div><div class="g" id="g-dep"></div></div>
+      <div><div class="gt">Mujeres y hombres, urbana y rural, por tramo</div><div class="g" id="g-brechas"></div></div>
+    </div>
+  </section>
+
+  <div id="bloque-gasto" hidden>
+    <div class="capitulo"><span class="n">4</span><h2>Relación con el gasto</h2><p>Lo que gastan las alcaldías, 2021-2023</p></div>
+    <section class="tarjeta">
+      <p class="nota" id="nota-gasto"></p>
+      <div class="cruce-ctl elegir"><label for="cx">Gasto: </label><select id="cx"></select></div>
+      <p class="lectura-cruce nota" id="lectura-cruce"></p>
+      <div class="g" id="g-cruce" style="height:420px"></div>
+    </section>
+  </div>
+
+  <div class="capitulo"><span class="n" id="n-ficha">5</span><h2>Cómo se mide</h2><p>Ficha del indicador</p></div>
+  <section class="tarjeta"><dl class="ficha" id="ficha"></dl></section>
+
+  <div class="capitulo"><span class="n" id="n-datos">6</span><h2>Los datos</h2><p>Los 343 municipios</p></div>
+  <section class="tarjeta">
+    <button class="btn" id="csv">Descargar CSV</button>
+    <div class="scroll" style="max-height:420px"><table id="tabla"></table></div>
+  </section>
+
+  <footer>Fuente: INE, Censo de Población y Vivienda 2024 (microdato), tasas sobre residentes habituales como los tabulados del INE, que reproducen al registro. Gasto: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto. Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script src="lib/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="estilo/comun.js"></script>
+<script>
+(() => {
+const { $, css, nf, pc, val, deCada, base, alfa } = Atlas;
+const qs = new URLSearchParams(location.search);
+let id = qs.get("i") || "trabaja", sel = qs.get("m") || null, ver = "total", tramo = "todo";
+// los territorios de la edad por edad: el primero (municipio o departamento; sin elegir, el municipio más poblado) y el
+// que se compara (sin elegir, el departamento del primero; «-», ninguno)
+let terA = qs.get("m") || null, terB = qs.get("c") || null;
+let POCOS = Atlas.POCOS;   // en los conteos, 1: cada caso cuenta y no hay tasa que se vuelva inestable
+const CRUCE = { educacion: [["a_edu_est", "Unidades educativas, por estudiante"], ["a_esp_nna", "Todo lo de la alcaldía, por niño"]],
+  alimentacion: [["a_ace_est", "Alimentación escolar, por estudiante"]], proteccion: [["a_prot_nna", "Protección, por niño"]],
+  salud: [["a_esp_nna", "Todo lo de la alcaldía, por niño"]], agua: [["a_esp_nna", "Todo lo de la alcaldía, por niño"]] };
+
+Promise.all([fetch("datos/catalogo_ind.json").then((r) => r.json()), fetch("datos/municipios.json").then((r) => r.json()),
+  fetch("datos/municipios.topojson").then((r) => r.json())]).then(([CAT, MUN, TOPO]) => {
+  const FI = {}; CAT.indicadores.forEach((f) => (FI[f.id] = f));
+  if (!FI[id] || id === "pob") id = "trabaja";
+  const M = MUN.municipios, DEP = MUN.departamentos, idx = {}; M.forEach((m, j) => (idx[m.c] = j));
+  // selector de indicadores agrupados por tema (el catálogo es la navegación)
+  $("ind").innerHTML = Object.entries(CAT.temas).map(([k, t]) => {
+    const op = CAT.indicadores.filter((f) => f.tema === k && f.id !== "pob");
+    return op.length ? `<optgroup label="${t.nombre}">${op.map((f) => `<option value="${f.id}">${f.nombre}</option>`).join("")}</optgroup>` : "";
+  }).join("");
+  $("lista-mun").innerHTML = M.map((m) => `<option value="${m.n} (${DEP[m.d]})">`).join("");
+  const geo = topojson.feature(TOPO, TOPO.objects.data);
+  const deps = topojson.mesh(TOPO, TOPO.objects.data, (a, b) => a.properties.cod_ine.slice(0, 2) !== b.properties.cod_ine.slice(0, 2));
+  const gEdad = echarts.init($("g-edad")), gEdad2 = echarts.init($("g-edad-2")), gDep = echarts.init($("g-dep")), gBre = echarts.init($("g-brechas")), gCru = echarts.init($("g-cruce"));
+  let D = null, IE = null, MAPA = null;   // IE: la edad por edad de cada municipio (ind_edad/), si el indicador la tiene
+
+  function cargar() {
+    $("ind").value = id;
+    Promise.all([fetch(`datos/ind/${id}.json`).then((r) => r.json()),
+      FI[id].edad_mun === "si" ? fetch(`datos/ind_edad/${id}.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : null])
+      .then(([d, ie]) => { D = d; IE = ie; pintarTodo(); });
+  }
+  const F = () => FI[id];
+  const u = () => F().unidad;
+  const deQuien = (ed) => (ed[1] <= 5 ? "niñas y niños" : ed[0] >= 12 ? "adolescentes" : "niñas, niños y adolescentes");
+  const esConteo = () => F().tipo === "conteo";
+
+  function encabezado() {
+    const f = F(), ed = f.titular || f.edad, b = D.bol;
+    document.title = `${f.nombre} · Atlas de la Niñez y la Adolescencia`;
+    $("kick").textContent = `Cómo viven · ${CAT.temas[f.tema].nombre}`;
+    $("nombre").textContent = f.nombre;
+    const dc = u() === "%" ? deCada(b.v) : null;
+    $("lede").innerHTML = `${f.definicion} ${u() === "%" && dc ? `En Bolivia, <b>${dc}</b>: ${pc(b.v)} (${nf(b.num)} ${deQuien(ed)}).` : u() === "por 1.000" ? `En Bolivia nacieron <b>${nf(b.v, 1)} bebés por cada mil</b> adolescentes de ${ed[0]} a ${ed[1]} años en el año anterior al censo.` : esConteo() ? `En Bolivia, <b>${nf(b.v)} ${deQuien(ed)}</b> en el Censo 2024.` : ""}`;
+    const sentido = f.sentido === "logro" ? "más es mejor" : f.sentido === "privacion" ? "más es peor" : "describe, no juzga";
+    $("chips").innerHTML = [`<span class="chip">Fuente <b>Censo 2024</b></span>`, `<span class="chip">Edades <b>${ed[0]} a ${ed[1]}</b></span>`,
+      `<span class="chip">Llega hasta <b>${f.territorio || "municipio"}</b></span>`, `<span class="chip">Lectura: <b>${sentido}</b></span>`].join("");
+    // indicadores sólo de mujeres: sin la comparación mujeres-hombres en la edad por edad
+    const bSexo = $("ver").querySelector('[data-v="sexo"]');
+    if (bSexo) { bSexo.hidden = b.hom == null; if (b.hom == null && ver === "sexo") ver = "total";
+      $("ver").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.v === ver)); }
+    const card = (lab, v, sub, c) => `<div class="kpi"><div class="kl">${lab}</div><div class="kv">${v}</div><div class="ku">${sub}</div><div class="kc">${Atlas.juntos(c)}</div></div>`;
+    const dif = (a, z) => (a == null || z == null ? "" : `${a >= z ? "+" : "−"}${nf(Math.abs(a - z), 1)} ${u() === "%" ? "puntos" : ""}`);
+    const vals = Object.values(D.dep).map((x) => x.v).filter((x) => x != null);
+    const dmax = Object.entries(D.dep).sort((a, z) => z[1].v - a[1].v)[0], dmin = Object.entries(D.dep).sort((a, z) => a[1].v - z[1].v)[0];
+    if (esConteo()) {   // conteos: partes del total en vez de diferencias, y municipios con al menos un caso
+      const parte = (a, z) => (a == null || z == null || a + z === 0 ? "" : `${pc(100 * a / (a + z))} del total`);
+      const conCaso = D.v.map((x, j) => [x, j]).filter(([x]) => x != null && x > 0), top = conCaso.sort((a, z) => z[0] - a[0])[0];
+      $("kpis").innerHTML = card("Bolivia", nf(b.v), `${deQuien(ed)} de ${ed[0]} a ${ed[1]} años`, "conteo del Censo 2024")
+        + card("Área rural", nf(b.rur), `urbana: ${nf(b.urb)}`, parte(b.rur, b.urb))
+        + card("Mujeres", nf(b.muj), `hombres: ${nf(b.hom)}`, parte(b.muj, b.hom))
+        + card("Departamento con más", nf(dmax[1].v), DEP[dmax[0]], `con menos: <b>${DEP[dmin[0]]} ${nf(dmin[1].v)}</b>`)
+        + card("Municipios", nf(conCaso.length), "con al menos un caso", top ? `el que más: <b>${M[top[1]].n}</b>` : "");
+      return;
+    }
+    $("kpis").innerHTML = card("Bolivia", val(b.v, u()), u() === "por 1.000" ? "nacimientos por cada mil" : `${nf(b.num)} ${deQuien(ed)}`, `de ${nf(b.n)} ${u() === "por 1.000" ? "adolescentes" : "en el universo"}`)
+      + card("Área rural", val(b.rur, u()), `urbana: ${val(b.urb, u())}`, `diferencia: <b>${dif(b.rur, b.urb)}</b>`)
+      // sólo mujeres (maternidad, fecundidad): en vez de comparar con los hombres, el tramo de 12 a 17
+      + (u() === "por 1.000" || b.hom == null ? card("Por tramo", val(b["12_17"], u()), "de 12 a 17 años", "")
+        : card("Mujeres", val(b.muj, u()), `hombres: ${val(b.hom, u())}`, `diferencia: <b>${dif(b.muj, b.hom)}</b>`))
+      + card("Departamento más alto", val(dmax[1].v, u()), DEP[dmax[0]], `más bajo: <b>${DEP[dmin[0]]} ${val(dmin[1].v, u())}</b>`)
+      + card("Municipios", nf(D.v.filter((x, j) => x != null && D.n[j] >= POCOS).length), `con al menos ${POCOS} casos`, `mediana: <b>${val(mediana(D.v.filter((x, j) => x != null && D.n[j] >= POCOS)), u())}</b>`);
+  }
+  const mediana = (a) => { const s = a.slice().sort((p, q) => p - q); return s.length ? s[Math.floor(s.length / 2)] : null; };
+
+  /* ── 1. edad por edad ─────────────────────────────────────────────────────────────────────
+     A la izquierda, Bolivia; a la derecha, un municipio o un departamento y, si se quiere, otro detrás, más
+     transparente, para compararlos. Las barras van en el estilo «por edades» de Foronda (docs/inventario): claras, casi
+     pegadas y con el contorno en escalón arriba, la línea de niveles que deja ver dónde se separan dos territorios. Los
+     dos paneles comparten la escala (salvo en los conteos) y el eje va sólo por las edades que mide el indicador. */
+  const HUECO = 2, MAXW = 90;   // entre barras, 2 px; ninguna más ancha que 90 px (indicadores de dos a cuatro edades)
+  const BANDAS = [[0, 5, "Primera infancia"], [6, 11, "Niñez"], [12, 17, "Adolescencia"]];
+  // por qué un indicador no tiene edad por edad en cada municipio (74_exportar_indicadores.py, `edad_mun`)
+  const MOTIVO = { territorio: "llega sólo hasta departamento",
+    conteo: "es un conteo: edad por edad, en cada municipio quedarían muy pocas personas y se podría identificar a alguien",
+    sensible: "a los 12, 13 o 14 años, edad por edad en cada municipio, serían celdas muy finas de un tema sensible",
+    pocos: `edad por edad en cada municipio, la mitad de las cifras saldría de menos de ${Atlas.POCOS} casos` };
+  let IDX = [[], []], hover = null;   // IDX: las series de barras de cada panel, para resaltar una edad en los dos
+  const rayados = new Map();
+  // la trama de «pocos casos»: el relleno de la barra con rayas finas del color de su línea
+  function rayado(fondo, raya) {
+    const k = fondo + "|" + raya;
+    if (!rayados.has(k)) {
+      const r = 2, s = 6 * r, cv = document.createElement("canvas"), x = cv.getContext("2d");
+      cv.width = cv.height = s; x.fillStyle = fondo; x.fillRect(0, 0, s, s);
+      x.strokeStyle = alfa(raya, 0.6); x.lineWidth = r; x.beginPath();
+      [[0, s, s, 0], [-s, s, s, -s], [0, 2 * s, 2 * s, 0]].forEach(([a, b, c, d]) => { x.moveTo(a, b); x.lineTo(c, d); });
+      x.stroke();
+      rayados.set(k, { image: cv, repeat: "repeat", scaleX: 1 / r, scaleY: 1 / r });
+    }
+    return rayados.get(k);
+  }
+  /* las barras y la línea de niveles de un territorio, en dos series: las barras abajo (z 1 y 2) y las líneas arriba (z 3
+     a 5), así la línea del territorio de atrás se ve también sobre las barras del de adelante */
+  function silueta(nombre, ed, vals, o) {
+    const datos = ed.map((e, k) => [e, vals[k] ?? null]);
+    const geo = (api, k) => { const paso = api.size([1, 0])[0], w = Math.max(1, Math.min(paso - HUECO, MAXW)), [cx, cy] = api.coord([ed[k], vals[k]]);
+      return { paso, w, cx, cy, y0: api.coord([ed[k], 0])[1] }; };
+    const fondo = o.fondo == null ? null : { type: "custom", name: nombre, z: o.z, silent: true, clip: true, data: datos, encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const k = p.dataIndex;
+        if (vals[k] == null) return null;
+        const { w, cx, cy, y0 } = geo(api, k), pocos = o.ns && o.ns[k] != null && o.ns[k] < POCOS;
+        return { type: "rect", shape: { x: cx - w / 2, y: Math.min(cy, y0), width: w, height: Math.max(Math.abs(y0 - cy), 0.5) },
+          style: { fill: pocos ? rayado(o.fondo, o.borde) : o.fondo, opacity: ed[k] >= 18 ? 0.5 : 1 },
+          emphasis: { style: { fill: o.foco, opacity: 1 } } };
+      } };
+    const linea = { type: "custom", name: nombre, z: o.z + 2, silent: true, clip: false, data: datos, encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const k = p.dataIndex;
+        if (vals[k] == null || o.borde == null) return null;
+        const { paso, w, cx, cy } = geo(api, k), pts = [[cx - w / 2, cy], [cx + w / 2, cy]];
+        // el escalón hasta la barra siguiente, si están pegadas (con pocas edades, cada barra lleva su propio techo)
+        if (k + 1 < ed.length && vals[k + 1] != null && paso - w <= HUECO + 0.5) {
+          const yn = api.coord([ed[k + 1], vals[k + 1]])[1], xm = cx + paso / 2;
+          pts.push([xm, cy], [xm, yn], [cx + paso - w / 2, yn]);
+        }
+        const hijos = [{ type: "polyline", shape: { points: pts }, style: { stroke: o.borde, lineWidth: o.grosor || 1.8, fill: null, lineJoin: "miter", opacity: ed[k] >= 18 ? 0.6 : 1 } }];
+        if (o.rotular && o.rotular.has(ed[k])) hijos.push({ type: "text", x: cx, y: cy - 5,
+          style: { text: o.fmt(vals[k]), align: "center", verticalAlign: "bottom", fill: css("--tinta"), font: `650 10.5px ${Atlas.fuente}` } });
+        return { type: "group", children: hijos };
+      } };
+    return { fondo, linea };
+  }
+  // las franjas de los tramos de la ley (recortadas a las edades del eje) y la línea de Bolivia, en series sin barras:
+  // las franjas van debajo de todo y la línea encima de todo. La línea va tenue y sin texto (Carlos, 15-oct: con su
+  // rótulo cargaba el gráfico y tapaba barras): su cifra está en la lectura de arriba
+  function marcas(ed) {
+    const lo = ed[0] - 0.5, hi = ed[ed.length - 1] + 0.5;
+    const vacia = { type: "custom", silent: true, data: [[ed[0], 0]], encode: { x: 0, y: 1 }, renderItem: () => null };
+    const franjas = BANDAS.map(([a, z, t], k) => ({ a: Math.max(a - 0.5, lo), z: Math.min(z + 0.5, hi), t, k })).filter((b) => b.z - b.a >= 1)
+      .map((b) => [{ xAxis: b.a, name: b.z - b.a >= 2 || hi - lo <= 4 ? b.t : "", itemStyle: { color: alfa(css("--tramo-2"), b.k === 1 ? 0.1 : 0.05) } }, { xAxis: b.z }]);
+    return [{ ...vacia, z: 0, markArea: { silent: true, label: { position: "top", color: css("--suave"), fontSize: 11, distance: 5 }, data: franjas } },
+      { ...vacia, z: 6, markLine: { silent: true, symbol: "none", label: { show: false }, emphasis: { disabled: true },
+        lineStyle: { color: css("--bolivia"), type: [3, 3], width: 1, opacity: 0.6 }, data: esConteo() ? [] : [{ yAxis: D.bol.v }] } }];
+  }
+  /* una escala redonda que deja poco aire arriba: el tope más bajo con cortes de 1, 2 o 5 por potencia de diez (2,5 sólo
+     con tres o cuatro cortes, para no llenar el eje de decimales), entre tres y siete cortes; si dos topes empatan, el
+     de menos cortes. En los conteos, cortes enteros. */
+  function escala(vals) {
+    const top = Math.max(0, ...vals.filter((x) => x != null && isFinite(x))) * 1.08;
+    if (!(top > 0)) return { max: 1, int: esConteo() ? 1 : 0.25 };
+    const p0 = 10 ** Math.floor(Math.log10(top / 7));
+    let mejor = null;
+    [p0, p0 * 10].forEach((p) => [1, 2, 2.5, 5].forEach((m) => {
+      const int = m * p, max = Math.ceil(top / int - 1e-9) * int, n = Math.round(max / int);
+      if ((esConteo() && int < 1) || n < 3 || n > (m === 2.5 ? 4 : 7)) return;
+      if (!mejor || max < mejor.max - 1e-9 || (Math.abs(max - mejor.max) < 1e-9 && int > mejor.int)) mejor = { max, int };
+    }));
+    if (!mejor) mejor = { max: Math.ceil(top), int: Math.max(1, Math.ceil(top) / 4) };
+    return { max: u() === "%" ? Math.min(mejor.max, 100) : mejor.max, int: mejor.int };
+  }
+  function opcionEdad(series, sc, ed) {
+    return { ...base(), legend: { show: false }, tooltip: { show: false }, animationDurationUpdate: 300,
+      grid: { left: 6, right: 12, top: 26, bottom: 24, containLabel: true },
+      xAxis: { type: "value", min: ed[0] - 0.5, max: ed[ed.length - 1] + 0.5, interval: 1, splitLine: { show: false }, axisTick: { show: false },
+        axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: css("--suave"), fontFamily: "Figtree", fontSize: 11, customValues: ed, formatter: (v) => v } },
+      yAxis: { type: "value", min: 0, max: sc.max, interval: sc.int, axisLine: { show: false }, axisTick: { show: false },
+        splitLine: { lineStyle: { color: css("--grilla") } },
+        axisLabel: { color: css("--suave"), fontFamily: "Figtree", fontSize: 11, formatter: (v) => nf(v, Number.isInteger(v) ? 0 : 1) + (u() === "%" ? " %" : "") } },
+      series };
+  }
+
+  /* los territorios: municipio (6 dígitos) o departamento (2); en los indicadores sin edad por edad municipal, el
+     municipio elegido se muestra por su departamento (y la elección se recupera al volver a uno que la tiene) */
+  const esMun = (c) => !!c && c.length === 6;
+  const conMun = () => F().edad_mun === "si" && !!IE;
+  const valido = (c) => !!c && (esMun(c) ? idx[c] != null : !!DEP[c]);
+  function efectivos() {
+    const ajusta = (c) => (esMun(c) && !conMun() ? c.slice(0, 2) : c);
+    const a = ajusta(valido(terA) ? terA : M.reduce((x, m) => (m.t > x.t ? m : x)).c);   // sin elegir: el municipio más poblado
+    const b = terB === "-" ? null : valido(terB) ? ajusta(terB) : esMun(a) ? a.slice(0, 2) : null;   // sin elegir: su departamento
+    return [a, b === a ? null : b];
+  }
+  const etiqueta = (c) => (esMun(c) ? `${M[idx[c]].n} (${DEP[M[idx[c]].d]})` : `${DEP[c]} (departamento)`);
+  const nombre = (c) => (esMun(c) ? M[idx[c]].n : `${DEP[c]} (departamento)`);
+  const serieDe = (c) => (esMun(c) ? { v: IE.v[idx[c]], n: IE.n[idx[c]] } : { v: D.edad_simple.dep[c] || [], n: (D.edad_simple.dep_n || {})[c] || null });
+  const totalDe = (c) => (esMun(c) ? { v: D.v[idx[c]], n: D.n[idx[c]] } : { v: (D.dep[c] || {}).v, n: (D.dep[c] || {}).n });
+
+  function edad() {
+    const f = F(), E = D.edad_simple, ed = E.edades, r = f.titular || f.edad, fmt = (v) => val(v, u());
+    const [a, b] = efectivos(), sa = serieDe(a), sb = b ? serieDe(b) : null;
+    const abre = ver === "sexo" ? [["Mujeres", E.muj, "--mujeres"], ["Hombres", E.hom, "--hombres"]] : ver === "area" ? [["Urbana", E.urb, "--urbana"], ["Rural", E.rur, "--rural"]] : [];
+    // la misma escala en los dos paneles (en los conteos, cada uno la suya: Bolivia y un departamento no se comparan en cantidad)
+    const izq = [...E.bol, ...abre.flatMap(([, v]) => v), esConteo() ? null : D.bol.v], der = [...sa.v, ...(sb ? sb.v : []), esConteo() ? null : D.bol.v];
+    const sI = escala(esConteo() ? izq : izq.concat(der)), sD = esConteo() ? escala(der) : sI;
+    const tierra = { fondo: css("--t2"), borde: css("--t6"), foco: css("--t4") };
+    // izquierda: Bolivia, con la cifra en la primera, la última y la más alta de las edades (en todas no se leerían)
+    const conDato = ed.map((e, k) => [e, E.bol[k]]).filter(([, v]) => v != null), vmax = Math.max(...conDato.map(([, v]) => v));
+    const rotular = ver === "total" && conDato.length ? new Set([conDato[0][0], conDato[conDato.length - 1][0], conDato.find(([, v]) => v === vmax)[0]]) : null;
+    const bol = silueta("Bolivia", ed, E.bol, { ...tierra, z: 2, borde: ver === "total" ? tierra.borde : null, rotular, fmt });
+    const [abajoI, arribaI] = marcas(ed);
+    gEdad.setOption(opcionEdad([abajoI, bol.fondo, bol.linea, ...abre.map(([n, v, c]) => silueta(n, ed, v, { z: 3, borde: css(c), grosor: 2.2 }).linea), arribaI], sI, ed), true);
+    // derecha: el territorio elegido adelante y, detrás y más transparente, el que se compara
+    const ta = silueta(nombre(a), ed, sa.v, { ...tierra, z: 2, ns: sa.n });
+    const tb = sb ? silueta(nombre(b), ed, sb.v, { fondo: alfa(css("--o3"), 0.42), borde: css("--o6"), foco: alfa(css("--o4"), 0.8), z: 1, ns: sb.n }) : null;
+    const [abajoD, arribaD] = marcas(ed);
+    gEdad2.setOption(opcionEdad(tb ? [abajoD, tb.fondo, ta.fondo, tb.linea, ta.linea, arribaD] : [abajoD, ta.fondo, ta.linea, arribaD], sD, ed), true);
+    IDX = [[1], tb ? [1, 2] : [1]];
+    hover = null;
+    const todo = ed[0] === 0 && ed[ed.length - 1] >= 17;
+    $("sub-edad").textContent = `Censo 2024 · ${todo ? `de 0 a ${ed[ed.length - 1]} años` : `de ${ed[0]} a ${ed[ed.length - 1]} años, las edades que mide este indicador`} · tramos de la Ley 548`;
+    territorios(a, b);
+    const pocos = [sa, sb].some((s) => s && s.n && s.v.some((v, k) => v != null && s.n[k] != null && s.n[k] < POCOS));
+    $("nota-edad").textContent = "Cada barra es una edad y la línea de arriba marca su nivel. A la derecha, el municipio o el departamento que elijas y, detrás y más transparente, otro para comparar"
+      + (esConteo() ? "; cada panel tiene su escala, porque es un conteo." : `; los dos paneles usan la misma escala y la línea punteada tenue es Bolivia de ${r[0]} a ${r[1]} años.`)
+      + (f.edad_mun !== "si" ? ` En este indicador se comparan sólo departamentos: ${MOTIVO[f.edad_mun] || "el dato no llega a municipio"}.` : "")
+      + (pocos ? ` Las barras rayadas tienen menos de ${POCOS} casos en esa edad: la cifra salta mucho de una edad a otra.` : "");
+    lectura();
+  }
+  // las cifras arriba de los paneles: sin puntero, las de todo el tramo del indicador; con el puntero, las de esa edad.
+  // Con Bolivia abierta por sexo o por área, cada línea lleva su muestra: la lectura hace de leyenda
+  function lectura() {
+    if (!D) return;
+    const f = F(), E = D.edad_simple, ed = E.edades, [a, b] = efectivos(), k = hover == null ? -1 : ed.indexOf(hover), U = (v) => val(v, u());
+    const casos = (n) => (n != null && n < POCOS ? ` <span class="s">(${nf(n)} casos)</span>` : "");
+    const sw = (c) => `<i class="ed-sw${c === b ? " b" : ""}"></i>`;
+    const det = ver === "sexo" ? [["mujeres", "muj", "--mujeres"], ["hombres", "hom", "--hombres"]] : ver === "area" ? [["urbana", "urb", "--urbana"], ["rural", "rur", "--rural"]] : [];
+    const abre = (dato) => (det.length ? ` <span class="s">(</span>${det.map(([n, c, col]) => `<i class="ed-ln" style="background:${css(col)}"></i><span class="s">${n}</span> <b>${U(dato(c))}</b>`).join(' <span class="s">·</span> ')}<span class="s">)</span>` : "");
+    const r = f.titular || f.edad, partes = [];
+    if (k < 0) {
+      partes.push(`<span class="s">De ${r[0]} a ${r[1]} años:</span> Bolivia <b>${U(D.bol.v)}</b>${abre((c) => D.bol[c])}`);
+      [a, b].filter(Boolean).forEach((c) => { const t = totalDe(c); partes.push(`${sw(c)}${nombre(c)} <b>${U(t.v)}</b>${casos(t.n)}`); });
+    } else {
+      partes.push(`<span class="s">${hover} años:</span> Bolivia <b>${U(E.bol[k])}</b>${abre((c) => E[c][k])}`);
+      [a, b].filter(Boolean).forEach((c) => { const s = serieDe(c); partes.push(`${sw(c)}${nombre(c)} <b>${U(s.v[k])}</b>${casos(s.n && s.n[k])}`); });
+    }
+    $("lectura-edad").innerHTML = partes.join(' <span class="s">·</span> ');
+  }
+  // pasar por una edad en cualquiera de los dos paneles la resalta en los dos y escribe sus cifras arriba
+  function marcar(e) {
+    if (e === hover || !D) return;
+    hover = e;
+    const k = e == null ? -1 : D.edad_simple.edades.indexOf(e);
+    [[gEdad, IDX[0]], [gEdad2, IDX[1]]].forEach(([c, s]) => {
+      c.dispatchAction({ type: "downplay", seriesIndex: s });
+      if (k >= 0) c.dispatchAction({ type: "highlight", seriesIndex: s, dataIndex: k });
+    });
+    lectura();
+  }
+  [gEdad, gEdad2].forEach((c) => {
+    const mover = (ev) => {
+      if (!D) return;
+      const p = [ev.offsetX, ev.offsetY], e = c.containPixel({ gridIndex: 0 }, p) ? Math.round(c.convertFromPixel({ gridIndex: 0 }, p)[0]) : null;
+      marcar(D.edad_simple.edades.includes(e) ? e : null);
+    };
+    c.getZr().on("mousemove", mover); c.getZr().on("click", mover); c.getZr().on("globalout", () => marcar(null));
+  });
+  // los dos cuadros de elección: una lista con los departamentos y, si el indicador la tiene, los 343 municipios
+  function territorios(a, b) {
+    $("lista-ter").innerHTML = Object.keys(DEP).map((k) => `<option value="${DEP[k]} (departamento)">`).join("")
+      + (conMun() ? M.map((m) => `<option value="${m.n} (${DEP[m.d]})">`).join("") : "");
+    [["ter-a", a], ["ter-b", b]].forEach(([k, c]) => { if (document.activeElement !== $(k)) $(k).value = c ? etiqueta(c) : ""; });
+    $("ter-x").hidden = !b;
+  }
+  const urlEdad = () => history.replaceState(null, "", `?i=${id}${terA ? `&m=${terA}` : ""}${terB ? `&c=${terB}` : ""}`);
+  function resolver(t) {
+    t = String(t || "").trim().toLowerCase();
+    if (!t) return null;
+    const dep = Object.keys(DEP).find((k) => `${DEP[k]} (departamento)`.toLowerCase() === t);
+    if (dep) return dep;
+    if (conMun()) {
+      const m = M.find((x) => `${x.n} (${DEP[x.d]})`.toLowerCase() === t) || M.find((x) => x.n.toLowerCase() === t) || M.find((x) => x.n.toLowerCase().startsWith(t));
+      if (m) return m.c;
+    }
+    return Object.keys(DEP).find((k) => DEP[k].toLowerCase().startsWith(t)) || null;
+  }
+  [["ter-a", "Municipio o departamento"], ["ter-b", "Comparar con…"]].forEach(([k, ph]) => {
+    const inp = $(k);
+    const aplicar = (c) => {
+      if (k === "ter-a") { terA = c; if (esMun(c)) { sel = c; mapa(); } } else terB = c;
+      urlEdad(); inp.blur(); edad();
+    };
+    // al entrar, el cuadro se vacía para que la lista muestre todas las opciones (el nombre de antes queda de guía)
+    inp.addEventListener("focus", () => { inp.dataset.antes = inp.value; inp.placeholder = inp.value || ph; inp.value = ""; });
+    inp.addEventListener("blur", () => { if (!inp.value) inp.value = inp.dataset.antes || ""; inp.placeholder = ph; });
+    // elegido de la lista, se aplica en el acto; escrito a mano, con Enter o al salir del cuadro
+    inp.addEventListener("input", () => { const t = inp.value.trim().toLowerCase(); if ([...$("lista-ter").options].some((o) => o.value.toLowerCase() === t)) aplicar(resolver(t)); });
+    inp.addEventListener("change", () => { const c = resolver(inp.value); if (!c) { inp.value = inp.dataset.antes || ""; return; } if (c !== (k === "ter-a" ? terA : terB)) aplicar(c); });
+  });
+  $("ter-x").onclick = () => { terB = "-"; urlEdad(); edad(); };
+
+  /* ── 2. mapa municipal por quintiles, ranking y buscador ──────────────────────────────────── */
+  const W = 760, H = 720;
+  const svg = d3.select("#mapa").append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("preserveAspectRatio", "xMidYMid meet");
+  const defs = svg.append("defs");
+  const trama = (idp, color) => { const p = defs.append("pattern").attr("id", idp).attr("patternUnits", "userSpaceOnUse").attr("width", 6).attr("height", 6).attr("patternTransform", "rotate(45)");
+    p.append("rect").attr("width", 6).attr("height", 6).attr("class", "fondo-trama"); p.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 6).attr("class", "linea-trama"); };
+  trama("sin-dato"); trama("pocos");
+  const proj = d3.geoMercator().fitExtent([[8, 8], [W - 8, H - 8]], geo), path = d3.geoPath(proj);
+  const gm = svg.append("g"), gd = svg.append("path").datum(deps).attr("class", "dep").attr("d", path);
+  const munis = gm.selectAll("path").data(geo.features).join("path").attr("class", "m").attr("d", path);
+  function valores() {
+    const k = tramo === "todo" ? "v" : `v_${tramo}`;
+    return { v: D[k] || D.v, n: D.n };
+  }
+  function mapa() {
+    const f = F(), { v, n } = valores();
+    const ok = v.map((x, j) => (x != null && n[j] >= POCOS ? x : null)).filter((x) => x != null).sort((a, z) => a - z);
+    const q = [0.2, 0.4, 0.6, 0.8].map((p) => ok[Math.floor(p * (ok.length - 1))]);
+    const unicos = [...new Set(q)];
+    const rampa = ["--t2", "--t3", "--t4", "--t5", "--t6"].map(css);
+    const colores = f.sentido === "logro" ? rampa.slice().reverse() : rampa;
+    const clase = (x) => { let k = 0; while (k < unicos.length && x > unicos[k]) k++; return Math.min(k, 4); };
+    defs.selectAll(".fondo-trama").attr("fill", css("--sin-dato"));
+    defs.selectAll(".linea-trama").attr("stroke", css("--suave")).attr("stroke-width", 1).attr("opacity", .45);
+    munis.attr("fill", (g) => { const j = idx[g.properties.cod_ine], x = v[j];
+      if (x == null) return "url(#sin-dato)"; if (n[j] < POCOS) return "url(#pocos)"; return colores[clase(x)]; })
+      .classed("sel", (g) => g.properties.cod_ine === sel);
+    gd.attr("stroke", css("--suave"));
+    const lims = [ok[0], ...unicos, ok[ok.length - 1]];
+    $("ley-mapa").innerHTML = colores.slice(0, unicos.length + 1).map((c, k) => `<div class="c"><i style="background:${c}"></i><span>${val(lims[k], f.unidad)}</span></div>`).join("")
+      + `<div class="c"><i style="background:transparent;border-color:transparent"></i><span>${val(lims[lims.length - 1], f.unidad)}</span></div>`
+      + `<div class="ex"><i style="background:repeating-linear-gradient(45deg,${css("--sin-dato")} 0 3px,${alfa(css("--suave"), .45)} 3px 4px)"></i><span>${POCOS > 1 ? `menos de ${POCOS} casos o sin dato` : "sin casos"}</span></div>`;
+    const tono = document.body.classList.contains("dark") ? "claro" : "oscuro";
+    $("nota-mapa").textContent = `Cinco grupos con la misma cantidad de municipios (quintiles)${f.sentido === "logro" ? `; como es un logro, más ${tono} es MENOS` : `; más ${tono}, más`}. Bolivia: ${val(D.bol.v, f.unidad)}.`;
+    // ranking
+    const filas = M.map((m, j) => ({ m, x: v[j], n: n[j] })).filter((r) => r.x != null && r.n >= POCOS).sort((a, z) => z.x - a.x);
+    const li = (r, p) => `<li data-c="${r.m.c}"><span class="p">${p}</span><span class="n">${r.m.n} <small>${DEP[r.m.d]}</small></span><span class="v">${val(r.x, f.unidad)}</span></li>`;
+    $("altos").innerHTML = filas.slice(0, 10).map((r, k) => li(r, k + 1)).join("");
+    $("bajos").innerHTML = filas.slice(-10).reverse().map((r, k) => li(r, filas.length - k)).join("");
+    document.querySelectorAll(".lista li").forEach((e) => (e.onclick = () => elegir(e.dataset.c)));
+    selMun();
+  }
+  function selMun() {
+    const f = F(), { v, n } = valores();
+    if (!sel || idx[sel] == null) { $("sel-mun").innerHTML = '<span style="color:var(--suave)">Tocá un municipio en el mapa o buscalo en la lista.</span>'; return; }
+    const j = idx[sel], m = M[j];
+    $("sel-mun").innerHTML = `<b>${m.n}</b> (<a href="departamento.html?d=${m.d}">${DEP[m.d]}</a>): <b>${val(v[j], f.unidad)}</b> ${n[j] < POCOS ? "· pocos casos" : ""} · <a href="perfil.html?m=${m.c}">ver su perfil</a>`;
+  }
+  function elegir(c) { sel = c; terA = c; urlEdad(); mapa(); edad(); }   // el municipio del mapa pasa también a la edad por edad
+  munis.on("click", (ev, g) => elegir(g.properties.cod_ine))
+    .on("mousemove", (ev, g) => { const j = idx[g.properties.cod_ine], { v, n } = valores(), m = M[j], r = $("mapa").getBoundingClientRect();
+      const fl = $("flot"); fl.style.display = "block"; fl.style.left = Math.min(ev.clientX - r.left + 14, r.width - 200) + "px"; fl.style.top = (ev.clientY - r.top + 14) + "px";
+      fl.innerHTML = `${m.n} <span style="color:var(--suave)">· ${DEP[m.d]}</span><br><b>${val(v[j], F().unidad)}</b>${n[j] < POCOS ? ` <span style="color:var(--suave)">(${nf(n[j])} casos)</span>` : ""}`; })
+    .on("mouseleave", () => ($("flot").style.display = "none"));
+  $("buscar").onchange = () => { const t = $("buscar").value.toLowerCase(); const m = M.find((x) => `${x.n} (${DEP[x.d]})`.toLowerCase() === t) || M.find((x) => x.n.toLowerCase().startsWith(t)); if (m) elegir(m.c); };
+  function tramos() {
+    const f = F(), ops = [["todo", "Todas las edades"], ...f.tramos.map((k) => [k, CAT.tramos[k].nombre + ` (${CAT.tramos[k].desde}-${CAT.tramos[k].hasta})`])];
+    if (!ops.find((o) => o[0] === tramo)) tramo = "todo";
+    $("tramo").innerHTML = ops.length > 2 ? ops.map(([k, t]) => `<button data-t="${k}" aria-pressed="${k === tramo}">${t}</button>`).join("") : "";
+    $("tramo").querySelectorAll("button").forEach((b) => (b.onclick = () => { tramo = b.dataset.t; tramos(); mapa(); }));
+  }
+
+  /* ── 3. departamentos y brechas ────────────────────────────────────────────────────────── */
+  function departamentos() {
+    const f = F(), filas = Object.entries(D.dep).map(([k, x]) => [DEP[k], x.v]).sort((a, z) => a[1] - z[1]);
+    gDep.setOption({ ...base(), legend: { show: false }, grid: { left: 8, right: 54, top: 10, bottom: 24, containLabel: true },
+      tooltip: { ...base().tooltip, trigger: "item", formatter: (p) => `${p.name}: <b>${val(p.value, f.unidad)}</b>` },
+      xAxis: { type: "value", splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), formatter: (v) => (f.unidad === "%" ? v + " %" : nf(v)) } },
+      yAxis: { type: "category", data: filas.map((x) => x[0]), axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: css("--tinta"), fontSize: 12 } },
+      series: [{ type: "bar", data: filas.map((x) => x[1]), barMaxWidth: 18, itemStyle: { color: css("--t4") },
+        label: { show: true, position: "right", color: css("--tinta"), fontFamily: "Figtree", fontSize: 11, formatter: (p) => val(p.value, f.unidad) },
+        markLine: { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: css("--bolivia"), type: "dashed" }, data: esConteo() ? [] : [{ xAxis: D.bol.v }] } }] }, true);
+    $("nota-dep").hidden = esConteo();
+    // brechas por tramo: pesas (mujeres–hombres y urbana–rural)
+    // las brechas por tramo vienen calculadas del pipeline (suma de numeradores y denominadores)
+    const BT = D.bol.tramos || {}, T = f.tramos.filter((k) => BT[k]);
+    const ms = T.map((k) => [BT[k].muj, BT[k].hom]), ur = T.map((k) => [BT[k].urb, BT[k].rur]);
+    const etiquetas = T.flatMap((k) => [CAT.tramos[k].nombre + " · sexo", CAT.tramos[k].nombre + " · área"]);
+    const dumb = (pares, fila, nom1, nom2, c1, c2) => [
+      { type: "custom", renderItem: (pr, api) => { const a = api.coord([api.value(0), api.value(2)]), b = api.coord([api.value(1), api.value(2)]);
+          return { type: "line", shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: css("--linea"), lineWidth: 3 } }; },
+        encode: { x: [0, 1], y: 2 }, data: pares.map((p, k) => [p[0], p[1], etiquetas[k * 2 + fila]]), z: 1, silent: true },
+      { name: nom1, type: "scatter", data: pares.map((p, k) => [p[0], etiquetas[k * 2 + fila]]), symbolSize: 11, itemStyle: { color: c1 }, z: 3 },
+      { name: nom2, type: "scatter", data: pares.map((p, k) => [p[1], etiquetas[k * 2 + fila]]), symbolSize: 11, itemStyle: { color: c2 }, z: 3 }];
+    gBre.setOption({ ...base(), grid: { left: 8, right: 16, top: 40, bottom: 24, containLabel: true },
+      tooltip: { ...base().tooltip, trigger: "item", formatter: (p) => `${p.seriesName}: <b>${val(p.value[0], f.unidad)}</b>` },
+      xAxis: { type: "value", splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), formatter: (v) => (f.unidad === "%" ? v + " %" : nf(v)) } },
+      yAxis: { type: "category", data: etiquetas, inverse: true, splitLine: { show: false }, axisTick: { show: false }, axisLine: { show: false },
+        axisLabel: { color: css("--tinta"), fontSize: 11.5 } },
+      series: [...dumb(ms, 0, "Mujeres", "Hombres", css("--mujeres"), css("--hombres")), ...dumb(ur, 1, "Urbana", "Rural", css("--urbana"), css("--rural"))] }, true);
+  }
+
+  /* ── 4. relación con el gasto ─────────────────────────────────────────────────────────── */
+  function gasto() {
+    const f = F(), cats = esConteo() ? [] : f.gasto || [];   // un conteo no se compara con el gasto por niño
+    $("bloque-gasto").hidden = !cats.length; $("n-ficha").textContent = cats.length ? 5 : 4; $("n-datos").textContent = cats.length ? 6 : 5;
+    if (!cats.length) return;
+    const ops = []; cats.forEach((c) => (CRUCE[c] || []).forEach((o) => { if (!ops.find((x) => x[0] === o[0])) ops.push(o); }));
+    $("cx").innerHTML = ops.map(([k, t]) => `<option value="${k}">${t}</option>`).join("");
+    $("nota-gasto").innerHTML = `Este indicador se relaciona con ${cats.map((c) => `<b>${CAT.cruce_gasto[c].split(":")[0].toLowerCase()}</b>`).join(", ")}. Cada punto es un municipio: la altura es el indicador (Censo de marzo de 2024) y la distancia a la derecha, lo que gastó su alcaldía en los tres años anteriores (promedio 2021-2023, bolivianos de 2025). Muestra dónde está cada uno, no por qué: el sueldo de los maestros lo paga el nivel central y no entra acá.`;
+    const dibujar = () => (MAPA ? Promise.resolve(MAPA) : fetch("datos/gasto/mapa.json").then((r) => r.json()).then((x) => (MAPA = x))).then((MP) => {
+      const cx = $("cx").value, anios = [2021, 2022, 2023].map((a) => a - 2016);
+      const pts = Object.values(MP).map((m) => { const j = idx[m.cod_ine]; const xs = anios.map((k) => (m.s[cx] || [])[k]).filter((x) => x != null && x > 0);
+        return { c: m.cod_ine, n: m.nombre, d: m.dpto, x: xs.length ? xs.reduce((a, z) => a + z, 0) / xs.length : null, y: D.v[j], nn: D.n[j], ok: D.n[j] >= POCOS }; }).filter((p) => p.x != null && p.y != null && p.ok);
+      const xsS = pts.map((p) => p.x).sort((a, z) => a - z), ysS = pts.map((p) => p.y).sort((a, z) => a - z);
+      const mx = xsS[Math.floor(xsS.length / 2)], my = ysS[Math.floor(ysS.length / 2)], xmax = xsS[Math.floor(xsS.length * 0.97)];
+      const corr = (() => { const n = pts.length, ax = pts.reduce((s, p) => s + p.x, 0) / n, ay = pts.reduce((s, p) => s + p.y, 0) / n;
+        const sxy = pts.reduce((s, p) => s + (p.x - ax) * (p.y - ay), 0), sxx = pts.reduce((s, p) => s + (p.x - ax) ** 2, 0), syy = pts.reduce((s, p) => s + (p.y - ay) ** 2, 0); return sxy / Math.sqrt(sxx * syy); })();
+      gCru.resize();   // el bloque estaba oculto cuando se creó el gráfico: medir de nuevo antes de dibujar
+      const paso = xmax <= 1000 ? 100 : xmax <= 5000 ? 500 : 1000, X = Math.ceil(xmax / paso) * paso, dark = document.body.classList.contains("dark"), u = f.unidad;
+      const ymaxD = ysS[ysS.length - 1], ymax = u === "%" ? Math.min(100, Math.ceil(ymaxD / 10) * 10) : Math.ceil(ymaxD * 1.05);
+      const nmax = Math.max(...pts.map((p) => p.nn || 0), 1), tam = (p) => (p.c === sel ? 16 : 5 + 11 * Math.sqrt((p.nn || 0) / nmax));
+      const peor = f.sentido === "logro" ? [{ xAxis: 0, yAxis: 0 }, { xAxis: mx, yAxis: my }] : [{ xAxis: 0, yAxis: my }, { xAxis: mx, yAxis: ymax }];
+      gCru.setOption({ ...base(), legend: { show: false }, grid: { left: 12, right: 30, top: 22, bottom: 32, containLabel: true },
+        tooltip: { ...base().tooltip, trigger: "item", formatter: Atlas.tipItem((q) => { const p = q.data && q.data.p; if (!p) return null; return {
+          titulo: p.n, filas: [{ nombre: "Gasto de la alcaldía, por niño", valor: "Bs " + nf(p.x), color: q.color, forma: "punto" },
+            { nombre: f.nombre, valor: val(p.y, u) }, { nombre: "Niñas, niños y adolescentes", valor: nf(p.nn) }], pie: p.d + " · gasto: promedio 2021-2023" }; }) },
+        xAxis: { type: "value", max: X, name: "Bolivianos por niño o estudiante, promedio 2021-2023", nameLocation: "middle", nameGap: 28,
+          nameTextStyle: { color: css("--suave"), fontSize: 11, fontFamily: "Figtree" }, splitNumber: 4, axisTick: { show: false },
+          axisLine: { lineStyle: { color: css("--linea") } }, splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), fontSize: 11, formatter: (v) => nf(v) } },
+        yAxis: { type: "value", max: ymax, interval: u === "%" ? (ymax <= 20 ? 5 : ymax <= 40 ? 10 : ymax <= 80 ? 20 : 25) : undefined, splitNumber: 4,
+          axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: css("--grilla") } },
+          axisLabel: { color: css("--suave"), fontSize: 11, formatter: (v) => (u === "%" ? v + " %" : nf(v)) } },
+        series: [{ type: "scatter", data: pts.map((p) => ({ value: [Math.min(p.x, X), p.y], p, symbolSize: tam(p), z: p.c === sel ? 3 : 1,
+            itemStyle: p.c === sel ? { color: css("--foco"), borderColor: css("--superficie"), borderWidth: 2.5, opacity: 1 }
+              : { color: dark ? "#555d47" : "#d8d4c3", borderColor: css("--superficie"), borderWidth: 0.8, opacity: 0.92 },
+            label: p.c === sel ? { show: true, position: "right", distance: 8, formatter: () => `{n|${p.n}}\n{v|Bs ${nf(p.x)} · ${val(p.y, u)}}`,
+              backgroundColor: Atlas.alfa(dark ? "#1f2318" : "#fbfaf6", 0.9), padding: [4, 7], borderColor: css("--linea"), borderWidth: 1,
+              rich: { n: { color: css("--titulo"), fontWeight: 650, fontSize: 12.5, fontFamily: "Figtree", lineHeight: 17 }, v: { color: css("--suave"), fontSize: 11, fontFamily: "Figtree", lineHeight: 15 } } } : undefined })),
+          emphasis: { scale: 1.35, itemStyle: { borderColor: css("--tinta"), borderWidth: 1.4 } },
+          markArea: { silent: true, itemStyle: { color: Atlas.alfa(dark ? "#c5a076" : "#936639", dark ? 0.08 : 0.07) }, data: [peor] },
+          markLine: { silent: true, symbol: "none", lineStyle: { color: css("--suave"), type: "solid", width: 1, opacity: 0.55 },
+            label: { color: css("--suave"), fontSize: 10.5, fontFamily: "Figtree" },
+            data: [{ xAxis: mx, label: { formatter: () => "mediana Bs " + nf(mx), position: "end", distance: 4 } },
+                   { yAxis: my, label: { formatter: () => "mediana " + val(my, u), position: "insideEndTop" } }] } }] }, true);
+      const fuerza = Math.abs(corr) < 0.1 ? "prácticamente nula" : Math.abs(corr) < 0.3 ? "débil" : Math.abs(corr) < 0.5 ? "moderada" : "fuerte";
+      $("lectura-cruce").innerHTML = `Entre los ${pts.length} municipios con dato, la relación es <b>${fuerza}</b> (correlación ${nf(corr, 2)}): ${corr < -0.1 ? "donde la alcaldía gasta más por niño, la carencia tiende a ser menor" : corr > 0.1 ? "donde la alcaldía gasta más por niño, la cifra tiende a ser más alta (suele pasar en municipios chicos y rurales, que reciben más por habitante)" : "gastar más o menos no se asocia con la cifra"}.`;
+    });
+    $("cx").onchange = dibujar; dibujar();
+  }
+
+  /* ── 5 y 6. ficha y datos ─────────────────────────────────────────────────────────────── */
+  function ficha() {
+    const f = F(), ed = f.titular || f.edad;
+    const it = [["Qué responde", f.pregunta], ["Definición", f.definicion], ["Quiénes", `${ed[0]} a ${ed[1]} años${f.titular ? ` (se calcula de ${f.edad[0]} a ${f.edad[1]})` : ""}; ${esConteo() ? "todas las personas empadronadas, como en la población del censo." : "residentes habituales en el país, como los tabulados del INE."}`],
+      ["Cómo se calcula", f.nota || "—"], ["Fuente", "INE, Censo de Población y Vivienda 2024, microdato. Las tasas de asistencia escolar de esta cadena reproducen al registro los tabulados del INE en los 343 municipios."],
+      ["Unidad", f.unidad === "%" ? "Porcentaje" : f.unidad === "por 1.000" ? "Nacimientos por cada mil mujeres de la edad" : "Personas"]];
+    $("ficha").innerHTML = it.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("");
+  }
+  function tabla() {
+    const f = F();
+    const L = 'style="text-align:left"';
+    $("tabla").innerHTML = `<tr><th>Código</th><th ${L}>Municipio</th><th ${L}>Departamento</th><th>${f.unidad === "%" ? "%" : "Valor"}</th><th>Casos (denominador)</th></tr>`
+      + M.map((m, j) => `<tr><td class="num">${m.c}</td><td ${L}>${m.n}</td><td ${L}>${DEP[m.d]}</td><td class="num">${val(D.v[j], f.unidad)}</td><td class="num">${nf(D.n[j])}</td></tr>`).join("");
+  }
+  $("csv").onclick = () => { const f = F(); const filas = M.map((m, j) => [m.c, m.n, DEP[m.d], D.v[j] ?? "", D.n[j] ?? ""]);
+    const b = new Blob(["﻿" + [["cod_ine", "municipio", "departamento", f.id, "denominador"], ...filas].map((r) => r.join(";")).join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `ninez-${f.id}-censo2024.csv`; a.click(); };
+
+  function pintarTodo() { POCOS = esConteo() ? 1 : Atlas.POCOS; encabezado(); edad(); tramos(); mapa(); departamentos(); gasto(); ficha(); tabla(); }
+  $("ind").onchange = () => { id = $("ind").value; urlEdad(); cargar(); };
+  $("ver").querySelectorAll("button").forEach((b) => (b.onclick = () => { ver = b.dataset.v; $("ver").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); edad(); }));
+  $("tema").onclick = () => { Atlas.aplicarTema(!document.body.classList.contains("dark"), true); pintarTodo(); };
+  addEventListener("resize", () => [gEdad, gEdad2, gDep, gBre, gCru].forEach((c) => c.resize()));
+  Atlas.listo(cargar);
+}).catch((e) => { $("nombre").textContent = "No se pudo cargar el indicador"; console.error(e); });
+})();
+</script>
+</body>
+</html>

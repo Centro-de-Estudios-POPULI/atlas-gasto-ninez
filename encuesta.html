@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indicador de encuesta · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Cómo viven las niñas, niños y adolescentes de Bolivia según las encuestas del INE: Bolivia y sus nueve departamentos, cada cifra con su margen de error.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo/identidad.css">
+<style>
+/* del molde (indicador.html) */
+.elegir { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 0 0 14px; font-size: 13px }
+.elegir label { color: var(--suave) }
+.elegir select { max-width: 100%; min-width: 0 }
+.elegir .volver { margin-left: auto; white-space: nowrap }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px }
+.chip { font-size: 11.5px; letter-spacing: .02em; border: 1px solid var(--linea); padding: 3px 8px; color: var(--suave); background: var(--superficie) }
+.chip b { color: var(--tinta); font-weight: 600 }
+.mapa-y-lista { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 26px; align-items: start }
+#mapa { width: 100%; height: 450px; position: relative }
+#mapa svg { width: 100%; height: 100%; display: block }
+#mapa path.dp { stroke: var(--superficie); stroke-width: 1.3; cursor: pointer }
+#mapa path.dp:hover { stroke: var(--titulo); stroke-width: 2.2 }
+#mapa path.ca { stroke: none }
+#mapa text.et { font-family: var(--fm); font-size: 13px; font-weight: 600; fill: var(--tinta); paint-order: stroke; stroke: var(--superficie);
+  stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; text-anchor: middle; dominant-baseline: middle }
+.ley-mapa { margin: 8px 0 4px; font-size: 11.5px }
+.ley-mapa .fila { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px 0; margin: 0 0 7px }
+.ley-mapa .c { display: flex; flex-direction: column; min-width: 50px }
+.ley-mapa .c i { height: 12px; display: block; border: 1px solid var(--superficie) }
+.ley-mapa .c span { font-family: var(--fm); color: var(--suave); font-size: 10.5px; padding-top: 3px }
+.ley-mapa .ex { margin-right: 18px; display: flex; align-items: center; gap: 6px }
+.ley-mapa .ex i { height: 12px; width: 28px; display: block }
+.ley-mapa .ex span { color: var(--suave); font-size: 11px }
+.flot { position: absolute; pointer-events: none; background: var(--superficie); border: 1px solid var(--linea); padding: 7px 10px; font-size: 12.5px;
+  box-shadow: 0 6px 18px rgba(30, 24, 10, .14); display: none; z-index: 5; max-width: 250px }
+.flot b { font-family: var(--fm) }
+.flot .s { color: var(--suave) }
+.ficha dt { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); font-weight: 600; margin-top: 12px }
+.ficha dd { margin: 3px 0 0; font-size: 14px; max-width: 62rem }
+.ficha code, .def code { font-family: var(--fm); font-size: 12px; color: var(--tinta); background: var(--superficie-2); padding: 1px 5px; overflow-wrap: anywhere }
+.ficha ul { margin: 4px 0 0; padding-left: 18px }
+/* propios de las encuestas */
+.def { font-size: 13px; color: var(--suave); margin: -12px 0 16px; max-width: 64rem }
+.kpi .kv .u { font-size: .52em; font-weight: 500; color: var(--suave); margin-left: 3px; letter-spacing: 0 }
+.kpi .kl .cautela { vertical-align: 1px }
+@media (min-width: 1001px) { .kpis.k4 { grid-template-columns: repeat(4, minmax(0, 1fr)) } .kpis.k3 { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.cautela { font-size: 10.5px; font-family: var(--f); font-weight: 500; color: var(--estimacion); border: 1px dashed var(--estimacion); padding: 0 4px; margin-left: 4px;
+  white-space: nowrap; letter-spacing: 0 }
+.ley { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 12px; color: var(--suave); margin: 0 0 8px }
+.ley > span { display: inline-flex; align-items: center; gap: 6px }
+.ley i { display: inline-block; flex: 0 0 auto }
+.ley .pt { width: 10px; height: 10px; border-radius: 50%; background: var(--t6) }
+.ley .pt.hueco { background: transparent; box-shadow: inset 0 0 0 2px var(--t6) }
+.ley .ic { width: 22px; height: 2px; background: var(--t4) }
+.ley .barra { width: 12px; height: 12px; background: var(--t4) }
+.ley .rayado { width: 12px; height: 12px; background: repeating-linear-gradient(135deg, var(--t5) 0 1.5px, var(--t2) 1.5px 4px); box-shadow: inset 0 0 0 1px var(--t6) }
+.ley .rombo { width: 9px; height: 9px; background: var(--bolivia); transform: rotate(45deg); margin: 0 2px }
+.ley .bo { width: 0; height: 12px; border-left: 2px dashed var(--bolivia) }
+.ley .nada { font-style: italic }
+.gt .s { font-weight: 400; color: var(--suave) }
+.lecturas { display: grid; gap: 6px; font-size: 14px; margin: 6px 0 12px; max-width: 64rem }
+.lecturas p { margin: 0 }
+.otra { background: var(--superficie); border: 1px solid var(--linea); border-left: 3px solid var(--t5); padding: 12px 16px 4px; margin: -14px 0 20px }
+.otra h3 { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--suave); margin: 0 0 4px; font-weight: 600 }
+.otra ul { list-style: none; margin: 0; padding: 0 }
+.otra li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--grilla); font-size: 13.5px }
+.otra li:last-child { border-bottom: 0 }
+.otra .f { font-size: 11px; font-weight: 600; letter-spacing: .02em; color: var(--tinta); display: inline-flex; align-items: center; gap: 5px; min-width: 76px }
+.otra .f i { width: 8px; height: 8px; display: inline-block }
+.otra .v { font-family: var(--fm); font-weight: 600; color: var(--titulo); white-space: nowrap }
+.otra .s { color: var(--suave); font-size: 12.5px }
+.otra p { font-size: 13px; color: var(--suave); margin: 6px 0 10px; max-width: 64rem }
+.sw-censo { background: var(--t7) } .sw-eh2025 { background: var(--t5) } .sw-edsa2023 { background: var(--t3) }
+#tabla th.grupo { text-align: left; background: var(--superficie-2); color: var(--tinta); letter-spacing: .06em; padding-top: 7px }
+#tabla td.x { color: var(--suave); font-style: italic }
+#tabla td:first-child, #tabla td:last-child { white-space: normal }
+#tabla td:last-child { text-align: left }
+#tabla th:last-child { text-align: left }
+#tabla .ct { display: none }
+@media (max-width: 560px) { #tabla .lg { display: none } #tabla .ct { display: inline } }
+@media (max-width: 1000px) {
+  .mapa-y-lista { grid-template-columns: 1fr } #mapa { height: 420px } .elegir .volver { margin-left: 0 }
+}
+@media (max-width: 560px) {
+  #mapa { height: 330px } .otra { margin-top: -12px; padding: 10px 12px 2px }
+  #tabla th, #tabla td { padding: 5px 4px; font-size: 11.5px } #tabla th { font-size: 10px; letter-spacing: .02em }
+}
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · cómo viven</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html" aria-current="page">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <div class="elegir solo-dato"><label for="ind">Indicador:</label><select id="ind"></select><a class="volver" href="indicadores.html">Todos los indicadores</a></div>
+  <div class="kick" id="kick">Cómo viven</div>
+  <h1 id="nombre">Cargando…</h1>
+  <p class="lede" id="lede"></p>
+  <p class="def" id="def"></p>
+  <div class="chips" id="chips"></div>
+  <div class="kpis solo-dato" id="kpis"></div>
+  <section class="otra" id="otra" hidden></section>
+
+  <div class="solo-dato">
+    <div class="capitulo"><span class="n">1</span><h2>Dónde</h2><p id="sub-dep">Los nueve departamentos y Bolivia, cada uno con su margen de error</p></div>
+    <section class="tarjeta">
+      <div class="ley" id="ley-dep" aria-hidden="true"></div>
+      <div class="mapa-y-lista">
+        <div><div class="g" id="g-dep" style="height:420px" role="img" aria-label="Valor de cada departamento con su intervalo de 95 %"></div></div>
+        <div>
+          <div id="mapa" aria-label="Mapa de los nueve departamentos"><div class="flot" id="flot"></div></div>
+          <div class="ley-mapa" id="ley-mapa"></div>
+          <p class="nota" id="nota-mapa"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="solo-dato" id="bloque-edad">
+    <div class="capitulo"><span class="n" id="n-edad">2</span><h2>Por edad</h2><p id="sub-edad">Por tramo de edad, con su margen de error</p></div>
+    <section class="tarjeta">
+      <div class="ley" id="ley-edad" aria-hidden="true"></div>
+      <div class="lectura" id="lectura-edad"></div>
+      <div class="ed-dos">
+        <div>
+          <div class="ed-cab"><div class="ed-nombre"><i class="ed-sw"></i>Bolivia</div></div>
+          <div class="g ed-g" id="g-edad" role="img" aria-label="Bolivia por tramo de edad, con su intervalo de 95 %"></div>
+        </div>
+        <div>
+          <div class="ed-cab">
+            <label class="ed-ter lista"><i class="ed-sw"></i><select id="dep-a" aria-label="Departamento"></select></label>
+            <label class="ed-ter lista"><i class="ed-sw b"></i><select id="dep-b" aria-label="Comparar con otro departamento"></select></label>
+          </div>
+          <div class="g ed-g" id="g-edad-2" role="img" aria-label="Uno o dos departamentos por tramo de edad, con su intervalo de 95 %"></div>
+        </div>
+      </div>
+      <p class="nota ed-nota" id="nota-edad"></p>
+    </section>
+  </div>
+
+  <div class="solo-dato" id="bloque-brechas">
+    <div class="capitulo"><span class="n" id="n-brechas">3</span><h2>Brechas</h2><p>Área urbana y rural, mujeres y hombres</p></div>
+    <section class="tarjeta">
+      <div class="ley" id="ley-brechas" aria-hidden="true"></div>
+      <div class="g" id="g-brechas" style="height:240px" role="img" aria-label="Valor por área y por sexo con su intervalo de 95 %"></div>
+      <div class="lecturas" id="lect-brechas"></div>
+    </section>
+  </div>
+
+  <div class="solo-dato">
+    <div class="capitulo"><span class="n" id="n-ficha">4</span><h2>Cómo se mide</h2><p>Ficha del indicador</p></div>
+    <section class="tarjeta"><dl class="ficha" id="ficha"></dl></section>
+
+    <div class="capitulo"><span class="n" id="n-datos">5</span><h2>Los datos</h2><p>Cada cifra con su error estándar, su coeficiente de variación y sus casos</p></div>
+    <section class="tarjeta">
+      <button class="btn" id="csv">Descargar CSV</button>
+      <div class="scroll" style="max-height:460px"><table id="tabla"></table></div>
+    </section>
+  </div>
+
+  <footer id="pie">Fuente: INE, encuestas de hogares (microdato). Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script src="lib/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="estilo/comun.js"></script>
+<script src="estilo/encuestas.js"></script>
+<script>
+(() => {
+const { $, css, nf, deCada, base, alfa } = Atlas, E = Atlas.enc, esc = E.esc;
+$("tema").onclick = () => Atlas.aplicarTema(!document.body.classList.contains("dark"), true);
+
+const qs = new URLSearchParams(location.search);
+const fuente = E.ENCUESTAS.includes(qs.get("f")) ? qs.get("f") : "eh2025", F = E.FUENTES[fuente];
+const PREFERIDO = { eh2025: "POB01", edsa2023: "N01" };
+let cod = qs.get("i");
+
+Promise.all([E.cargar(fuente), fetch("datos/catalogo_ind.json").then((r) => r.json()), fetch("datos/municipios.json").then((r) => r.json()),
+  fetch("datos/municipios.topojson").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  fetch(`datos/${fuente}_dep_tramo.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null)]).then(([J, CAT, MUN, TOPO, DTJ]) => {
+  if (!J) return sinFuente();
+  const DEP = MUN.departamentos, DK = Object.keys(DEP), TEMAS = E.temas(CAT);
+  const IX = {}; J.indicadores.forEach((x) => (IX[x.cod] = x));
+  if (!IX[cod]) cod = IX[PREFERIDO[fuente]] ? PREFERIDO[fuente] : J.indicadores[0].cod;
+  const LEY = {}; Object.values(CAT.tramos).forEach((t) => (LEY[`${t.desde}-${t.hasta}`] = t.nombre));
+  const X = () => IX[cod], V = () => J.valores[cod] || {};
+  const R = J.reglas || {};
+  // selector: los indicadores de la misma fuente, por tema del atlas
+  $("ind").innerHTML = Object.entries(TEMAS).map(([k, t]) => {
+    const op = J.indicadores.filter((x) => E.temaDe(fuente, x) === k);
+    return op.length ? `<optgroup label="${esc(t.nombre)}">${op.map((x) => `<option value="${esc(x.cod)}">${esc(x.nombre)}</option>`).join("")}</optgroup>` : "";
+  }).join("");
+  const gDep = echarts.init($("g-dep")), gEdad = echarts.init($("g-edad")), gEdad2 = echarts.init($("g-edad-2")), gBre = echarts.init($("g-brechas"));
+  const comun = () => ({ c2: css("--t2"), c4: css("--t4"), c5: css("--t5"), c6: css("--t6"), bo: css("--bolivia"), sup: css("--superficie"), tinta: css("--tinta"), suave: css("--suave"), titulo: css("--titulo") });
+  const ejeFmt = (x, v) => (x.tipo === "prop" ? `${nf(v, Number.isInteger(v) ? 0 : 1)} %` : v >= 1e6 ? `${nf(v / 1e6, 1)} M` : v >= 1e4 ? `${nf(v / 1e3, 0)} mil` : nf(v, Number.isInteger(v) ? 0 : 1));
+  /* paso «redondo» de las marcas del eje: el menor de 1, 2, 2,5, 5 o 10 (por potencia de diez) que deja como mucho n marcas */
+  const paso = (r, n = 6) => { const t = r / n, p = Math.pow(10, Math.floor(Math.log10(t))); return [1, 2, 2.5, 5, 10].map((k) => k * p).find((s) => s >= t); };
+  /* escala de los gráficos de puntos: arranca en cero si los datos están cerca; si no, se acerca para que se vea la duda.
+     En el teléfono, menos marcas en el eje. */
+  function escala(x, vals, ancho) {
+    let mn = Math.min(...vals), mx = Math.max(...vals);
+    if (!isFinite(mn) || !isFinite(mx)) { mn = 0; mx = 1; }
+    if (mn >= 0 && mn < 0.35 * mx) mn = 0;
+    const r = mx - mn || Math.abs(mx) || 1, st = paso(r, ancho < 560 ? 3 : 6);
+    let a0 = mn === 0 ? 0 : Math.floor((mn - r * 0.05) / st) * st, a1 = Math.ceil((mx + r * 0.05) / st) * st;
+    if (a0 < 0 && mn >= 0) a0 = 0;
+    if (x.tipo === "prop") a1 = Math.min(100, a1);
+    return { min: a0, max: a1, interval: st };
+  }
+  /* trama para «cautela» en las barras (patrón de ECharts hecho en un lienzo) */
+  const rayas = (fondo, raya) => { const c = document.createElement("canvas"); c.width = c.height = 8; const g = c.getContext("2d");
+    g.fillStyle = fondo; g.fillRect(0, 0, 8, 8); g.strokeStyle = raya; g.lineWidth = 1.5; g.beginPath();
+    g.moveTo(-2, 10); g.lineTo(10, -2); g.moveTo(-2, 2); g.lineTo(2, -2); g.moveTo(6, 10); g.lineTo(10, 6); g.stroke(); return c; };
+  const entre = (x, c) => { const ic = E.ic(x, c); return ic ? `entre ${E.fmt(x, ic[0])} y ${E.fmt(x, ic[1])}` : ""; };
+  /* la línea punteada de Bolivia, en una serie propia por debajo de todo: no cruza las cifras */
+  const refBolivia = (k, b) => ({ type: "line", data: [], silent: true, z: 1,
+    markLine: E.publica(b) ? { silent: true, symbol: "none", label: { show: false }, lineStyle: { color: k.bo, type: "dashed", width: 1.2 }, data: [{ xAxis: b.v }] } : undefined });
+  /* dos grupos: ¿se tocan sus intervalos de 95 %? (comparación, no una prueba: lo dice así) */
+  const comparar = (x, a, b) => {
+    if (!E.publica(a) || !E.publica(b)) return "uno de los dos no tiene una cifra publicable para comparar";
+    const ia = E.ic(x, a), ib = E.ic(x, b);
+    if (!ia || !ib) return "sin margen de error para comparar";
+    return ia[1] < ib[0] || ib[1] < ia[0] ? "los intervalos <b>no se tocan</b>: la diferencia es clara" : "los intervalos <b>se superponen</b>: con esta muestra, la diferencia puede ser del azar";
+  };
+  const tip = (x, n, c) => `<b>${esc(n)}</b><br>${E.publica(c) ? `<b>${E.fmt(x, c.v)}</b>${E.ic(x, c) ? ` · ${entre(x, c)}` : ""}<br>CV ${E.cv(c)} · ${nf(c.n)} casos · ${E.motivo(c)}`
+    : `${E.motivo(c)}${c ? ` (${nf(c.n)} casos)` : ""}${E.degenerada(c) ? "<br>el margen de error no se puede medir" : ""}`}`;
+  /* el rótulo de una cifra que no se dibuja, partido en dos renglones para las barras */
+  const partir = (s) => { const w = s.split(" "), h = Math.ceil(w.length / 2); return w.length > 1 ? `${w.slice(0, h).join(" ")}\n${w.slice(h).join(" ")}` : s; };
+
+  /* ── encabezado ─────────────────────────────────────────────────────────────────────────────────────────── */
+  function lectura() {
+    const x = X(), b = V().nac;
+    if (!E.publica(b)) return `La ${F.largo} no da una cifra publicable para Bolivia (${E.motivo(b)}${E.degenerada(b) ? ": el margen de error no se puede medir" : ""}). Los grupos que sí resisten se muestran abajo.`;
+    const ic = E.ic(x, b), v = E.fmt(x, b.v), quien = E.quienes(x.poblacion);
+    let s;
+    if (x.tipo === "prop") { const dc = deCada(b.v); s = `En Bolivia alcanza a <b>${v}</b> de ${quien}${dc ? `: ${dc}` : ""}.`; }
+    else if (x.tipo === "rate1000") s = `En Bolivia, <b>${v}</b> entre ${quien}.`;
+    else if (x.tipo === "total") s = `La encuesta estima <b>${v}</b> en Bolivia: ${quien}.`;
+    else s = `En Bolivia, <b>${v}</b> ${x.tipo === "median" ? "de mediana" : "en promedio"}, entre ${quien}.`;
+    if (ic) s += ` Es una estimación con muestra: con 95 % de confianza, el valor está entre <b>${E.fmt(x, ic[0])}</b> y <b>${E.fmt(x, ic[1])}</b>.`;
+    else s += ` Esta ${x.tipo === "median" ? "mediana" : "cifra"} no trae margen de error calculado.`;
+    if (x.oficial != null) s += ` El INE publica <b>${E.fmt(x, x.oficial)}</b>.`;
+    if (b.c === "a") s += ` <span class="cautela">cautela</span> Su coeficiente de variación es de ${E.cv(b)}: hay que leerla con cuidado.`;
+    return s;
+  }
+  function encabezado() {
+    const x = X(), b = V().nac, n = E.contar(V().dep, DK);
+    document.title = `${x.nombre} · ${F.corto} · Atlas de la Niñez y la Adolescencia`;
+    $("kick").textContent = `Cómo viven · ${TEMAS[E.temaDe(fuente, x)].nombre}`;
+    $("nombre").textContent = x.nombre;
+    $("lede").innerHTML = lectura();
+    $("def").innerHTML = x.definicion && x.definicion !== x.receta ? esc(x.definicion) : x.definicion ? `Definición del cálculo: <code>${esc(x.definicion)}</code>` : "";
+    $("chips").innerHTML = [`<span class="chip">Fuente <b>${F.largo}</b></span>`, `<span class="chip">Población <b>${esc(E.poblacion(x.poblacion))}</b></span>`,
+      n.p + n.a > 0 ? `<span class="chip">Llega hasta <b>departamento</b></span>` : `<span class="chip">Sólo <b>Bolivia</b>: la muestra no alcanza por departamento</span>`,
+      `<span class="chip">Cifra: <b>${E.TIPO[x.tipo] || esc(x.tipo)}</b></span>`, b ? `<span class="chip">Muestra <b>${nf(b.n)} casos</b></span>` : ""].join("");
+  }
+  function kpis() {
+    const x = X(), Vv = V(), b = Vv.nac;
+    const card = (lab, v, sub, c) => `<div class="kpi"><div class="kl">${lab}</div><div class="kv">${v}</div><div class="ku">${sub}</div><div class="kc">${Atlas.juntos(c)}</div></div>`;
+    const val = (c) => (E.publica(c) ? E.fmtHTML(x, c.v) : "—");
+    const marca = (c) => (c && c.c === "a" ? '<span class="cautela">cautela</span>' : "");
+    const cs = [];
+    cs.push(card(`Bolivia ${marca(b)}`, val(b), E.publica(b) ? entre(x, b) || "sin margen de error calculado" : E.motivo(b),
+      `${b ? `CV <b>${E.cv(b)}</b> · <b>${nf(b.n)}</b> casos` : ""}${x.oficial != null ? ` · INE: <b>${E.fmt(x, x.oficial)}</b>` : ""}`));
+    const A_ = Vv.area || {}, S = Vv.sexo || {};
+    if (A_.rur && A_.urb) cs.push(card(`Área rural ${marca(A_.rur)}`, val(A_.rur), `urbana: ${E.publica(A_.urb) ? E.fmt(x, A_.urb.v) : E.motivo(A_.urb)} ${marca(A_.urb)}`, comparar(x, A_.rur, A_.urb)));
+    if (S.muj && S.hom) cs.push(card(`Mujeres ${marca(S.muj)}`, val(S.muj), `hombres: ${E.publica(S.hom) ? E.fmt(x, S.hom.v) : E.motivo(S.hom)} ${marca(S.hom)}`, comparar(x, S.muj, S.hom)));
+    // el más alto y el más bajo, sólo entre los departamentos publicables
+    const P = DK.filter((k) => Vv.dep && Vv.dep[k] && Vv.dep[k].c === "p" && E.publica(Vv.dep[k])).sort((a, z) => Vv.dep[z].v - Vv.dep[a].v);
+    if (P.length >= 2) cs.push(card("Departamento más alto", E.fmtHTML(x, Vv.dep[P[0]].v), DEP[P[0]], `más bajo: <b>${DEP[P[P.length - 1]]} ${E.fmt(x, Vv.dep[P[P.length - 1]].v)}</b> · entre los publicables`));
+    const n = E.contar(Vv.dep, DK);
+    if (P.length === 1) cs.push(card("Departamento", E.fmtHTML(x, Vv.dep[P[0]].v), DEP[P[0]], `el único publicable${n.a ? ` · ${n.a} más con cautela` : ""}`));
+    else if (P.length === 0) cs.push(card("Departamentos", "—", R.publicable ? `ninguno con ${esc(R.publicable)}` : "ninguno publicable", n.a ? `los ${n.a} con cautela se ven abajo` : "la cifra vale para Bolivia"));
+    cs.push(card("Departamentos publicables", `${n.p} de ${DK.length}`, R.publicable ? `con ${esc(R.publicable)}` : "", `con cautela: <b>${n.a}</b> · no publicables: <b>${n.x}</b>`));
+    $("kpis").className = `kpis solo-dato k${cs.length}`;
+    $("kpis").innerHTML = cs.join("");
+  }
+
+  /* ── la misma pregunta en otra fuente ───────────────────────────────────────────────────────────────────── */
+  let PS = null;
+  // la cifra de Bolivia de cada indicador del censo viaja en cada perfil municipal (campo b): se lee la de uno
+  const cargarPS = () => (PS ? Promise.resolve(PS) : fetch("datos/perfil_social/010101.json").then((r) => (r.ok ? r.json() : null)).catch(() => null).then((d) => (PS = d)));
+  function otraFuente() {
+    const pares = E.paresDe(fuente, cod), pedido = cod;
+    if (!pares.length) { $("otra").hidden = true; return; }
+    const otras = E.ENCUESTAS.filter((k) => k !== fuente && pares.some((p) => p[k]));
+    Promise.all([cargarPS(), ...otras.map((k) => E.cargar(k))]).then(([ps, ...OJ]) => {
+      if (pedido !== cod) return;
+      const FI = {}; CAT.indicadores.forEach((f) => (FI[f.id] = f));
+      const li = [];
+      pares.forEach((p) => {
+        (p.censo || []).forEach((id) => {
+          const f = FI[id], d = ps && ps.ind && ps.ind[id];
+          if (!f || !d || d.b == null) return;
+          const ed = f.titular || f.edad, v = f.unidad === "%" ? Atlas.pc(d.b) : f.unidad === "por 1.000" ? `${nf(d.b, 1)} por mil` : nf(d.b);
+          li.push(`<li><span class="f"><i class="sw-censo"></i>Censo 2024</span><a href="indicador.html?i=${encodeURIComponent(id)}">${esc(f.nombre)}</a><span class="s">${ed[0]} a ${ed[1]} años</span><span class="v">${v}</span><span class="s">· llega a municipio</span></li>`);
+        });
+        otras.forEach((k, j) => (p[k] || []).forEach((c) => {
+          const OJk = OJ[j], y = OJk && OJk.indicadores.find((z) => z.cod === c), cc = OJk && OJk.valores[c] && OJk.valores[c].nac;
+          if (!y || !cc) return;
+          li.push(`<li><span class="f"><i class="sw-${k}"></i>${E.FUENTES[k].corto}</span><a href="encuesta.html?f=${k}&amp;i=${encodeURIComponent(c)}">${esc(y.nombre)}</a><span class="s">${esc(E.poblacion(y.poblacion))}</span><span class="v">${E.publica(cc) ? `${E.fmt(y, cc.v)} <span class="s">${E.pm(y, cc)}</span>` : E.motivo(cc)}</span></li>`);
+        }));
+      });
+      if (!li.length) { $("otra").hidden = true; return; }
+      const por = pares.map((p) => p.por).filter(Boolean).join(" ");
+      $("otra").innerHTML = `<h3>La misma pregunta, en otra fuente</h3><ul>${li.join("")}</ul><p>${por ? `${esc(por)} ` : ""}Las fuentes son de años distintos y no se calibran entre sí: cada cifra vale con su fuente y su año. <a href="metodologia.html#tres-fuentes">Por qué difieren</a>.</p>`;
+      $("otra").hidden = false;
+    });
+  }
+
+  /* ── 1. dónde: puntos con su intervalo, ordenados, y el mapa ────────────────────────────────────────────── */
+  function leyendas() {
+    const x = X(), b = V().nac, adv = R.advertencia ? ` (${esc(R.advertencia)})` : "";
+    // la referencia de Bolivia va en la leyenda, con su cifra: rotulada sobre la línea pisaría otras cifras
+    const bo = x.tipo === "total" || !E.publica(b) ? "" : `<span><i class="bo"></i>Bolivia: ${E.fmt(x, b.v)}</span>`;
+    $("ley-dep").innerHTML = `<span><i class="pt"></i>publicable</span><span><i class="pt hueco"></i>cautela${adv}</span><span><i class="ic"></i>intervalo de 95 %</span>`
+      + (bo ? `<span><i class="rombo"></i><i class="bo"></i>Bolivia</span>` : "") + `<span class="nada">sin punto: no se publica</span>`;
+    $("ley-edad").innerHTML = `<span><i class="barra"></i>estimación</span><span><i class="ic" style="background:var(--t6)"></i>intervalo de 95 %</span><span><i class="rayado"></i>cautela${adv}</span>${bo}`;
+    $("ley-brechas").innerHTML = `<span><i class="pt" style="background:var(--tinta)"></i>estimación</span><span><i class="ic" style="background:var(--tinta)"></i>intervalo de 95 %</span><span><i class="pt hueco" style="box-shadow:inset 0 0 0 2px var(--tinta)"></i>cautela</span>${bo}`;
+  }
+  function departamentos() {
+    const x = X(), Vv = V(), k = comun(), esTotal = x.tipo === "total";
+    const filas = DK.map((d) => ({ n: DEP[d], c: (Vv.dep || {})[d] }));
+    if (!esTotal && Vv.nac) filas.push({ n: "Bolivia", c: Vv.nac, bo: true });
+    const vis = filas.filter((f) => E.publica(f.c)).sort((a, z) => z.c.v - a.c.v), nov = filas.filter((f) => !E.publica(f.c));
+    const M = vis.concat(nov).map((f, j) => ({ ...f, j, ic: E.publica(f.c) ? E.ic(x, f.c) : null }));
+    $("g-dep").style.height = `${M.length * 40 + 44}px`; gDep.resize();
+    const ex = escala(x, vis.length ? M.filter((m) => E.publica(m.c)).flatMap((m) => (m.ic ? m.ic : [m.c.v])) : [0, 1], $("g-dep").clientWidth);
+    gDep.setOption({ ...base(), legend: { show: false }, grid: { left: 8, right: 74, top: 8, bottom: 24, containLabel: true },
+      tooltip: { ...base().tooltip, trigger: "item", formatter: (p) => tip(x, M[p.data.j].n, M[p.data.j].c) },
+      xAxis: { type: "value", min: ex.min, max: ex.max, interval: ex.interval, splitLine: { lineStyle: { color: css("--grilla") } }, axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: { color: k.suave, fontFamily: "Figtree", fontSize: 11, formatter: (v) => ejeFmt(x, v) } },
+      yAxis: { type: "category", data: M.map((m) => m.n), inverse: true, axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } },
+        axisLabel: { color: k.tinta, fontSize: 12.5, formatter: (n) => (n === "Bolivia" ? `{b|${n}}` : n), rich: { b: { fontWeight: 700, color: k.titulo, fontSize: 12.5 } } } },
+      series: [
+        { type: "custom", silent: true, z: 2, encode: { x: [0, 1], y: 2 },
+          data: M.map((m) => (E.publica(m.c) ? [m.ic ? m.ic[0] : m.c.v, m.ic ? m.ic[1] : m.c.v, m.j] : [ex.min, ex.min, m.j])),
+          renderItem: (params, api) => {
+            const m = M[params.dataIndex], y = api.coord([ex.min, m.j])[1];
+            if (!E.publica(m.c)) return { type: "text", x: api.coord([ex.min, m.j])[0] + 6, y, style: { text: E.motivo(m.c), fill: k.suave, font: "italic 12px Figtree", align: "left", verticalAlign: "middle" } };
+            const col = m.bo ? k.bo : k.c4, dash = m.c.c === "a" ? [4, 3] : null, hijos = [];
+            const xv = api.coord([m.c.v, m.j])[0];
+            let xd = xv;
+            if (m.ic) {
+              const x0 = api.coord([m.ic[0], m.j])[0], x1 = api.coord([m.ic[1], m.j])[0]; xd = x1;
+              hijos.push({ type: "line", shape: { x1: x0, y1: y, x2: x1, y2: y }, style: { stroke: col, lineWidth: 2, lineDash: dash } },
+                { type: "line", shape: { x1: x0, y1: y - 5, x2: x0, y2: y + 5 }, style: { stroke: col, lineWidth: 1.5 } },
+                { type: "line", shape: { x1: x1, y1: y - 5, x2: x1, y2: y + 5 }, style: { stroke: col, lineWidth: 1.5 } });
+            }
+            hijos.push({ type: "text", x: Math.max(xd, xv + 6) + 6, y, style: { text: E.fmt(x, m.c.v), fill: m.bo ? k.titulo : k.tinta, font: `${m.bo ? 700 : 600} 12px "Figtree"`, align: "left", verticalAlign: "middle", backgroundColor: k.sup, padding: [1, 2] } });
+            return { type: "group", children: hijos };
+          } },
+        { type: "scatter", z: 3, data: M.filter((m) => E.publica(m.c)).map((m) => ({ value: [m.c.v, m.j], j: m.j, symbol: m.bo ? "diamond" : "circle", symbolSize: m.bo ? 15 : 12,
+            itemStyle: m.bo ? { color: k.bo, borderColor: k.sup, borderWidth: 1 } : m.c.c === "a" ? { color: k.sup, borderColor: k.c6, borderWidth: 2 } : { color: k.c6, borderColor: k.sup, borderWidth: 1 } })),
+          emphasis: { scale: 1.25 } },
+        refBolivia(k, esTotal ? null : Vv.nac),
+      ] }, true);
+    const n = E.contar(Vv.dep, DK);
+    $("sub-dep").textContent = `${F.corto} · los ${DK.length} departamentos${esTotal ? "" : " y Bolivia"}, de mayor a menor, cada uno con su margen de error${n.x ? ` · ${n.x} sin cifra publicable` : ""}`;
+  }
+
+  let MAPA = null;
+  function prepararMapa() {
+    if (!TOPO || !window.d3 || !window.topojson) { $("mapa").hidden = true; return; }
+    const W = 600, H = 640, svg = d3.select("#mapa").append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("preserveAspectRatio", "xMidYMid meet");
+    const defs = svg.append("defs");
+    const trama = (id, fondo) => { const p = defs.append("pattern").attr("id", id).attr("patternUnits", "userSpaceOnUse").attr("width", 7).attr("height", 7).attr("patternTransform", "rotate(45)");
+      if (fondo) p.append("rect").attr("width", 7).attr("height", 7).attr("class", "fondo"); p.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 7).attr("class", "raya"); };
+    trama("enc-sin", true); trama("enc-cautela", false);
+    const geoms = TOPO.objects.data.geometries;
+    const fc = { type: "FeatureCollection", features: DK.map((d) => ({ type: "Feature", properties: { d }, geometry: topojson.merge(TOPO, geoms.filter((g) => String(g.properties.cod_ine).slice(0, 2) === d)) })) };
+    const path = d3.geoPath(d3.geoMercator().fitExtent([[10, 10], [W - 10, H - 10]], fc)), g = svg.append("g");
+    const base_ = g.selectAll("path.dp").data(fc.features).join("path").attr("class", "dp").attr("d", path);
+    const capa = g.selectAll("path.ca").data(fc.features).join("path").attr("class", "ca").attr("d", path).attr("pointer-events", "none");
+    const et = g.selectAll("text.et").data(fc.features).join("text").attr("class", "et").attr("x", (f) => path.centroid(f)[0]).attr("y", (f) => path.centroid(f)[1]);
+    base_.on("mousemove", (ev, f) => { const c = (V().dep || {})[f.properties.d], r = $("mapa").getBoundingClientRect(), fl = $("flot");
+        fl.style.display = "block"; fl.innerHTML = tip(X(), DEP[f.properties.d], c);
+        fl.style.left = Math.max(0, Math.min(ev.clientX - r.left + 14, r.width - 230)) + "px"; fl.style.top = (ev.clientY - r.top + 14) + "px"; })
+      .on("mouseleave", () => ($("flot").style.display = "none"))
+      .on("click", (ev, f) => { depA = f.properties.d; urlPag(); edad(); });   // el departamento tocado pasa a la edad
+    MAPA = { defs, base_, capa, et };
+  }
+  function mapa() {
+    if (!MAPA) return;
+    const x = X(), D = V().dep || {};
+    const ok = DK.filter((d) => E.publica(D[d])).map((d) => D[d].v), mn = Math.min(...ok), mx = Math.max(...ok);
+    const rampa = ["--t2", "--t3", "--t4", "--t5", "--t6"].map(css), cinco = ok.length > 1 && mx > mn;
+    const clase = (v) => (cinco ? Math.min(4, Math.floor((5 * (v - mn)) / (mx - mn))) : 2);
+    MAPA.defs.selectAll("#enc-sin .fondo").attr("fill", css("--sin-dato"));
+    MAPA.defs.selectAll("#enc-sin .raya").attr("stroke", css("--suave")).attr("stroke-width", 1).attr("opacity", .45);
+    MAPA.defs.selectAll("#enc-cautela .raya").attr("stroke", css("--superficie")).attr("stroke-width", 1.8).attr("opacity", .9);
+    MAPA.base_.attr("fill", (f) => (E.publica(D[f.properties.d]) ? rampa[clase(D[f.properties.d].v)] : "url(#enc-sin)"));
+    MAPA.capa.attr("fill", (f) => (D[f.properties.d] && D[f.properties.d].c === "a" && E.publica(D[f.properties.d]) ? "url(#enc-cautela)" : "none"));
+    // las cifras del mapa, siempre del mismo tamaño en pantalla aunque el dibujo se achique
+    const r = $("mapa").getBoundingClientRect(), s = Math.min(r.width / 600, r.height / 640) || 1;
+    MAPA.et.text((f) => (E.publica(D[f.properties.d]) ? E.fmt(x, D[f.properties.d].v, true) : "")).style("font-size", `${12.5 / s}px`).style("stroke-width", `${3.5 / s}px`);
+    const lims = cinco ? [0, 1, 2, 3, 4, 5].map((i) => mn + (i * (mx - mn)) / 5) : ok.length ? [mn, mx] : [];
+    const sinD = `repeating-linear-gradient(45deg,${css("--sin-dato")} 0 3px,${alfa(css("--suave"), .45)} 3px 4px)`;
+    const cau = `repeating-linear-gradient(45deg,${rampa[3]} 0 3px,${css("--superficie")} 3px 4.5px)`;
+    $("ley-mapa").innerHTML = `<div class="fila">${cinco ? rampa.map((c, i) => `<div class="c"><i style="background:${c}"></i><span>${E.fmt(x, lims[i], true)}</span></div>`).join("")
+        + `<div class="c" style="min-width:0"><i style="background:transparent;border-color:transparent;width:0"></i><span>${E.fmt(x, lims[5], true)}</span></div>`
+        : ok.length ? `<div class="c"><i style="background:${rampa[2]}"></i><span>${E.fmt(x, mn, true)}</span></div>` : ""}</div>`
+      + `<div class="fila"><div class="ex"><i style="background:${cau}"></i><span>cautela</span></div><div class="ex"><i style="background:${sinD}"></i><span>sin cifra publicable</span></div></div>`;
+    const tono = document.body.classList.contains("dark") ? "claro" : "oscuro";
+    $("nota-mapa").textContent = ok.length > 1 ? `Cinco tramos del mismo ancho, del departamento más bajo al más alto; más ${tono}, cifra más alta. El mapa no muestra el margen de error: el gráfico de puntos sí.`
+      : ok.length === 1 ? "Un solo departamento tiene una cifra publicable." : "Ningún departamento tiene una cifra publicable: la cifra vale sólo para Bolivia.";
+  }
+
+  /* ── 2. por edad ───────────────────────────────────────────────────────────────────────────────────────────
+     Como la edad por edad del censo (indicador.html): Bolivia a la izquierda y, a la derecha, un departamento y, si se
+     quiere, otro detrás, más transparente; cada barra con su línea de nivel arriba y su intervalo de 95 %. Por tramo y
+     no por edad simple: año por año la muestra se achica y la cifra se vuelve ruido. Los dos paneles comparten la
+     escala (salvo en los totales de personas); la lectura de arriba sirve a los dos y, al pasar por un tramo, dice si
+     los intervalos de los dos departamentos se tocan. El cruce departamento × tramo viene de <fuente>_dep_tramo.json. */
+  const MAXW_T = 96;   // ninguna barra más ancha que 96 px: con dos a cinco tramos, cada barra lleva su propio techo
+  const POB = {}; MUN.municipios.forEach((m) => (POB[m.d] = (POB[m.d] || 0) + m.t));
+  const MAYORES = DK.slice().sort((a, z) => POB[z] - POB[a]);   // sin elegir: los dos departamentos más poblados
+  let depA = qs.get("d"), depB = qs.get("c"), IDXE = [[], []], hoverE = null, TRAMOS = [];
+  function deptos() {
+    const a = DEP[depA] ? depA : MAYORES[0];
+    const b = depB === "-" ? null : DEP[depB] ? depB : a === MAYORES[0] ? MAYORES[1] : MAYORES[0];
+    return [a, b === a ? null : b];
+  }
+  const celdasDe = (d) => TRAMOS.map(([t]) => ((((DTJ && DTJ.valores[cod]) || {})[d]) || {})[t]);
+  /* las barras de un territorio en dos series, como en el censo: las barras abajo y, encima de todas, su línea de
+     nivel y su intervalo (con dos departamentos, el de adelante a la izquierda del centro y el de atrás a la derecha);
+     en el panel de Bolivia, también su cifra (en el de los departamentos las cifras van en rotulosTramo) */
+  function barrasTramo(nombre, cel, o) {
+    const x = X(), datos = cel.map((c, j) => [j, E.publica(c) ? c.v : null]);
+    const geo = (api, j, v) => { const w = Math.min(api.size([1, 0])[0] * 0.62, MAXW_T), [cx, cy] = api.coord([j, v]); return { w, cx, cy, y0: api.coord([j, 0])[1] }; };
+    const fondo = { type: "custom", name: nombre, z: o.z, silent: true, data: datos, encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const j = p.dataIndex, c = cel[j];
+        if (!E.publica(c)) return null;
+        const { w, cx, cy, y0 } = geo(api, j, c.v);
+        return { type: "rect", shape: { x: cx - w / 2, y: Math.min(cy, y0), width: w, height: Math.max(Math.abs(y0 - cy), 0.5) },
+          style: { fill: c.c === "a" ? { image: rayas(o.fondo, o.raya), repeat: "repeat" } : o.fondo }, emphasis: { style: { fill: o.foco } } };
+      } };
+    const linea = { type: "custom", name: nombre, z: o.z + 2, silent: true, clip: false, data: datos, encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const j = p.dataIndex, c = cel[j];
+        if (!E.publica(c)) return null;
+        const { w, cx, cy } = geo(api, j, c.v), ic = E.ic(x, c), xb = cx + (o.dx || 0), hijos = [];
+        hijos.push({ type: "line", shape: { x1: cx - w / 2, y1: cy, x2: cx + w / 2, y2: cy }, style: { stroke: o.borde, lineWidth: 2 } });
+        let arriba = cy;
+        if (ic) {
+          const y1 = api.coord([j, ic[0]])[1], y2 = api.coord([j, ic[1]])[1];
+          arriba = Math.min(y2, cy);
+          hijos.push({ type: "line", shape: { x1: xb, y1, x2: xb, y2 }, style: { stroke: o.bigote, lineWidth: 1.6, lineDash: c.c === "a" ? [4, 3] : null } },
+            { type: "line", shape: { x1: xb - 6, y1, x2: xb + 6, y2: y1 }, style: { stroke: o.bigote, lineWidth: 1.4 } },
+            { type: "line", shape: { x1: xb - 6, y1: y2, x2: xb + 6, y2 }, style: { stroke: o.bigote, lineWidth: 1.4 } });
+        }
+        if (o.rotulo) hijos.push({ type: "text", x: o.rotulo === "izq" ? xb + 3 : o.rotulo === "der" ? xb - 3 : xb, y: arriba - 6,
+          style: { text: E.fmt(x, c.v), fill: o.cifra, font: '600 12px "Figtree"', align: o.rotulo === "izq" ? "right" : o.rotulo === "der" ? "left" : "center", verticalAlign: "bottom" } });
+        return { type: "group", children: hijos };
+      } };
+    return { fondo, linea };
+  }
+  // las cifras de los dos departamentos, juntas arriba del intervalo más alto: la del de adelante a la izquierda y la
+  // del de atrás a la derecha, cada una del color de su línea (sobre su propio intervalo, se pisaban con el del otro)
+  function rotulosTramo(lista) {
+    const x = X();
+    return { type: "custom", silent: true, z: 8, clip: false, data: TRAMOS.map((_, j) => [j, 0]), encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const j = p.dataIndex, tops = lista.map((t) => { const c = t.cel[j]; if (!E.publica(c)) return null; const ic = E.ic(x, c);
+          return api.coord([j, Math.max(c.v, ic ? ic[1] : c.v)])[1]; });
+        const hay = tops.filter((t) => t != null);
+        if (!hay.length) return null;
+        const y = Math.min(...hay) - 6, cx = api.coord([j, 0])[0], dos = hay.length === 2;
+        return { type: "group", children: lista.map((t, i) => (tops[i] == null ? null : { type: "text", x: dos ? cx + (i ? 4 : -4) : cx, y,
+          style: { text: E.fmt(x, t.cel[j].v), fill: t.color, font: '600 12px "Figtree"', align: dos ? (i ? "left" : "right") : "center", verticalAlign: "bottom" } })).filter(Boolean) };
+      } };
+  }
+  // al pie de un tramo sin ninguna barra, por qué (en cursiva, partido en dos renglones); si falta sólo uno de los dos
+  // departamentos, lo dice la lectura de arriba (escrito al pie, pisaría la barra del otro)
+  function avisosTramo(lista) {
+    const k = comun();
+    return { type: "custom", silent: true, z: 7, clip: false, data: TRAMOS.map((_, j) => [j, 0]), encode: { x: 0, y: 1 },
+      renderItem: (p, api) => {
+        const j = p.dataIndex;
+        if (lista.some((t) => E.publica(t.cel[j]))) return null;
+        const mot = [...new Set(lista.map((t) => E.motivo(t.cel[j])))], pt = api.coord([j, 0]);
+        return { type: "text", x: pt[0], y: pt[1] - 8, style: { text: partir(mot.length === 1 ? mot[0] : "sin cifra publicable"), fill: k.suave,
+          font: "italic 11.5px Figtree", align: "center", verticalAlign: "bottom", lineHeight: 15 } };
+      } };
+  }
+  // la línea de Bolivia, tenue y sin texto (su cifra está en la lectura y en la leyenda), en una serie sin barras
+  const lineaBolivia = (b, esTotal) => ({ type: "custom", silent: true, z: 6, data: [[0, 0]], encode: { x: 0, y: 1 }, renderItem: () => null,
+    markLine: !esTotal && E.publica(b) ? { silent: true, symbol: "none", label: { show: false }, emphasis: { disabled: true },
+      lineStyle: { color: css("--bolivia"), type: [3, 3], width: 1, opacity: 0.6 }, data: [{ yAxis: b.v }] } : undefined });
+  function topeDe(vals) {
+    const x = X(), pmax = Math.max(...vals) * 1.14 || 1, st = paso(pmax, 4);
+    let tope = Math.ceil(pmax / st) * st;
+    if (x.tipo === "prop") tope = Math.min(100, tope);
+    return { tope, st };
+  }
+  const arribaDe = (c) => { const ic = E.publica(c) ? E.ic(X(), c) : null; return ic ? ic[1] : E.publica(c) ? c.v : null; };
+  function edad() {
+    const x = X(), k = comun(), b = V().nac, esTotal = x.tipo === "total";
+    TRAMOS = Object.entries(V().tramo || {});
+    const hay = TRAMOS.some(([, c]) => E.publica(c));
+    $("bloque-edad").hidden = !hay;
+    if (!hay) return;
+    gEdad.resize(); gEdad2.resize();
+    const [a, d2] = deptos(), cb = TRAMOS.map(([, c]) => c), ca = celdasDe(a), cd = d2 ? celdasDe(d2) : null;
+    const cats = TRAMOS.map(([t]) => (LEY[t] ? `${LEY[t]}\n${E.tramo(t)}` : E.tramo(t)));
+    // la misma escala en los dos paneles (en los totales de personas, cada uno la suya: Bolivia y un departamento no se comparan en cantidad)
+    const izq = cb.map(arribaDe).concat(!esTotal && E.publica(b) ? [b.v] : []).filter((v) => v != null);
+    const der = [...ca, ...(cd || [])].map(arribaDe).concat(!esTotal && E.publica(b) ? [b.v] : []).filter((v) => v != null);
+    const eI = topeDe(esTotal ? izq : izq.concat(der)), eD = esTotal ? topeDe(der.length ? der : [1]) : eI;
+    const opcion = (e, series) => ({ ...base(), legend: { show: false }, tooltip: { show: false }, animationDurationUpdate: 300,
+      grid: { left: 8, right: 14, top: 26, bottom: 6, containLabel: true },
+      xAxis: { type: "category", data: cats, axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: k.tinta, fontSize: 12, lineHeight: 16, interval: 0 } },
+      yAxis: { type: "value", min: 0, max: e.tope, interval: e.st, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: css("--grilla") } },
+        axisLabel: { color: k.suave, fontFamily: "Figtree", fontSize: 11, formatter: (v) => ejeFmt(x, v) } },
+      series });
+    const tierra = { fondo: k.c2, raya: k.c5, borde: k.c6, bigote: k.c6, foco: k.c4, cifra: k.tinta };
+    const bol = barrasTramo("Bolivia", cb, { ...tierra, z: 2, rotulo: "centro" });
+    gEdad.setOption(opcion(eI, [bol.fondo, bol.linea, avisosTramo([{ nombre: "Bolivia", cel: cb }]), lineaBolivia(b, esTotal)]), true);
+    const ta = barrasTramo(DEP[a], ca, { ...tierra, z: 2, dx: cd ? -9 : 0 });
+    const tb = cd ? barrasTramo(DEP[d2], cd, { fondo: alfa(css("--o3"), 0.42), raya: css("--o6"), borde: css("--o6"), bigote: css("--o6"), foco: alfa(css("--o4"), 0.8), z: 1, dx: 9 }) : null;
+    const lista = [{ nombre: DEP[a], cel: ca, color: k.tinta }, ...(cd ? [{ nombre: DEP[d2], cel: cd, color: css("--o6") }] : [])];
+    gEdad2.setOption(opcion(eD, tb ? [tb.fondo, ta.fondo, tb.linea, ta.linea, rotulosTramo(lista), avisosTramo(lista), lineaBolivia(b, esTotal)]
+      : [ta.fondo, ta.linea, rotulosTramo(lista), avisosTramo(lista), lineaBolivia(b, esTotal)]), true);
+    IDXE = [[0], tb ? [0, 1] : [0]];
+    hoverE = null;
+    // los dos cuadros: los nueve departamentos (el segundo, con «ninguno»)
+    $("dep-a").innerHTML = DK.map((d) => `<option value="${d}">${esc(DEP[d])}</option>`).join("");
+    $("dep-b").innerHTML = `<option value="-">Comparar con…</option>` + DK.map((d) => `<option value="${d}">${esc(DEP[d])}</option>`).join("");
+    $("dep-a").value = a; $("dep-b").value = d2 || "-";
+    const nx = [cb, ca, cd || []].flat().filter((c) => c && !E.publica(c)).length, ret = x.retenido && !DK.some((d) => E.publica((V().dep || {})[d]));
+    $("sub-edad").textContent = `${F.corto} · por tramo de edad${TRAMOS.some(([t]) => LEY[t]) ? ", con los de la Ley 548" : ""}, cada uno con su margen de error`;
+    $("nota-edad").textContent = "Por tramo y no por edad simple: año por año, la muestra se achica y la cifra se vuelve ruido. A la derecha, el departamento que elijas y, detrás y más transparente, otro para comparar"
+      + (esTotal ? "; cada panel tiene su escala, porque son totales de personas." : "; los dos paneles usan la misma escala y la línea punteada tenue es Bolivia.")
+      + (nx ? " Donde no hay barra, la muestra no alcanza para una cifra publicable." : "")
+      + (ret ? ` Por departamento no se publica: ${x.retenido}` : "");
+    lecturaEdad();
+  }
+  // las cifras arriba de los paneles: sin puntero, las de toda la población del indicador; con el puntero, las del tramo
+  function lecturaEdad() {
+    const x = X(), [a, d2] = deptos(), j = hoverE == null ? -1 : hoverE, Vv = V();
+    const sw = (d) => `<i class="ed-sw${d === d2 ? " b" : ""}"></i>`;
+    const cifra = (c) => (E.publica(c) ? `<b>${E.fmt(x, c.v)}</b>${c.c === "a" ? ' <span class="cautela">cautela</span>' : ""}` : `<span class="s">${E.motivo(c)}</span>`);
+    const conIC = (c) => cifra(c) + (E.publica(c) && E.ic(x, c) ? ` <span class="s">(${entre(x, c)})</span>` : "");
+    const partes = [];
+    if (j < 0) {
+      partes.push(`<span class="s">${esc(E.poblacion(x.poblacion))}:</span> Bolivia ${cifra(Vv.nac)}`);
+      [a, d2].filter(Boolean).forEach((d) => partes.push(`${sw(d)}${esc(DEP[d])} ${cifra((Vv.dep || {})[d])}`));
+      $("lectura-edad").innerHTML = partes.join(' <span class="s">·</span> ');
+      return;
+    }
+    const [t, cb] = TRAMOS[j], ca = celdasDe(a)[j], cd = d2 ? celdasDe(d2)[j] : null;
+    partes.push(`<span class="s">${esc(LEY[t] ? `${LEY[t]}, ${E.tramo(t)}` : E.tramo(t))}:</span> Bolivia ${conIC(cb)}`);
+    partes.push(`${sw(a)}${esc(DEP[a])} ${conIC(ca)}`);
+    if (d2) partes.push(`${sw(d2)}${esc(DEP[d2])} ${conIC(cd)}`);
+    $("lectura-edad").innerHTML = partes.join(' <span class="s">·</span> ') + (d2 ? ` <span class="s">—</span> ${comparar(x, ca, cd)}` : "");
+  }
+  // pasar por un tramo en cualquiera de los dos paneles lo resalta en los dos y escribe sus cifras arriba
+  function marcarTramo(j) {
+    if (j === hoverE) return;
+    hoverE = j;
+    [[gEdad, IDXE[0]], [gEdad2, IDXE[1]]].forEach(([c, s]) => {
+      c.dispatchAction({ type: "downplay", seriesIndex: s });
+      if (j != null) c.dispatchAction({ type: "highlight", seriesIndex: s, dataIndex: j });
+    });
+    lecturaEdad();
+  }
+  [gEdad, gEdad2].forEach((c) => {
+    const mover = (ev) => {
+      if (!TRAMOS.length) return;
+      const p = [ev.offsetX, ev.offsetY], j = c.containPixel({ gridIndex: 0 }, p) ? Math.round(c.convertFromPixel({ gridIndex: 0 }, p)[0]) : null;
+      marcarTramo(j != null && j >= 0 && j < TRAMOS.length ? j : null);
+    };
+    c.getZr().on("mousemove", mover); c.getZr().on("click", mover); c.getZr().on("globalout", () => marcarTramo(null));
+  });
+  const urlPag = () => history.replaceState(null, "", `?f=${fuente}&i=${encodeURIComponent(cod)}${depA ? `&d=${depA}` : ""}${depB ? `&c=${depB}` : ""}`);
+  $("dep-a").onchange = () => { depA = $("dep-a").value; urlPag(); edad(); };
+  $("dep-b").onchange = () => { depB = $("dep-b").value; urlPag(); edad(); };
+
+  /* ── 3. brechas: área y sexo con su intervalo ───────────────────────────────────────────────────────────── */
+  function brechas() {
+    const x = X(), Vv = V(), k = comun(), esTotal = x.tipo === "total", A_ = Vv.area || {}, S = Vv.sexo || {};
+    const pares = [];
+    if (A_.urb && A_.rur) pares.push(["Área", [["Urbana", A_.urb, css("--urbana")], ["Rural", A_.rur, css("--rural")]]]);
+    if (S.muj && S.hom) pares.push(["Sexo", [["Mujeres", S.muj, css("--mujeres")], ["Hombres", S.hom, css("--hombres")]]]);
+    $("bloque-brechas").hidden = !pares.length;
+    if (!pares.length) return;
+    gBre.resize();
+    const M = pares.flatMap(([, f]) => f).map(([n, c, col], j) => ({ n, c, col, j, ic: E.publica(c) ? E.ic(x, c) : null }));
+    const pub = M.filter((m) => E.publica(m.c));
+    $("g-brechas").style.height = `${M.length * 40 + 44}px`; gBre.resize();
+    const ex = escala(x, (pub.length ? pub.flatMap((m) => (m.ic ? m.ic : [m.c.v])) : [0, 1]).concat(!esTotal && E.publica(Vv.nac) ? [Vv.nac.v] : []), $("g-brechas").clientWidth);
+    gBre.setOption({ ...base(), legend: { show: false }, grid: { left: 8, right: 74, top: 8, bottom: 24, containLabel: true },
+      tooltip: { ...base().tooltip, trigger: "item", formatter: (p) => tip(x, M[p.data.j].n, M[p.data.j].c) },
+      xAxis: { type: "value", min: ex.min, max: ex.max, interval: ex.interval, splitLine: { lineStyle: { color: css("--grilla") } }, axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: { color: k.suave, fontFamily: "Figtree", fontSize: 11, formatter: (v) => ejeFmt(x, v) } },
+      yAxis: { type: "category", data: M.map((m) => m.n), inverse: true, axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: k.tinta, fontSize: 12.5 } },
+      series: [
+        { type: "custom", silent: true, z: 2, encode: { x: [0, 1], y: 2 },
+          data: M.map((m) => (E.publica(m.c) ? [m.ic ? m.ic[0] : m.c.v, m.ic ? m.ic[1] : m.c.v, m.j] : [ex.min, ex.min, m.j])),
+          renderItem: (params, api) => {
+            const m = M[params.dataIndex], y = api.coord([ex.min, m.j])[1];
+            if (!E.publica(m.c)) return { type: "text", x: api.coord([ex.min, m.j])[0] + 6, y, style: { text: E.motivo(m.c), fill: k.suave, font: "italic 12px Figtree", align: "left", verticalAlign: "middle" } };
+            const xv = api.coord([m.c.v, m.j])[0], hijos = []; let xd = xv;
+            if (m.ic) {
+              const x0 = api.coord([m.ic[0], m.j])[0], x1 = api.coord([m.ic[1], m.j])[0]; xd = x1;
+              hijos.push({ type: "line", shape: { x1: x0, y1: y, x2: x1, y2: y }, style: { stroke: m.col, lineWidth: 2.2, lineDash: m.c.c === "a" ? [4, 3] : null } },
+                { type: "line", shape: { x1: x0, y1: y - 5, x2: x0, y2: y + 5 }, style: { stroke: m.col, lineWidth: 1.6 } },
+                { type: "line", shape: { x1: x1, y1: y - 5, x2: x1, y2: y + 5 }, style: { stroke: m.col, lineWidth: 1.6 } });
+            }
+            hijos.push({ type: "text", x: Math.max(xd, xv + 6) + 6, y, style: { text: E.fmt(x, m.c.v), fill: k.tinta, font: '600 12px "Figtree"', align: "left", verticalAlign: "middle", backgroundColor: k.sup, padding: [1, 2] } });
+            return { type: "group", children: hijos };
+          } },
+        { type: "scatter", z: 3, symbolSize: 13, emphasis: { scale: 1.25 },
+          data: pub.map((m) => ({ value: [m.c.v, m.j], j: m.j, itemStyle: m.c.c === "a" ? { color: k.sup, borderColor: m.col, borderWidth: 2.4 } : { color: m.col, borderColor: k.sup, borderWidth: 1 } })) },
+        refBolivia(k, esTotal ? null : Vv.nac),
+      ] }, true);
+    $("lect-brechas").innerHTML = pares.map(([g, [[n1, c1], [n2, c2]]]) => {
+      const d = (n, c) => `${n.toLowerCase()} ${E.publica(c) ? `<b>${E.fmt(x, c.v)}</b>${E.ic(x, c) ? ` (${entre(x, c)})` : ""}${c.c === "a" ? ' <span class="cautela">cautela</span>' : ""}` : `<i>${E.motivo(c)}</i>`}`;
+      return `<p><b>${g}:</b> ${d(n2 === "Rural" ? n2 : n1, n2 === "Rural" ? c2 : c1)} y ${d(n2 === "Rural" ? n1 : n2, n2 === "Rural" ? c1 : c2)}; ${comparar(x, c1, c2)}.</p>`;
+    }).join("");
+  }
+
+  /* ── 4 y 5. ficha y datos ───────────────────────────────────────────────────────────────────────────────── */
+  function ficha() {
+    const x = X();
+    const it = [["Indicador", esc(x.nombre)], ["Población", esc(E.poblacion(x.poblacion))],
+      x.definicion && x.definicion !== x.receta ? ["Definición", esc(x.definicion)] : null,
+      x.nombre_tecnico ? ["Nombre técnico", esc(x.nombre_tecnico)] : null,
+      x.receta ? ["Cómo se calculó", `<code>${esc(x.receta)}</code> <span style="color:var(--suave)">(variables del cuestionario del INE)</span>`] : null,
+      ["Tipo de cifra", E.TIPO[x.tipo] || esc(x.tipo)], x.nota ? ["Nota", esc(x.nota)] : null,
+      x.oficial != null ? ["Cifra oficial", `El INE publica <b>${E.fmt(x, x.oficial)}</b> para Bolivia; esta cadena da ${E.publica(V().nac) ? `<b>${E.fmt(x, V().nac.v)}</b>` : `una cifra no publicable (${E.motivo(V().nac)})`}.`] : null,
+      ["Fuente", esc(J.fuente)],
+      ["Margen de error", "Por ser una muestra, cada cifra tiene un error estándar. El intervalo de 95 % es el valor más y menos 1,96 errores estándar: con 95 % de confianza, el valor real está adentro. El coeficiente de variación (CV) es el error estándar dividido por el valor; cuanto más alto, menos firme la cifra."],
+      ["Reglas de publicación", `<ul><li><b>Publicable</b> (${esc(R.publicable || "")}): punto o barra llenos.</li><li><b>Cautela</b> (${esc(R.advertencia || "")}): punto hueco, barra rayada y línea punteada.</li><li><b>No se publica</b> (${esc(R.no_publicar || "")}): no se dibuja; dice «${E.CALIF.x}» y en la tabla va sin valor.</li><li><b>Sin margen medible:</b> una cifra de 0 % o de 100 % con error estándar cero —ningún caso, o todos, en la muestra— tampoco se dibuja, porque su margen de error no se puede medir; la tabla la muestra con esa aclaración.</li></ul>`],
+      ["Comparabilidad", `La ${F.largo} vale para ${F.anio}. No se calibra con el Censo 2024 ni con la otra encuesta: cuando dos fuentes miden lo mismo, el atlas muestra las dos con su año. <a href="metodologia.html#tres-fuentes">Tres fuentes frente a frente</a>.`]].filter(Boolean);
+    $("ficha").innerHTML = it.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("");
+  }
+  function celdas() {
+    const Vv = V(), out = [];
+    if (Vv.nac) out.push(["Bolivia", "Bolivia", Vv.nac]);
+    [["urb", "Urbana"], ["rur", "Rural"]].forEach(([k, n]) => Vv.area && Vv.area[k] && out.push(["Área", n, Vv.area[k]]));
+    [["muj", "Mujeres"], ["hom", "Hombres"]].forEach(([k, n]) => Vv.sexo && Vv.sexo[k] && out.push(["Sexo", n, Vv.sexo[k]]));
+    DK.forEach((d) => Vv.dep && Vv.dep[d] && out.push(["Departamento", DEP[d], Vv.dep[d]]));
+    Object.entries(Vv.tramo || {}).forEach(([t, c]) => out.push(["Tramo de edad", LEY[t] ? `${LEY[t]} (${E.tramo(t)})` : E.tramo(t), c]));
+    Object.entries(Vv.edad || {}).forEach(([t, c]) => out.push(["Edad simple", E.tramo(t), c]));
+    return out;
+  }
+  function tabla() {
+    const x = X(), u = E.unidad(x);
+    let g0 = null;
+    const filas = celdas().map(([g, n, c]) => {
+      const cab = g !== g0 && g !== "Bolivia" ? `<tr><th class="grupo" colspan="6">${g}</th></tr>` : ""; g0 = g;
+      // la tabla muestra el valor de toda celda que la cadena no suprime; la calificación dice si se dibuja y por qué no
+      const ok = c.c !== "x" && c.v != null, nom = g === "Bolivia" ? `<b>${esc(n)}</b>` : esc(n);
+      return `${cab}<tr><td>${nom}</td><td class="num">${ok ? E.fmt(x, c.v, true) : "—"}</td><td class="num">${ok && c.ee != null ? nf(c.ee, u.dec + 1) : "—"}</td><td class="num">${ok ? E.cv(c) : "—"}</td><td class="num">${nf(c.n)}</td><td class="${E.publica(c) ? "" : "x"}">${E.motivo(c)}</td></tr>`;
+    });
+    $("tabla").innerHTML = `<tr><th>Grupo</th><th>${x.tipo === "prop" ? "%" : "Valor"}</th><th><span class="lg">Error est.</span><span class="ct">EE</span></th><th>CV</th><th>Casos</th><th><span class="lg">Calificación</span><span class="ct">Calif.</span></th></tr>${filas.join("")}`;
+  }
+  $("csv").onclick = () => {
+    const x = X(), cab = ["fuente", "indicador", "nombre", "grupo", "categoria", "valor", "error_estandar", "coef_variacion", "ic95_inf", "ic95_sup", "casos", "calificacion"];
+    const filas = celdas().map(([g, n, c]) => { const ok = c.c !== "x" && c.v != null, ic = E.publica(c) ? E.ic(x, c) : null;
+      return [F.corto, x.cod, x.nombre, g, n, ok ? c.v : "", ok && c.ee != null ? c.ee : "", ok && c.cv != null ? c.cv : "", ic ? +ic[0].toFixed(3) : "", ic ? +ic[1].toFixed(3) : "", c.n,
+        E.publica(c) ? E.motivo(c) : `no se dibuja (${E.motivo(c)})`]; });
+    const q = (s) => (/[;"\n]/.test(String(s)) ? `"${String(s).replace(/"/g, '""')}"` : s);
+    const b = new Blob(["﻿" + [cab, ...filas].map((r) => r.map(q).join(";")).join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `ninez-${fuente}-${x.cod}.csv`; a.click();
+  };
+
+  function numerar() {
+    let n = 2;
+    if (!$("bloque-edad").hidden) $("n-edad").textContent = n++;
+    if (!$("bloque-brechas").hidden) $("n-brechas").textContent = n++;
+    $("n-ficha").textContent = n++; $("n-datos").textContent = n;
+  }
+  function pintarTodo() {
+    $("ind").value = cod;
+    encabezado(); kpis(); otraFuente(); leyendas(); departamentos(); mapa(); edad(); brechas(); numerar(); ficha(); tabla();
+    $("pie").innerHTML = `Fuente: ${esc(J.fuente)} Reglas de publicación: publicable si ${esc(R.publicable || "")}; con cautela si ${esc(R.advertencia || "")}; no se publica si ${esc(R.no_publicar || "")}. <a href="metodologia.html#indicadores">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.`;
+  }
+  $("ind").onchange = () => { cod = $("ind").value; urlPag(); pintarTodo(); };
+  $("tema").onclick = () => { Atlas.aplicarTema(!document.body.classList.contains("dark"), true); pintarTodo(); };
+  addEventListener("resize", () => { [gDep, gEdad, gEdad2, gBre].forEach((c) => c.resize()); mapa(); });
+  urlPag();
+  Atlas.listo(() => { prepararMapa(); pintarTodo(); });
+}).catch((e) => { $("nombre").textContent = "No se pudo cargar el indicador"; console.error(e); });
+
+function sinFuente() {
+  $("nombre").textContent = `${F.largo}: en cálculo`;
+  $("lede").innerHTML = `Los indicadores de la ${F.largo} todavía no están en el atlas. Mientras tanto, podés ver los de la <a href="encuesta.html?f=eh2025">Encuesta de Hogares 2025</a> o volver al <a href="indicadores.html">catálogo de indicadores</a>.`;
+  document.querySelectorAll(".solo-dato").forEach((e) => (e.hidden = true));
+}
+})();
+</script>
+</body>
+</html>

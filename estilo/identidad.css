@@ -1,0 +1,286 @@
+/* Atlas de la Niñez y la Adolescencia — identidad visual.
+   Paleta propia (tierra y salvia) definida por Carlos el 11-oct-2026:
+   #582f0e nogal · #7f4f24 cuero · #936639 toffee · #a68a64 camello · #b6ad90 caqui
+   #c2c5aa salvia seca · #a4ac86 salvia · #656d4a oliva · #414833 ébano · #333d29 carbón.
+   Regla de datos: TIERRA = cómo viven las niñas y los niños (más oscuro = más privación);
+   OLIVA = recursos públicos (más oscuro = más bolivianos por niño). Validado con validate_palette.js (docs/06_identidad.md).
+   En oscuro las rampas invierten la luminosidad: más dato = más claro.
+   Tipografía propia (identidad 2, 13-oct-2026): Fraunces (títulos, con el eje SOFT para un trazo cálido) y Figtree
+   (texto, ejes y cifras; tabulares sólo en columnas). Sin bordes redondeados. Firma: la franja de cuatro tramos
+   (tres edades de la ley en tierra + el gasto en oliva) arriba de la barra. */
+
+:root {
+  --f: "Figtree", system-ui, sans-serif;
+  --fd: "Fraunces", Georgia, serif;
+  --fm: "Figtree", system-ui, sans-serif;   /* cifras: la misma familia, tabulares donde se alinean */
+
+  /* superficie y texto */
+  --papel: #f5f2ea;
+  --superficie: #fbfaf6;
+  --superficie-2: #efeadd;
+  --linea: #ddd6c6;
+  --grilla: #e8e2d4;
+  --tinta: #333d29;          /* carbón: texto */
+  --titulo: #582f0e;         /* nogal: títulos */
+  --suave: #656d4a;          /* oliva: texto secundario (4,9:1) */
+  --acento: #7f4f24;         /* cuero: enlaces y estado activo (6,2:1) */
+  --cabecera: #582f0e;
+  --cabecera-linea: #3e2009;
+  --cabecera-tx: #f5f2ea;
+  --cabecera-acento: #c2c5aa;
+
+  /* datos */
+  --t1: #f1e8d6; --t2: #dcc8a8; --t3: #c2a77f; --t4: #a68a64; --t5: #936639; --t6: #774920; --t7: #512a0b;
+  --o1: #ecede0; --o2: #cfd2b9; --o3: #afb593; --o4: #8c946f; --o5: #6e7653; --o6: #51593e; --o7: #2f3926;
+  --foco: #582f0e;           /* el municipio elegido */
+  --dpto: #c2a77f;           /* su departamento */
+  --bolivia: #6e7653;        /* Bolivia (punteado) */
+  --contexto: #c2c5aa;       /* los demás */
+  --alcaldia: #936639; --gobernacion: #b6ad90; --central: #333d29;
+  --mujeres: #7f4f24; --hombres: #a4ac86;
+  --urbana: #414833; --rural: #a68a64;
+  --tramo-1: #b6ad90; --tramo-2: #936639; --tramo-3: #582f0e;
+  --otros: #ece6da;          /* «otros» en los apilados */
+  --sin-dato: #e4dfd3;
+  --estimacion: #936639;
+}
+body.dark {
+  --papel: #171a12;
+  --superficie: #1f2318;
+  --superficie-2: #292e21;
+  --linea: #3a4030;
+  --grilla: #2c3124;
+  --tinta: #e8e4d6;
+  --titulo: #e3cfae;
+  --suave: #b6ad90;
+  --acento: #d9b98f;
+  --cabecera: #2a1708;
+  --cabecera-linea: #432410;
+  --cabecera-tx: #f1ece0;
+  --cabecera-acento: #c2c5aa;
+  --t1: #68503b; --t2: #7e634a; --t3: #957758; --t4: #ad8b67; --t5: #c5a076; --t6: #dab78c; --t7: #f3d2a4;
+  --o1: #525943; --o2: #666d54; --o3: #7a8165; --o4: #8f9677; --o5: #a5ac8a; --o6: #bcc29d; --o7: #d7dcb3;
+  --foco: #f3d2ae;
+  --dpto: #95663a;
+  --bolivia: #9aa381;
+  --contexto: #4b5340;
+  --alcaldia: #c59366; --gobernacion: #5e553c; --central: #dee1c7;
+  --mujeres: #f2c79e; --hombres: #6e7655;
+  --urbana: #d3d6bd; --rural: #b38653;
+  --tramo-1: #6f6a55; --tramo-2: #b38653; --tramo-3: #e9cfa6;
+  --otros: #3c4133;
+  --sin-dato: #30342a;
+  --estimacion: #cfa877;
+}
+
+*, *::before, *::after { box-sizing: border-box; border-radius: 0 }
+html, body { margin: 0; background: var(--papel); color: var(--tinta); font-family: var(--f); font-size: 14.5px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility }
+h1, h2, h3, .t-h { font-optical-sizing: auto; font-variation-settings: "SOFT" 50 }
+a { color: var(--acento); text-underline-offset: 2px }
+.num, .cifra { font-family: var(--f); font-variant-numeric: tabular-nums }
+.kv { font-family: var(--f); font-variant-numeric: proportional-nums; letter-spacing: -.012em }
+
+/* cabecera (identidad 2): clara y translúcida, con la franja de los cuatro tramos arriba; el año y el tema como
+   controles de un hilo; la sección activa subrayada en nogal */
+#top { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 18px; padding: 0 24px; height: 60px;
+  background: color-mix(in srgb, var(--papel) 90%, transparent); -webkit-backdrop-filter: saturate(1.3) blur(12px); backdrop-filter: saturate(1.3) blur(12px);
+  border-bottom: 1px solid var(--linea); color: var(--tinta) }
+#top::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+  background: linear-gradient(90deg, var(--tramo-1) 0 25%, var(--tramo-2) 25% 50%, var(--tramo-3) 50% 75%, var(--o5) 75% 100%) }
+#top .marca { display: flex; align-items: center; gap: 11px; color: inherit; text-decoration: none; min-width: 0 }
+#top .marca svg { width: 28px; height: 28px; flex: 0 0 28px }
+#top .t-h { font-family: var(--fd); font-weight: 600; font-size: 16px; line-height: 1.15; color: var(--titulo); letter-spacing: -.005em; white-space: nowrap }
+#top .t-n { font-size: 11px; color: var(--suave); margin-top: 2px; letter-spacing: .02em; white-space: nowrap }
+#top .sp { flex: 1 }
+#top nav { display: flex; gap: 4px; align-self: stretch }
+#top nav a { position: relative; display: flex; align-items: center; color: var(--tinta); text-decoration: none; font-size: 13.5px; font-weight: 500;
+  padding: 0 10px; opacity: .74; transition: opacity .15s }
+#top nav a:hover { opacity: 1 }
+#top nav a[aria-current] { opacity: 1; color: var(--titulo); font-weight: 600 }
+#top nav a[aria-current]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px; background: var(--titulo) }
+.yr { display: flex; align-items: stretch; border: 1px solid var(--linea); background: var(--superficie); height: 32px }
+.yr button { background: none; border: 0; color: var(--suave); font: inherit; font-size: 15px; padding: 0 9px; cursor: pointer; transition: color .15s }
+.yr button:hover:not(:disabled) { color: var(--titulo) }
+.yr button:disabled { opacity: .3; cursor: default }
+.yr .yv { font-family: var(--f); font-variant-numeric: tabular-nums; font-weight: 650; color: var(--titulo); font-size: 14px; padding: 0 4px; min-width: 46px;
+  display: flex; align-items: center; justify-content: center }
+.tema { position: relative; background: var(--superficie); border: 1px solid var(--linea); color: var(--suave); width: 32px; height: 32px; cursor: pointer;
+  font-size: 0; transition: color .15s }
+.tema:hover { color: var(--titulo) }
+.tema::before { content: ""; position: absolute; inset: 0; margin: auto; width: 15px; height: 15px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/%3E%3C/svg%3E") center / contain no-repeat }
+body.dark .tema::before { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3Cg stroke='black' stroke-width='2' stroke-linecap='square'%3E%3Cpath d='M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1'/%3E%3C/g%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3Cg stroke='black' stroke-width='2' stroke-linecap='square'%3E%3Cpath d='M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1'/%3E%3C/g%3E%3C/svg%3E") }
+
+main { max-width: 1200px; margin: 0 auto; padding: 26px 20px 48px }
+.kick { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); font-weight: 600 }
+.kick a { color: inherit; text-underline-offset: 3px }
+h1 { font-family: var(--fd); font-weight: 600; color: var(--titulo); font-size: clamp(28px, 3.2vw, 40px); line-height: 1.08; margin: 8px 0 12px; letter-spacing: -.015em }
+.lede { font-size: 16px; line-height: 1.6; max-width: 60rem; margin: 0 0 24px; color: var(--tinta) }
+.lede b { font-weight: 650; color: var(--titulo) }
+.aviso { border-left: 3px solid var(--estimacion); background: var(--superficie); padding: 10px 14px; margin: 0 0 16px; font-size: 14px }
+
+/* cifras clave */
+.kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 0 0 30px }
+.kpi { background: var(--superficie); padding: 15px 15px 13px; min-width: 0; display: flex; flex-direction: column }
+.kpi .kl { font-size: 12px; color: var(--suave); line-height: 1.35; min-height: 32px }
+.kpi .kv { font-size: 25px; font-weight: 650; line-height: 1.1; margin: 8px 0 3px; color: var(--titulo); white-space: nowrap }
+.kpi .ku { font-size: 12px; color: var(--suave) }
+.kpi .kc { font-size: 12px; color: var(--suave); margin-top: auto; padding-top: 8px; border-top: 1px solid var(--grilla) }
+.kpi .kc b { color: var(--tinta); font-weight: 600 }
+.kpi.gasto .kv { color: var(--o6) }
+body.dark .kpi.gasto .kv { color: var(--o7) }
+
+/* etiquetas de naturaleza del dato */
+.marca-dato { display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  padding: 1px 6px; border: 1px solid currentColor; vertical-align: 2px; margin-left: 6px; white-space: nowrap }
+.marca-dato.dato { color: var(--suave) }
+.marca-dato.est { color: var(--estimacion) }
+
+/* secciones */
+.capitulo { margin: 40px 0 14px; display: flex; align-items: baseline; gap: 12px; border-top: 1.5px solid var(--titulo); padding-top: 11px }
+.capitulo .n { font-family: var(--f); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 600; color: var(--suave) }
+.capitulo h2 { margin: 0; font-family: var(--fd); color: var(--titulo); font-size: 22px; font-weight: 600; line-height: 1.2; letter-spacing: -.01em }
+.capitulo p { margin: 0; color: var(--suave); font-size: 13px }
+section.tarjeta { background: var(--superficie); border: 1px solid var(--linea); padding: 18px 20px 12px; margin: 0 0 16px }
+section.tarjeta h3 { font-family: var(--fd); font-weight: 600; color: var(--titulo); font-size: 17.5px; margin: 0 0 5px; line-height: 1.25; letter-spacing: -.005em }
+section.tarjeta h3 em { font-style: italic; font-weight: 400; color: var(--suave) }
+.nota { font-size: 13.5px; color: var(--suave); margin: 0 0 12px; max-width: 64rem }
+.nw { white-space: nowrap }   /* un trozo que no se parte («puesto 227 de 343», «2.729 casos en la muestra») */
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 22px }
+.dos > * { min-width: 0 }   /* al achicar la ventana, cada columna se encoge aunque su gráfico ya esté dibujado más ancho */
+.dos.ancho-izq { grid-template-columns: 1.15fr .85fr }
+.g { width: 100%; height: 330px }
+.gt { font-size: 13px; font-weight: 600; margin: 6px 0 0; color: var(--tinta) }
+
+/* tablas */
+table { border-collapse: collapse; width: 100%; font-size: 13px }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--grilla); text-align: right; white-space: nowrap }
+th:first-child, td:first-child { text-align: left }
+th { font-size: 10.5px; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: .06em }
+td.num, td { font-variant-numeric: tabular-nums }
+.scroll { overflow-x: auto }
+.btn { background: none; border: 1px solid var(--linea); color: var(--tinta); font: inherit; font-size: 13px; padding: 6px 12px; cursor: pointer; margin: 0 0 10px }
+.btn:hover { border-color: var(--acento) }
+.selector { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px }
+.selector button { background: none; border: 1px solid var(--linea); color: var(--tinta); font: inherit; font-size: 12.5px; padding: 4px 10px; cursor: pointer }
+.selector button[aria-pressed="true"] { background: var(--titulo); border-color: var(--titulo); color: var(--papel) }
+body.dark .selector button[aria-pressed="true"] { color: #1f2318 }
+select { font: inherit; font-size: 13px; color: var(--tinta); background: var(--superficie); border: 1px solid var(--linea); padding: 5px 8px }
+
+footer { font-size: 12.5px; color: var(--suave); margin-top: 30px; border-top: 1px solid var(--linea); padding-top: 14px }
+.tt span { border-radius: 0 !important }
+/* tooltip (comun.js: Atlas.tt): título, filas con clave de línea, valor fuerte a la derecha, total y unidad */
+.tt-c { font-family: var(--f); font-size: 12px; line-height: 1.4; color: var(--tinta); min-width: 168px; max-width: 320px; white-space: normal }
+.tt-h { font-weight: 650; font-size: 12.5px; color: var(--titulo); margin: 0 0 7px; padding-bottom: 6px; border-bottom: 1px solid var(--grilla) }
+.tt-r { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; align-items: center; gap: 4px 9px; padding: 2px 0 }
+.tt-k { display: block; width: 14px; height: 3px }
+.tt-k.tt-p { width: 8px; height: 8px; justify-self: center }
+.tt-n { color: var(--suave) }
+.tt-v { font-weight: 650; color: var(--tinta); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums }
+.tt-fuerte .tt-n { color: var(--tinta); font-weight: 600 }
+.tt-t { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grilla) }
+.tt-t .tt-n { color: var(--tinta); font-weight: 600 }
+.tt-f { margin-top: 7px; font-size: 11px; color: var(--suave); line-height: 1.35 }
+/* los marcadores que ECharts pone en los tooltips con formato propio pasan a ser claves de línea */
+.tt span[style*="border-radius"] { width: 12px !important; height: 3px !important; vertical-align: middle !important; margin-right: 6px !important }
+
+@media (max-width: 1000px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } .kpis .kpi:last-child:nth-child(odd) { grid-column: 1 / -1 } .dos, .dos.ancho-izq { grid-template-columns: 1fr } #top nav { display: none } }
+@media (max-width: 560px) {
+  #top { height: 56px; gap: 10px; padding: 0 14px } #top .t-n { display: none } #top .marca { flex: 1 1 auto }
+  #top .t-h { font-size: 14px; white-space: normal; max-width: 9.5em; line-height: 1.12 } #top .sp { display: none } .yr .yv { min-width: 40px }
+  main { padding: 18px 14px 34px } .kpi .kv { font-size: 21px } .lede { font-size: 15px } .g { height: 290px }
+  section.tarjeta { padding: 14px 14px 8px } .capitulo h2 { font-size: 20px } .capitulo { flex-wrap: wrap; gap: 4px 10px }
+}
+
+/* navegación en el teléfono: bajo 1000 px la del encabezado se oculta y comun.js pone una copia debajo, que se va con el
+   desplazamiento (así el encabezado fijo no crece) */
+.nav-movil { display: none }
+@media (max-width: 1000px) {
+  .nav-movil { display: flex; flex-wrap: wrap; gap: 2px 16px; padding: 7px 20px; background: var(--superficie-2); border-bottom: 1px solid var(--linea); font-size: 13px }
+  .nav-movil a { color: var(--tinta); text-decoration: none; padding: 3px 0; border-bottom: 2px solid transparent }
+  .nav-movil a[aria-current] { color: var(--titulo); font-weight: 600; border-bottom-color: var(--titulo) }
+}
+@media (max-width: 560px) { .nav-movil { padding: 6px 13px; gap: 2px 13px; font-size: 12.5px } }
+
+/* desagregación del gasto (estilo/desagregacion.js): preguntas, miga de pan, cifras del nivel, rectángulos y lista */
+.dg-vistas { margin: 4px 0 8px }
+.dg-vistas button { font-size: 13px; padding: 6px 12px }
+.dg-op { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; font-size: 13px; color: var(--suave); margin: 0 0 12px }
+.dg-op .selector { margin: 0 }
+.dg-op label { display: inline-flex; align-items: center; gap: 6px }
+.dg-op select:disabled { opacity: .5 }
+.dg-miga { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; padding: 9px 0; border-top: 1px solid var(--grilla); border-bottom: 1px solid var(--grilla); margin: 0 0 12px; font-size: 13.5px }
+.dg-miga button { background: none; border: 0; padding: 2px 0; font: inherit; color: var(--acento); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; text-align: left }
+.dg-miga button:last-child { color: var(--titulo); font-weight: 600; text-decoration: none; cursor: default }
+.dg-miga span { color: var(--suave) }
+.dg-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 0 0 14px }
+.dg-kpi { background: var(--superficie); padding: 10px 13px 9px; min-width: 0 }
+.dg-kpi .kl { font-size: 12px; color: var(--suave); line-height: 1.3 }
+.dg-kpi .kv { font-family: var(--f); font-size: 20px; font-weight: 600; color: var(--o6); margin: 4px 0 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+body.dark .dg-kpi .kv { color: var(--o7) }
+.dg-kpi .ku { font-size: 11.5px; color: var(--suave) }
+/* el puente: de qué se compone el total por niño con indirecto y ampliado (el cuadrito, del color de su clase en el mapa) */
+.dg-puente { font-size: 13.5px; line-height: 1.5; color: var(--tinta); margin: -2px 0 14px; max-width: 64rem }
+.dg-puente:empty { display: none }
+.dg-pl { display: block } .dg-pl + .dg-pl { margin-top: 6px }
+.dg-puente b { font-weight: 650; white-space: nowrap }
+.dg-sw { display: inline-block; width: 9px; height: 9px; margin: 0 5px 0 2px; vertical-align: 0 }
+/* mapa de rectángulos y lista, mitad y mitad: la lista lleva los nombres largos de las líneas del presupuesto */
+.dg-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start }
+.dg-mapa { width: 100%; height: 430px }
+.dg-pista { font-size: 12px; color: var(--suave); margin: 4px 0 0 }
+.dg-lista-t { margin: 0 0 4px }
+.dg-lista { list-style: none; margin: 0; padding: 0; max-height: 470px; overflow-y: auto }
+.dg-lista li { border-bottom: 1px solid var(--grilla) }
+/* columnas FIJAS (la barra, 100 px; la cifra, 7 rem: la más ancha mide 101 px): en todas las filas la barra empieza y
+   termina en el mismo lugar; con la cifra en «auto», cada fila la corría según el ancho de su propio texto */
+.dg-fila { display: grid; grid-template-columns: minmax(0, 1fr) 100px 7rem; gap: 4px 12px; align-items: center; width: 100%; background: none; border: 0;
+  padding: 7px 4px; font: inherit; color: var(--tinta); text-align: left; cursor: pointer }
+.dg-fila:hover, .dg-fila:focus-visible { background: var(--superficie-2); outline: none }
+.dg-fila[data-hoja] { cursor: default }
+.dg-fila[data-hoja]:hover { background: none }
+.dg-n { font-size: 13.5px; line-height: 1.3; min-width: 0; overflow-wrap: anywhere }
+.dg-n small { display: block; font-size: 11.5px; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.dg-b { height: 10px; background: var(--grilla) }
+.dg-b i { display: block; height: 100%; background: var(--o5) }
+.dg-v { font-family: var(--f); font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 600; text-align: right; white-space: nowrap; color: var(--titulo) }
+.dg-v small { display: block; font-family: var(--f); font-size: 11px; font-weight: 400; color: var(--suave) }
+.dg-mas { background: none; border: 0; padding: 8px 4px; font: inherit; font-size: 13px; color: var(--acento); cursor: pointer; text-decoration: underline }
+.dg-vacio { padding: 12px 4px; color: var(--suave); font-size: 13.5px }
+.dg-serie-t { margin-top: 14px }
+.dg .dg-serie { height: 300px }
+.dg-nota { margin-top: 8px }
+@media (max-width: 1000px) { .dg-cuerpo { grid-template-columns: 1fr } .dg-mapa { height: 340px } .dg-lista { max-height: none } .dg-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 560px) { .dg-vistas button { font-size: 12.5px; padding: 5px 9px } .dg-mapa { height: 290px } .dg-fila { grid-template-columns: minmax(0, 1fr) auto } .dg-b { grid-column: 1 / -1; grid-row: 2 } .dg-kpi .kv { font-size: 18px } }
+
+/* edad por edad en dos paneles (indicador.html y encuesta.html): Bolivia a la izquierda y, a la derecha, uno o dos
+   territorios; la lectura de arriba sirve a los dos paneles */
+.lectura { font-family: var(--fm); font-size: 13px; color: var(--tinta); min-height: 20px; margin: 2px 0 6px }
+.lectura .s { color: var(--suave); font-family: var(--f) }
+.ed-dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; margin-top: 4px }
+.ed-dos > div { min-width: 0 }   /* si no, al achicar la ventana cada panel conserva el ancho del gráfico ya dibujado */
+.ed-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; min-height: 34px; margin: 0 0 2px }
+.ed-cab .selector { margin: 0 0 0 auto }
+.ed-nombre { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 650; color: var(--titulo) }
+.ed-ter { display: flex; align-items: center; gap: 8px; flex: 1 1 12rem; max-width: 17rem; min-width: 0; height: 32px; padding: 0 9px;
+  border: 1px solid var(--linea); background: var(--superficie); cursor: text }
+.ed-ter:focus-within { border-color: var(--acento) }
+.ed-ter input { flex: 1; min-width: 0; border: 0; padding: 0; background: none; font: inherit; font-size: 13px; color: var(--tinta); outline: none; text-overflow: ellipsis }
+.ed-ter input::placeholder { color: var(--suave) }
+.ed-x { border: 0; background: none; padding: 0 2px; font: inherit; font-size: 17px; line-height: 1; color: var(--suave); cursor: pointer }
+.ed-x:hover { color: var(--tinta) }
+/* la muestra de cada serie: la barra clara con su línea de niveles arriba */
+.ed-sw { flex: none; display: inline-block; width: 16px; height: 11px; background: var(--t2); box-shadow: inset 0 2px 0 var(--t6) }
+.ed-sw.b { background: color-mix(in srgb, var(--o3) 42%, transparent); box-shadow: inset 0 2px 0 var(--o6) }
+.lectura .ed-sw { margin: 0 5px 0 0; vertical-align: -1px }
+.ed-ln { display: inline-block; width: 14px; height: 2.5px; margin: 0 5px 0 1px; vertical-align: 3px }
+.ed-g { height: 330px }
+.ed-nota { margin: 6px 0 4px }
+.ed-ter select { flex: 1; min-width: 0; border: 0; padding: 0 14px 0 0; background: none; font: inherit; font-size: 13px; color: var(--tinta);
+  outline: none; appearance: none; cursor: pointer; text-overflow: ellipsis }
+.ed-ter select option { color: #333d29; background: #fbfaf6 }
+.ed-ter.lista { position: relative; cursor: pointer }
+.ed-ter.lista::after { content: "▾"; position: absolute; right: 9px; top: 50%; transform: translateY(-52%); font-size: 11px; color: var(--suave); pointer-events: none }
+@media (max-width: 1000px) { .ed-dos { grid-template-columns: minmax(0, 1fr); gap: 16px } }
+@media (max-width: 560px) { .ed-g { height: 270px } #lectura-edad { min-height: 40px } .ed-ter { max-width: none; flex-basis: 100% } .ed-cab .selector { margin: 0 } }

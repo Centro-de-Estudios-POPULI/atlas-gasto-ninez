@@ -1,48 +1,199 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Metodología · Atlas del Gasto en Niñez</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Metodología · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Cómo se hizo el Atlas de la Niñez y la Adolescencia: qué se cuenta como gasto en la niñez, de dónde sale cada cifra, qué es dato y qué es estimación, y cómo se calcularon los indicadores del Censo 2024 y de las encuestas.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo/identidad.css">
 <style>
-:root{--f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;--amber:#ee9b00;--teal-dk:#005f73;--topbar:#5c1618;--topline:#3f0e10;
-  --fondo:#f2efe8;--card:#fff;--linea:#ddd6c9;--linea-2:#eae4d7;--tx:#16232c;--suave:#5f6f79;--code:#f6f3ec}
-body.dark{--fondo:#0b1318;--card:#141414;--linea:#26343d;--linea-2:#1d2a32;--tx:#e2e8f0;--suave:#9aabb5;--topbar:#3d0e10;--topline:#5c1618;--code:#1b252c}
-*,*::before,*::after{box-sizing:border-box;border-radius:0}
-html,body{margin:0;background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:15.5px;line-height:1.6}
-a{color:var(--teal-dk)}body.dark a{color:#5cc3c9}
-#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--topbar);color:#fff;border-bottom:1px solid var(--topline)}
-#top svg{width:30px;height:30px;flex:0 0 30px}#top .t-h{font-weight:700;font-size:15px;line-height:1.2}#top .t-h b{color:var(--amber)}
-#top .t-n{font-size:11.5px;opacity:.8}#top .sp{flex:1}
-#top a.nav{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);padding:5px 10px;white-space:nowrap}
-.tema{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:34px;height:32px;cursor:pointer}
-.env{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1180px;margin:0 auto;padding:26px 18px 50px}
-nav.indice{position:sticky;top:70px;align-self:start;font-size:13px;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--linea);padding-left:12px}
-nav.indice a{color:var(--suave);text-decoration:none}nav.indice a:hover{color:var(--tx)}
-article{background:var(--card);border:1px solid var(--linea);padding:26px 30px 30px;min-width:0}
-h1{font-family:var(--fd);font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin:0 0 14px}
-h2{font-family:var(--fd);font-size:23px;margin:34px 0 8px;padding-top:14px;border-top:1px solid var(--linea-2)}
-h3{font-size:15.5px;margin:22px 0 6px}
-p,li{max-width:62rem}blockquote{margin:0 0 16px;padding:8px 14px;border-left:3px solid var(--amber);background:var(--code);color:var(--suave);font-size:13.5px}
-blockquote p{margin:0}
-.scroll{overflow-x:auto;margin:10px 0 16px}
-table{border-collapse:collapse;font-size:13px;width:100%}
-th,td{padding:7px 9px;border-bottom:1px solid var(--linea-2);text-align:left;vertical-align:top}
-th{font-size:11.5px;color:var(--suave);font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 4px}
-pre{background:var(--code);padding:12px 14px;overflow-x:auto;font-size:12.5px;line-height:1.5}pre code{background:none;padding:0}
-@media (max-width:900px){.env{grid-template-columns:1fr}nav.indice{display:none}article{padding:18px 16px 24px}}
-@media (max-width:560px){#top{flex-wrap:wrap;gap:8px}#top .t-n,#top .sp{display:none}.env{padding:14px 10px 30px}}
-</style></head><body>
-<header id="top"><svg viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="Inter,sans-serif">NNA</text></svg>
-<div><div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div><div class="t-n">Metodología</div></div><div class="sp"></div>
-<a class="nav" href="index.html">Mapa municipal</a><a class="nav" href="nacional.html">Bolivia y departamentos</a>
-<button class="tema" id="tema" aria-label="Cambiar tema">◐</button></header>
-<div class="env"><nav class="indice"><a href="#1-alcance">1. Alcance</a><a href="#2-fuentes">2. Fuentes</a><a href="#3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</a><a href="#4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</a><a href="#5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</a><a href="#6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</a><a href="#7-denominadores-y-precios">7. Denominadores y precios</a><a href="#8-variables">8. Variables</a><a href="#9-indicadores-del-atlas">9. Indicadores del atlas</a><a href="#10-controles">10. Controles</a><a href="#11-limitaciones">11. Limitaciones</a></nav>
-<article><h1>Gasto público en niñas, niños y adolescentes: metodología</h1><h2 id="1-alcance">1. Alcance</h2>
+/* versión corta: una pantalla */
+.corta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 0 0 12px }
+.mitad { background: var(--superficie); padding: 17px 22px 16px; border-top: 4px solid var(--c); min-width: 0 }
+.mitad .mk { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--suave) }
+.mitad h2 { font-family: var(--fd); font-size: 20px; color: var(--titulo); margin: 4px 0 10px; line-height: 1.2; font-weight: 600 }
+.pasos { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; counter-reset: paso }
+.pasos li { font-size: 14px; line-height: 1.5; padding-left: 28px; position: relative; counter-increment: paso }
+.pasos li::before { content: counter(paso); position: absolute; left: 0; top: 2px; width: 19px; height: 19px; border: 1px solid var(--linea); font-family: var(--fm);
+  font-size: 11.5px; line-height: 17px; text-align: center; color: var(--suave) }
+.pasos li b { color: var(--titulo) }
+.niveles { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--grilla); font-size: 12.5px }
+.niveles span { display: inline-flex; align-items: center; gap: 6px }
+.niveles i { width: 12px; height: 12px; display: inline-block; background: var(--c) }
+.naturaleza { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 30px; background: var(--superficie); border: 1px solid var(--linea); padding: 12px 20px; font-size: 13.5px; margin: 0 0 12px }
+.naturaleza p { margin: 0 }
+.naturaleza .marca-dato { margin: 0 6px 0 0 }
+.saltos { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; margin: 0 }
+.saltos span { color: var(--suave) }
+/* glosario */
+.glosario { column-count: 2; column-gap: 44px }
+section.tarjeta.glosario h3 { font-family: var(--f); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--suave); margin: 6px 0 0; font-weight: 600;
+  break-after: avoid; padding-bottom: 6px; border-bottom: 1px solid var(--grilla) }
+.glosario dl { margin: 0 0 18px }
+.glosario .t { break-inside: avoid; padding-top: 11px }
+.glosario dt { font-weight: 650; font-size: 14px; color: var(--titulo) }
+.glosario dd { margin: 2px 0 0; font-size: 13.5px; line-height: 1.5 }
+/* la metodología completa */
+.met-doc { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 26px; align-items: start; margin: 0 0 16px }
+.met-doc nav.indice { position: sticky; top: 74px; font-size: 13px; display: flex; flex-direction: column; gap: 7px; border-left: 2px solid var(--linea); padding: 2px 0 2px 12px }
+.met-doc nav.indice a { color: var(--suave); text-decoration: none; line-height: 1.35 }
+.met-doc nav.indice a:hover { color: var(--acento) }
+article.metodo { background: var(--superficie); border: 1px solid var(--linea); padding: 22px 28px 20px; margin: 0; min-width: 0 }
+.metodo h3 { font-family: var(--fd); font-size: 19px; font-weight: 600; color: var(--titulo); line-height: 1.2; margin: 30px 0 8px; padding-top: 14px; border-top: 1px solid var(--grilla); scroll-margin-top: 70px }
+.metodo > h3:first-child { margin-top: 0; padding-top: 0; border-top: 0 }
+.metodo h4 { font-size: 15px; margin: 22px 0 6px; color: var(--tinta); scroll-margin-top: 70px }
+.metodo p, .metodo li { max-width: 64rem; font-size: 14.5px; line-height: 1.6 }
+.metodo ul, .metodo ol { padding-left: 20px }
+.metodo .scroll { margin: 10px 0 16px }
+.metodo table { font-size: 13px }
+.metodo th, .metodo td { white-space: normal; text-align: left; vertical-align: top; padding: 7px 9px }
+.metodo th { white-space: nowrap }
+.metodo td.num, .metodo th.num { text-align: right; white-space: nowrap }
+.metodo th.num { font-family: var(--f) }
+.metodo .junto { white-space: nowrap }
+.metodo code { font-family: var(--fm); font-size: 12px; background: var(--superficie-2); padding: 1px 4px; overflow-wrap: anywhere }
+.metodo pre { background: var(--superficie-2); padding: 12px 14px; overflow-x: auto; font-size: 12px; line-height: 1.5; margin: 10px 0 16px }
+.metodo pre code { background: none; padding: 0 }
+.metodo .v { font-family: var(--fm); font-weight: 600; color: var(--titulo); white-space: nowrap }
+.metodo .s { color: var(--suave); font-size: 12px }
+.metodo .dentro, .metodo .fuera { color: var(--tinta) }
+.metodo .dentro b, .metodo .fuera b { color: var(--titulo) }
+.reglas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 10px 0 14px }
+.reglas div { background: var(--papel); padding: 10px 12px; font-size: 13.5px }
+.reglas b { display: block; color: var(--titulo); margin-bottom: 2px }
+.reglas .c { font-family: var(--fm); font-size: 12.5px; color: var(--tinta) }
+.reglas .m { display: flex; align-items: center; gap: 7px; color: var(--suave); font-size: 12.5px; margin-top: 4px }
+.reglas .m i { display: inline-block; width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto }
+.cautela { font-size: 10.5px; color: var(--estimacion); border: 1px dashed var(--estimacion); padding: 0 4px; white-space: nowrap; font-weight: 500; margin-left: 3px }
+@media (max-width: 1000px) {
+  .corta, .naturaleza { grid-template-columns: 1fr } .glosario { column-count: 1 }
+  .met-doc { grid-template-columns: minmax(0, 1fr) } .met-doc nav.indice { display: none }
+}
+@media (max-width: 560px) {
+  .mitad { padding: 14px 14px 13px } .mitad h2 { font-size: 21px } .naturaleza { padding: 11px 14px }
+  article.metodo { padding: 15px 14px 12px } .metodo h3 { font-size: 20px } .metodo p, .metodo li { font-size: 14px }
+  .metodo th, .metodo td { padding: 6px 6px; font-size: 12px } .reglas { grid-template-columns: 1fr }
+}
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · metodología</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html" aria-current="page">Metodología</a></nav>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <div class="kick">Metodología</div>
+  <h1>Cómo se hizo este atlas</h1>
+  <p class="lede">Qué se cuenta, de dónde sale cada cifra, qué es dato y qué es estimación. Primero, en una pantalla; abajo, el glosario y la metodología completa, regla por regla.</p>
+
+  <div class="corta">
+    <section class="mitad" style="--c:var(--o5)">
+      <div class="mk">Lo que se gasta</div>
+      <h2>Tres bolsillos y dos clases de cifra</h2>
+      <ol class="pasos">
+        <li><b>Quién pone la plata.</b> Las alcaldías, las gobernaciones y el nivel central. Cada boliviano se cuenta una sola vez, en quien lo gasta: las transferencias entre entidades públicas se descuentan.</li>
+        <li><b>Qué cuenta como gasto en la niñez.</b> Los programas sólo para niñas, niños y adolescentes —desayuno escolar, maestros, Juancito Pinto, defensorías— cuentan enteros. Los programas para la madre y el niño o para la familia cuentan en parte, y los que son para toda la población —salud, agua, deporte—, en la parte de los menores de 18. El atlas muestra primero lo que va sólo a la niñez.</li>
+        <li><b>Dónde se gasta.</b> Lo de alcaldías y gobernaciones es <span class="marca-dato dato">dato</span> de su presupuesto. El nivel central no dice en qué municipio gasta —el sueldo de los maestros se registra en la capital del departamento y los bonos no tienen territorio—, así que se reparte con una llave a la vista: los maestros por la matrícula fiscal, el Juancito Pinto por la de primaria y secundaria, el Juana Azurduy por los niños de 0 a 5 años y el resto por la población de 0 a 17. Eso es <span class="marca-dato est">estimación</span>.</li>
+        <li><b>Cuánto por niño.</b> Lo gastado de verdad (devengado), en bolivianos de 2025, dividido por la población de 0 a 17 años de las proyecciones del INE.</li>
+      </ol>
+      <div class="niveles"><span style="--c:var(--alcaldia)"><i></i>Alcaldía</span><span style="--c:var(--gobernacion)"><i></i>Gobernación</span><span style="--c:var(--central)"><i></i>Nivel central</span></div>
+    </section>
+    <section class="mitad" style="--c:var(--t5)">
+      <div class="mk">Cómo viven</div>
+      <h2>Tres fuentes, tres años</h2>
+      <ol class="pasos">
+        <li><b>Censo 2024.</b> Cuenta a todos y llega a cada municipio: es <span class="marca-dato dato">dato</span>, sin error de muestreo. Está validado contra el INE: la asistencia escolar reproduce sus cuadros municipio por municipio, y el agua y el saneamiento usan su definición oficial y dan sus mismos totales.</li>
+        <li><b>Encuesta de Hogares 2025 y EDSA 2023.</b> Son muestras: cada cifra es una <span class="marca-dato est">estimación</span> con su margen de error, siempre a la vista. Llegan hasta departamento y se publican con reglas fijas: <span id="reglas-corta">publicable, con cautela o no se publica, según su coeficiente de variación</span>.</li>
+        <li><b>Cada cifra con su fuente y su año.</b> Las tres fuentes no se calibran entre sí. Si dos miden lo mismo y no coinciden, se ven las dos y se explica por qué.</li>
+        <li><b>Edades.</b> Todo se calcula por edad simple de 0 a 18; los totales siguen la Ley 548 —de 0 a 17 años— y sus tramos: primera infancia (0 a 5), niñez (6 a 11) y adolescencia (12 a 17). El 18 se muestra como transición.</li>
+      </ol>
+    </section>
+  </div>
+  <div class="naturaleza">
+    <p><span class="marca-dato dato">dato</span> Sale de un registro o de un conteo completo: el presupuesto de cada alcaldía y de cada gobernación, el gasto nacional, el Censo 2024.</p>
+    <p><span class="marca-dato est">estimación</span> Se reparte con una llave declarada —el gasto central en cada municipio— o se infiere de una muestra —las encuestas, con su margen de error—.</p>
+  </div>
+  <nav class="saltos" aria-label="En esta página"><span>En esta página:</span><a href="#glosario">Glosario</a><a href="#gasto">La metodología del gasto</a><a href="#indicadores">Los indicadores sociales</a><a href="#tres-fuentes">Tres fuentes frente a frente</a></nav>
+
+  <div class="capitulo" id="glosario"><span class="n">1</span><h2>Glosario</h2><p>Las palabras del atlas, en una frase</p></div>
+  <section class="tarjeta glosario">
+      <h3>Lo que se gasta</h3>
+      <dl>
+        <div class="t"><dt>Alcaldía</dt><dd>Gobierno autónomo municipal (GAM) o indígena originario campesino (GAIOC): uno por municipio.</dd></div>
+        <div class="t"><dt>Gobernación</dt><dd>Gobierno autónomo departamental (GAD); el atlas incluye también a la autonomía regional del Gran Chaco.</dd></div>
+        <div class="t"><dt>Nivel central</dt><dd>Ministerios, fondos y programas nacionales; paga el sueldo de los maestros y los bonos.</dd></div>
+        <div class="t"><dt>Presupuesto inicial</dt><dd>Lo aprobado al comenzar el año.</dd></div>
+        <div class="t"><dt>Presupuesto final (vigente)</dt><dd>Lo aprobado, más las modificaciones que se hicieron durante el año.</dd></div>
+        <div class="t"><dt>Gastado (devengado)</dt><dd>Lo que efectivamente se gastó: el bien se recibió o el servicio se prestó, aunque el pago llegue después.</dd></div>
+        <div class="t"><dt>Ejecución</dt><dd>Qué parte del presupuesto final se gastó.</dd></div>
+        <div class="t"><dt>Programas sólo para la niñez</dt><dd>Los dirigidos únicamente a niñas, niños y adolescentes (en la jerga, «gasto específico»): cuentan enteros.</dd></div>
+        <div class="t"><dt>Gasto indirecto</dt><dd>Programas para la madre y el niño o para la familia: cuenta una parte, con los ponderadores de UNICEF.</dd></div>
+        <div class="t"><dt>Gasto ampliado</dt><dd>Programas para toda la población que también llegan a los niños —salud, agua, deporte—: cuenta la parte de los menores de 18.</dd></div>
+        <div class="t"><dt>Llave de reparto</dt><dd>La regla que distribuye entre municipios un gasto que no dice dónde se hizo, como la planilla docente según la matrícula fiscal.</dd></div>
+        <div class="t"><dt>Bolivianos de 2025</dt><dd>Los montos de cada año llevados a precios de 2025 con el índice de precios al consumidor, para poder compararlos.</dd></div>
+        <div class="t"><dt>Por niño</dt><dd>El gasto dividido por toda la población de 0 a 17 años, no por los niños que recibieron algo.</dd></div>
+        <div class="t"><dt>Coparticipación tributaria</dt><dd>La parte de los impuestos nacionales que se transfiere a alcaldías y universidades según su población.</dd></div>
+        <div class="t"><dt>IDH</dt><dd>Impuesto Directo a los Hidrocarburos: una parte se transfiere a gobernaciones, alcaldías y universidades.</dd></div>
+        <div class="t"><dt>Regalías</dt><dd>El pago por explotar recursos naturales; financia sobre todo a las gobernaciones.</dd></div>
+        <div class="t"><dt>SEDEGES</dt><dd>Servicio Departamental de Gestión Social de cada gobernación: centros de acogida y protección.</dd></div>
+        <div class="t"><dt>Dirección Departamental de Educación (DDE)</dt><dd>La oficina del Ministerio de Educación en cada departamento: por ella se paga la planilla de los maestros.</dd></div>
+        <div class="t"><dt>Desayuno escolar</dt><dd>La alimentación complementaria escolar, que pagan las alcaldías.</dd></div>
+        <div class="t"><dt>Bono Juancito Pinto</dt><dd>Transferencia anual a cada estudiante de las unidades educativas fiscales y de convenio.</dd></div>
+        <div class="t"><dt>Bono Juana Azurduy</dt><dd>Transferencia a las madres y a sus hijos menores de dos años por cumplir los controles de salud.</dd></div>
+        <div class="t"><dt>Defensoría de la Niñez y Adolescencia (DNA)</dt><dd>El servicio municipal que protege y defiende los derechos de las niñas, niños y adolescentes.</dd></div>
+      </dl>
+      <h3>Cómo viven</h3>
+      <dl>
+        <div class="t"><dt>Censo</dt><dd>El conteo de todas las personas y viviendas del país en una misma fecha; el último fue en marzo de 2024.</dd></div>
+        <div class="t"><dt>Encuesta</dt><dd>Entrevistas a una muestra de hogares elegida al azar, que se expande para representar a todo el país.</dd></div>
+        <div class="t"><dt>Residente habitual</dt><dd>Quien vive normalmente en el hogar: las tasas del censo se calculan sobre ellos, como en los cuadros del INE.</dd></div>
+        <div class="t"><dt>Universo</dt><dd>Las personas a las que se refiere un indicador; por ejemplo, las de 7 a 17 años en el trabajo infantil.</dd></div>
+        <div class="t"><dt>Tramos de la Ley 548</dt><dd>Primera infancia (0 a 5 años), niñez (6 a 11) y adolescencia (12 a 17).</dd></div>
+        <div class="t"><dt>Privación</dt><dd>Una carencia en la vivienda: agua, saneamiento, electricidad, piso, combustible para cocinar o espacio para dormir.</dd></div>
+        <div class="t"><dt>Error estándar</dt><dd>Cuánto podría moverse una estimación si la encuesta se repitiera con otra muestra.</dd></div>
+        <div class="t"><dt>Margen de error</dt><dd>1,96 errores estándar, hacia arriba y hacia abajo de la estimación.</dd></div>
+        <div class="t"><dt>Intervalo de 95 %</dt><dd>La estimación más y menos el margen de error: con 95 % de confianza, el valor real está adentro.</dd></div>
+        <div class="t"><dt>Coeficiente de variación (CV)</dt><dd>El error estándar dividido por la estimación: cuanto más alto, menos firme la cifra.</dd></div>
+        <div class="t"><dt>Cautela</dt><dd>Una cifra con un CV en la franja intermedia: se publica, pero con punto hueco, barra rayada y la palabra «cautela».</dd></div>
+        <div class="t"><dt>Muestra insuficiente</dt><dd>Una cifra que no se publica, porque su CV es muy alto o hay muy pocos casos.</dd></div>
+        <div class="t"><dt>Trabajo infantil (13.ª y 19.ª CIET)</dt><dd>Dos definiciones de las conferencias internacionales de estadísticos del trabajo: la 13.ª cuenta la producción para el consumo de la familia; la 19.ª, no.</dd></div>
+        <div class="t"><dt>Área urbana y rural</dt><dd>La clasificación del INE de cada lugar poblado.</dd></div>
+        <div class="t"><dt>Quintil</dt><dd>Cada una de las cinco partes iguales en que se ordena la población, de la de menos ingreso a la de más.</dd></div>
+      </dl>
+  </section>
+
+  <div class="capitulo" id="gasto"><span class="n">2</span><h2>La metodología del gasto</h2><p>Completa, regla por regla</p></div>
+  <div class="met-doc">
+    <nav class="indice" aria-label="Metodología del gasto">
+<!-- INDICE-GASTO:INICIO -->
+<a href="#1-alcance">1. Alcance</a>
+<a href="#2-fuentes">2. Fuentes</a>
+<a href="#3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</a>
+<a href="#4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</a>
+<a href="#5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</a>
+<a href="#6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</a>
+<a href="#7-denominadores-y-precios">7. Denominadores y precios</a>
+<a href="#8-variables">8. Variables</a>
+<a href="#9-indicadores-del-atlas">9. Indicadores del atlas</a>
+<a href="#10-controles">10. Controles</a>
+<a href="#11-limitaciones">11. Limitaciones</a>
+<!-- INDICE-GASTO:FIN -->
+    </nav>
+    <article class="tarjeta metodo">
+<!-- GASTO:INICIO -->
+<h3 id="1-alcance">1. Alcance</h3>
 <p>Gasto público <strong>devengado</strong> del Estado boliviano —nivel central, gobernaciones y alcaldías— dirigido a la población de
 <strong>0 a 17 años</strong> (Ley 548, Código Niña, Niño y Adolescente), 2016-2025. Tres pisos: lo que <strong>ejecuta cada alcaldía</strong>, lo que
 <strong>ejecuta cada gobernación</strong> y <strong>todo lo que se gasta en cada municipio y departamento</strong> sumando niveles (estimación).</p>
-<h2 id="2-fuentes">2. Fuentes</h2>
+<h3 id="2-fuentes">2. Fuentes</h3>
 <div class="scroll"><table>
 <thead>
 <tr>
@@ -74,13 +225,13 @@ pre{background:var(--code);padding:12px 14px;overflow-x:auto;font-size:12.5px;li
 </tr>
 </tbody>
 </table></div>
-<h2 id="3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</h2>
+<h3 id="3-consolidacion-cada-boliviano-se-cuenta-una-vez">3. Consolidación: cada boliviano se cuenta una vez</h3>
 <p>Se trabaja sobre el gasto <strong>consolidado</strong>: se descartan los activos financieros (grupo 50000), el servicio de la deuda
 (60000) y las <strong>transferencias entre entidades públicas</strong> (partidas 72xxx-74xxx y 77xxx-79xxx), que la entidad receptora
 vuelve a ejecutar. Se conservan las transferencias al sector privado (71xxx, 75xxx), donde están los bonos. Así el gasto se
 cuenta en quien lo ejecuta y los pisos se pueden sumar. Las transferencias públicas pagadas y las recibidas (ingresos
-19200, 19300, 23200, 23300) difieren menos de 1 % todos los años. El atlas no incluye a las empresas municipales.</p>
-<h2 id="4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</h2>
+19200, 19300, 23200, 23300) difieren menos de 1 % todos los años. El atlas no incluye a las empresas públicas municipales, departamentales ni regionales (agua, gas, electricidad).</p>
+<h3 id="4-que-es-gasto-en-ninez-clases-y-ponderadores">4. Qué es gasto en niñez: clases y ponderadores</h3>
 <p>Metodología MEFP-UNICEF-Red Parlamentaria por la Niñez (2017) con los ponderadores de UNICEF Bolivia (2023). Cada fila
 del presupuesto se clasifica con reglas explícitas, en orden (la primera que calza gana), leyendo el programa, la
 actividad o proyecto, la dirección administrativa, la partida, la finalidad-función y la actividad económica.</p>
@@ -115,7 +266,7 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 </tbody>
 </table></div>
 <p>El atlas usa la <strong>versión B</strong>. La capa principal es el gasto <strong>específico</strong>; indirecto y ampliado van en una capa aparte.</p>
-<h3 id="reglas-de-clasificacion">Reglas de clasificación</h3>
+<h4 id="reglas-de-clasificacion">Reglas de clasificación</h4>
 <div class="scroll"><table>
 <thead>
 <tr>
@@ -188,7 +339,7 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>Alimentación complementaria escolar</td>
 <td>Específico</td>
 <td>Nutrición y alimentación</td>
-<td>Subpartida 31130 «Alimentación complementaria escolar» o actividad de desayuno o alimentación complementaria escolar.</td>
+<td>Subpartida 31130 «Alimentación complementaria escolar», actividad de desayuno o alimentación complementaria escolar, o canastas y paquetes de alimentos para estudiantes.</td>
 <td>1</td>
 <td>100 %</td>
 </tr>
@@ -209,6 +360,15 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>Educación superior, técnica y formación docente (finalidad 9.3-9.4, actividad o actividad económica de educación superior).</td>
 <td>0</td>
 <td>0</td>
+</tr>
+<tr>
+<td>R23</td>
+<td>Bonos y becas a estudiantes (alcaldías y gobernaciones)</td>
+<td>Específico</td>
+<td>Transferencias condicionadas</td>
+<td>Bonos y becas a estudiantes en programas de educación (Bono estudiantil, becas escolares; partida 71200 «Becas»), sin becas universitarias.</td>
+<td>1</td>
+<td>100 %</td>
 </tr>
 <tr>
 <td>R07</td>
@@ -242,7 +402,7 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>Salud infantil (hospitales del niño, vacunas, nutrición)</td>
 <td>Específico</td>
 <td>Salud</td>
-<td>Salud infantil: hospitales del niño, pediatría, neonatología, inmunizaciones (PAI), Nutribebé, desnutrición, desarrollo infantil temprano.</td>
+<td>Salud infantil: hospitales del niño, pediatría, neonatología, inmunizaciones (PAI), Nutribebé, desnutrición, suplementos nutricionales, desarrollo infantil temprano.</td>
 <td>1</td>
 <td>100 %</td>
 </tr>
@@ -272,6 +432,15 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>Protección compartida con la mujer y la familia (DNA-SLIM).</td>
 <td>0,5</td>
 <td>33 % (familia)</td>
+</tr>
+<tr>
+<td>R24</td>
+<td>Parques y juegos infantiles</td>
+<td>Específico</td>
+<td>Deportes y cultura</td>
+<td>Parques y juegos infantiles: construcción y mejora de áreas de juego para niñas y niños.</td>
+<td>1</td>
+<td>100 %</td>
 </tr>
 <tr>
 <td>R14</td>
@@ -319,11 +488,20 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>proporción 0-17 del departamento y año</td>
 </tr>
 <tr>
+<td>X05</td>
+<td>Otros grupos: enfermedades crónicas del adulto (renal, cáncer de cuello uterino, mama y próstata)</td>
+<td>Excluido</td>
+<td>—</td>
+<td>Programas de enfermedades crónicas del adulto (salud renal y diálisis, cáncer de cuello uterino, mama y próstata): no se imputan a la niñez.</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
 <td>R18</td>
 <td>Salud pública y prevención</td>
 <td>Ampliado</td>
 <td>Salud</td>
-<td>Salud pública y prevención: vigilancia, epidemiología, promoción de la salud (función 7.4).</td>
+<td>Salud pública y prevención: programas de vigilancia, epidemiología, promoción de la salud y control de enfermedades, reconocidos por su nombre.</td>
 <td>0,2</td>
 <td>proporción 0-17 del departamento y año</td>
 </tr>
@@ -332,7 +510,7 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 <td>Atención de salud (SUS, redes, hospitales)</td>
 <td>Ampliado</td>
 <td>Salud</td>
-<td>Atención de salud: SUS, redes, SEDES, hospitales generales, direcciones municipales de salud.</td>
+<td>Atención de salud: SUS (servicios y recursos humanos), redes, SEDES, hospitales generales, direcciones municipales de salud.</td>
 <td>0,5</td>
 <td>proporción 0-17 del departamento y año</td>
 </tr>
@@ -376,7 +554,7 @@ actividad o proyecto, la dirección administrativa, la partida, la finalidad-fun
 </table></div>
 <p>La gestión educativa no atribuible a un nivel (R16) se prorratea por la parte de la educación regular (inicial, primaria y
 secundaria) en el gasto educativo identificado por nivel de cada Dirección Departamental de Educación (91,6 % en 2025).</p>
-<h2 id="5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</h2>
+<h3 id="5-partidas-componentes-y-financiamiento">5. Partidas, componentes y financiamiento</h3>
 <p><strong>Rubros de partida</strong> (objeto del gasto; gana el primer prefijo que calza):</p>
 <div class="scroll"><table>
 <thead>
@@ -465,8 +643,12 @@ secundaria) en el gasto educativo identificado por nivel de cada Dirección Depa
 <td>R10</td>
 </tr>
 <tr>
-<td>Deporte estudiantil</td>
-<td>R09</td>
+<td>Deporte y recreación</td>
+<td>R09, R24</td>
+</tr>
+<tr>
+<td>Bonos y becas</td>
+<td>R23</td>
 </tr>
 <tr>
 <td>Otros</td>
@@ -521,7 +703,32 @@ secundaria) en el gasto educativo identificado por nivel de cada Dirección Depa
 </tr>
 </tbody>
 </table></div>
-<h2 id="6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</h2>
+<p><strong>«Otros del TGN».</strong> Es lo que la entidad registra con un organismo del Tesoro General de la Nación que no es la
+coparticipación ni el IDH. En el nivel central es el Tesoro mismo, que paga la planilla docente: en su desglose se llama
+«Tesoro General de la Nación». En alcaldías y gobernaciones es plata que les transfiere el nivel central, y su presupuesto
+no dice quién se la mandó; lo dice el del nivel central (columna <code>entidad_transferencia</code>), que
+<code>scripts/81_desagregacion_gasto.py</code> suma por entidad, año y quién transfiere (campo <code>transf</code>). En las alcaldías llega sobre
+todo de la Unidad de Proyectos Especiales (UPRE, Ministerio de la Presidencia: el programa «Bolivia Cambia, Evo Cumple»
+hasta 2019, después «proyectos multisectoriales» e «implementación de proyectos») y, en menor medida, del Fondo Nacional de
+Inversión Productiva y Social (FPS), y casi todo es inversión en escuelas; en las gobernaciones, del Tesoro y del
+Ministerio de Salud. El gasto se cuenta en la entidad que lo ejecuta. En el sitio, para alcaldías y gobernaciones, se
+llama «Transferencias del nivel central» y, en el desglose de cada una, al mirar los recursos o la inversión, una línea
+dice cuánto recibió ese año, de quién, y qué parte de su inversión en la niñez pagó así.</p>
+<p><strong>Desagregación de los perfiles.</strong> El perfil de cada alcaldía, de cada gobernación y del nivel central abre su gasto en
+niñez hasta la línea del presupuesto, por siete caminos: las cinco preguntas del documento MEFP-UNICEF (2017) —¿para
+qué? (clase, categoría, programa o servicio, tipo de intervención, línea, entidad y partida), ¿en qué? (grupo y partida del
+objeto del gasto), ¿con qué recursos? (fuente y organismo financiador), ¿quién? (entidad) y ¿dónde? (todo el Estado en el
+territorio, por nivel)— más ¿para quién? (el tramo de edad del programa) y ¿corriente o inversión?, con presupuesto
+inicial, vigente y devengado. Una <strong>línea</strong> junta las actividades que se llaman igual (la planilla docente de las nueve
+direcciones departamentales es una línea, que se abre en sus nueve departamentos). El <strong>tipo de intervención</strong> (obra
+nueva, mejoramiento, equipamiento, alimentación, personal, funcionamiento, bonos, transporte, eventos, programas) sale del
+nombre de la línea y aparece cuando hay más de ocho líneas: en El Alto, cientos de proyectos de unidades educativas se
+leen en cuatro grupos. La entidad y la partida aparecen cuando hay más de una. Con «indirecto y ampliado», cada línea
+cuenta su parte ponderada (versión B). En las barras apiladas de todo el sitio, la serie más grande va abajo y las demás
+encima por orden de importancia («Otros», arriba). Los datos salen de <code>scripts/81_desagregacion_gasto.py</code> (reglas de los
+tipos en <code>scripts/intervenciones.py</code>; método completo en <code>docs/11_desagregacion_metodo.md</code>) y el específico de cada
+entidad cuadra con los paneles.</p>
+<h3 id="6-estimacion-territorial-todo-el-gasto-en-el-municipio">6. Estimación territorial («todo el gasto en el municipio»)</h3>
 <p>Lo que ejecutan alcaldías y gobernaciones es <strong>dato</strong>. Del nivel central, la planilla docente se registra en la capital
 del departamento y los bonos no tienen territorio: en 2025 sólo el 1,7 % del gasto central en niñez fueron proyectos de inversión, los únicos que traen ubicación. Lo
 que no trae ubicación se <strong>reparte</strong> con una llave declarada (columna <code>llave</code> del panel):</p>
@@ -574,7 +781,7 @@ que no trae ubicación se <strong>reparte</strong> con una llave declarada (colu
 <p>La suma de los 343 municipios reproduce el total nacional. Los cuatro municipios que el SEIE todavía cuenta dentro de su
 municipio de origen (Raqaypampa, Jatun Ayllu Yura, San Pedro de Macha, Territorio Indígena Multiétnico) reciben matrícula
 en proporción a su población de 6 a 17 años.</p>
-<h2 id="7-denominadores-y-precios">7. Denominadores y precios</h2>
+<h3 id="7-denominadores-y-precios">7. Denominadores y precios</h3>
 <ul>
 <li><strong>Población por municipio y tramo de edad</strong> (0-5, 6-11, 12-17): la parte de cada tramo en la población del municipio se
   interpola entre el censo 2012 y el censo 2024, se aplica a la población municipal del INE a mitad de año (Rev. 2020 y
@@ -585,7 +792,7 @@ en proporción a su población de 6 a 17 años.</p>
   presupuesto publicado quedan vacíos (Uru Chipaya 2019-2022, Salinas 2022-2024, Huacaya 2025, Raqaypampa salvo 2024,
   Jatun Ayllu Yura antes de 2025, San Pedro de Macha antes de 2021, Territorio Indígena Multiétnico siempre).</li>
 </ul>
-<h2 id="8-variables">8. Variables</h2>
+<h3 id="8-variables">8. Variables</h3>
 <p><code>datos/final/panel_municipal.csv</code> (una fila por municipio y año):</p>
 <div class="scroll"><table>
 <thead>
@@ -618,6 +825,10 @@ en proporción a su población de 6 a 17 años.</p>
 <tr>
 <td><code>c_ace</code></td>
 <td>Devengado específico de la alcaldía en el componente «ace»</td>
+</tr>
+<tr>
+<td><code>c_bonos</code></td>
+<td>Devengado específico de la alcaldía en el componente «bonos»</td>
 </tr>
 <tr>
 <td><code>c_deporte</code></td>
@@ -710,6 +921,70 @@ en proporción a su población de 6 a 17 años.</p>
 <tr>
 <td><code>t_Inversión</code></td>
 <td>Devengado específico de la alcaldía de tipo «Inversión» (corriente o inversión de proyecto)</td>
+</tr>
+<tr>
+<td><code>ci_edad_escolar</code></td>
+<td>Devengado específico de la alcaldía en programas para el tramo de edad «edad escolar»</td>
+</tr>
+<tr>
+<td><code>ci_ninez</code></td>
+<td>Devengado específico de la alcaldía en programas para el tramo de edad «ninez»</td>
+</tr>
+<tr>
+<td><code>ci_primera_infancia</code></td>
+<td>Devengado específico de la alcaldía en programas para el tramo de edad «primera infancia»</td>
+</tr>
+<tr>
+<td><code>ci_todas</code></td>
+<td>Devengado específico de la alcaldía en programas para el tramo de edad «todas»</td>
+</tr>
+<tr>
+<td><code>i_alimento</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «alimento» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_bono</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «bono» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_equipo</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «equipo» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_estudio</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «estudio» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_evento</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «evento» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_funciona</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «funciona» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_mejora</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «mejora» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_obra</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «obra» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_otra</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «otra» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_personal</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «personal» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_programa</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «programa» (por el nombre de la línea, intervenciones.py)</td>
+</tr>
+<tr>
+<td><code>i_transporte</code></td>
+<td>Devengado específico de la alcaldía en líneas del tipo de intervención «transporte» (por el nombre de la línea, intervenciones.py)</td>
 </tr>
 <tr>
 <td><code>l2</code></td>
@@ -895,8 +1170,16 @@ en proporción a su población de 6 a 17 años.</p>
 <td>Devengado específico de la gobernación en «Alimentación complementaria escolar»</td>
 </tr>
 <tr>
+<td><code>gob_sub_Bonos y becas a estudiantes (alcaldías y gobernaciones)</code></td>
+<td>Devengado específico de la gobernación en «Bonos y becas a estudiantes (alcaldías y gobernaciones)»</td>
+</tr>
+<tr>
 <td><code>gob_sub_Juegos estudiantiles y olimpiadas</code></td>
 <td>Devengado específico de la gobernación en «Juegos estudiantiles y olimpiadas»</td>
+</tr>
+<tr>
+<td><code>gob_sub_Parques y juegos infantiles</code></td>
+<td>Devengado específico de la gobernación en «Parques y juegos infantiles»</td>
 </tr>
 <tr>
 <td><code>gob_sub_Programa de defensa y protección de NNA</code></td>
@@ -948,9 +1231,17 @@ en proporción a su población de 6 a 17 años.</p>
 </tr>
 </tbody>
 </table></div>
-<h2 id="9-indicadores-del-atlas">9. Indicadores del atlas</h2>
+<h3 id="9-indicadores-del-atlas">9. Indicadores del atlas</h3>
 <p>El valor de Bolivia y de cada departamento es el <strong>cociente de los totales</strong>: el atlas pondera cada indicador por su propio
 denominador (columna «Ponderador»); los montos se suman.</p>
+<p><strong>Promedio de 3 años.</strong> El mapa ofrece cada indicador también como promedio de la gestión y las dos anteriores: el total
+de las tres gestiones (montos en bolivianos de 2025, población y matrícula sumadas) entre el total de las tres, con la
+misma fórmula; los montos, como promedio anual. Pide presupuesto publicado en las tres gestiones, así que empieza en
+2016-2018. Sirve para comparar municipios: un año con una obra grande sube mucho a un municipio chico, y el orden de los
+municipios por gasto por niño cambia mucho de un año a otro (<code>docs/12_mapa_fondo.md</code>).</p>
+<p><strong>Indicadores por estudiante.</strong> Quedan sin dato donde la matrícula fiscal del municipio es menos de un tercio de su
+población de 6 a 17 años: la mayoría de sus niños estudia en otro municipio o en una unidad privada, y dividir entre los
+pocos inscritos inflaría el gasto por estudiante.</p>
 <div class="scroll"><table>
 <thead>
 <tr>
@@ -964,31 +1255,31 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 </thead>
 <tbody>
 <tr>
-<td>Alcaldía: cuánto gasta</td>
+<td>¿Cuánto gasta la alcaldía?</td>
 <td><code>a_esp_nna</code></td>
 <td>Gasto específico en NNA por niño</td>
 <td>Bs/NNA</td>
-<td>Devengado específico de la alcaldía (desayuno escolar, unidades educativas, defensorías y centros infantiles, salud infantil, deporte estudiantil) ÷ población de 0 a 17 años (INE, a mitad de año). En bolivianos de 2025.</td>
+<td>Devengado específico de la alcaldía (alimentación escolar, unidades educativas, bonos y becas a estudiantes, defensorías y centros infantiles, salud infantil, deporte estudiantil y parques infantiles) ÷ población de 0 a 17 años (INE, a mitad de año). En bolivianos de 2025.</td>
 <td>población 0-17</td>
 </tr>
 <tr>
-<td>Alcaldía: cuánto gasta</td>
+<td>¿Cuánto gasta la alcaldía?</td>
 <td><code>a_esp_pct</code></td>
-<td>Parte del presupuesto municipal que va a la niñez</td>
+<td>Parte del gasto municipal que va a la niñez</td>
 <td>%</td>
 <td>Devengado específico en NNA ÷ gasto consolidado de la alcaldía (sin deuda, activos financieros ni transferencias a otras entidades públicas).</td>
 <td>gasto consolidado de la alcaldía</td>
 </tr>
 <tr>
-<td>Alcaldía: cuánto gasta</td>
+<td>¿Cuánto gasta la alcaldía?</td>
 <td><code>a_esp_mm</code></td>
 <td>Gasto específico en NNA (monto)</td>
 <td>MM Bs</td>
-<td>Suma del devengado específico en NNA de la alcaldía, en bolivianos de 2025 (IPC).</td>
+<td>Suma del devengado específico en NNA de la alcaldía, en bolivianos de 2025 (IPC). En el promedio de 3 años, el promedio anual.</td>
 <td>suma de los municipios</td>
 </tr>
 <tr>
-<td>Alcaldía: en qué gasta</td>
+<td>¿En qué?</td>
 <td><code>a_ace_pct</code></td>
 <td>Alimentación escolar</td>
 <td>%</td>
@@ -996,31 +1287,7 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>gasto específico</td>
 </tr>
 <tr>
-<td>Alcaldía: en qué gasta</td>
-<td><code>a_edu_pct</code></td>
-<td>Unidades educativas</td>
-<td>%</td>
-<td>Devengado en infraestructura, equipamiento, mantenimiento, servicios básicos y material de las unidades educativas (programa municipal de educación) ÷ devengado específico en NNA.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Alcaldía: en qué gasta</td>
-<td><code>a_prot_pct</code></td>
-<td>Protección de la niñez</td>
-<td>%</td>
-<td>Devengado del programa municipal 26 «Defensa y protección de la niñez y adolescencia» y líneas de protección fuera de él ÷ devengado específico en NNA.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Alcaldía: en qué gasta</td>
-<td><code>a_inv_pct</code></td>
-<td>Inversión (proyectos)</td>
-<td>%</td>
-<td>Devengado específico registrado en proyectos de inversión ÷ devengado específico en NNA.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Alcaldía: por beneficiario</td>
+<td>¿En qué?</td>
 <td><code>a_ace_est</code></td>
 <td>Alimentación escolar por estudiante</td>
 <td>Bs/est.</td>
@@ -1028,7 +1295,7 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>matrícula fiscal</td>
 </tr>
 <tr>
-<td>Alcaldía: por beneficiario</td>
+<td>¿En qué?</td>
 <td><code>a_edu_est</code></td>
 <td>Unidades educativas por estudiante</td>
 <td>Bs/est.</td>
@@ -1036,7 +1303,15 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>matrícula fiscal</td>
 </tr>
 <tr>
-<td>Alcaldía: por beneficiario</td>
+<td>¿En qué?</td>
+<td><code>a_mant_pct</code></td>
+<td>De lo que va a obras, parte para mantener y mejorar</td>
+<td>%</td>
+<td>Devengado específico en líneas de mejoramiento y mantenimiento ÷ devengado en esas líneas más las de construcción y ampliación. El tipo de cada línea sale de su nombre, con la regla del desglose (intervenciones.py).</td>
+<td>gasto en obras (construcción y ampliación más mejoramiento y mantenimiento)</td>
+</tr>
+<tr>
+<td>¿En qué?</td>
 <td><code>a_prot_nna</code></td>
 <td>Protección por niño</td>
 <td>Bs/NNA</td>
@@ -1044,7 +1319,71 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>población 0-17</td>
 </tr>
 <tr>
-<td>Alcaldía: ejecución y financiamiento</td>
+<td>¿En qué?</td>
+<td><code>a_prot_pct</code></td>
+<td>Protección de la niñez</td>
+<td>%</td>
+<td>Devengado del programa municipal 26 «Defensa y protección de la niñez y adolescencia» y líneas de protección fuera de él ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿En qué?</td>
+<td><code>a_pi_nna</code></td>
+<td>Primera infancia, por niño de 0 a 5 años</td>
+<td>Bs/NNA</td>
+<td>Devengado específico en programas cuyo tramo de edad es la primera infancia (0 a 5 años) ÷ población de 0 a 5 años (INE, a mitad de año). En bolivianos de 2025.</td>
+<td>población 0-5</td>
+</tr>
+<tr>
+<td>¿En qué?</td>
+<td><code>a_inv_pct</code></td>
+<td>Inversión (proyectos)</td>
+<td>%</td>
+<td>Devengado específico registrado en proyectos de inversión ÷ devengado específico en NNA.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Con qué plata?</td>
+<td><code>a_fin_copart</code></td>
+<td>Pagado con coparticipación</td>
+<td>%</td>
+<td>Devengado específico con organismo financiador «TGN - Coparticipación Tributaria» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Con qué plata?</td>
+<td><code>a_fin_idh</code></td>
+<td>Pagado con IDH</td>
+<td>%</td>
+<td>Devengado específico con organismo «TGN - Impuesto Directo a los Hidrocarburos» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Con qué plata?</td>
+<td><code>a_fin_propios</code></td>
+<td>Pagado con recursos propios</td>
+<td>%</td>
+<td>Devengado específico con organismo «Recursos Específicos de los Gobiernos Autónomos Municipales» ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Con qué plata?</td>
+<td><code>a_fin_tgn</code></td>
+<td>Pagado con transferencias del nivel central</td>
+<td>%</td>
+<td>Devengado específico con organismo financiador «Tesoro General de la Nación» (sin coparticipación ni IDH) ÷ devengado específico. Quién giró la plata lo dice el presupuesto del nivel central (ver la metodología).</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Con qué plata?</td>
+<td><code>a_fin_regalias</code></td>
+<td>Pagado con regalías</td>
+<td>%</td>
+<td>Devengado específico con organismo financiador de regalías ÷ devengado específico.</td>
+<td>gasto específico</td>
+</tr>
+<tr>
+<td>¿Se gasta lo presupuestado?</td>
 <td><code>a_ejec</code></td>
 <td>Ejecución del gasto en niñez</td>
 <td>%</td>
@@ -1052,39 +1391,15 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>presupuesto vigente específico</td>
 </tr>
 <tr>
-<td>Alcaldía: ejecución y financiamiento</td>
-<td><code>a_modif</code></td>
-<td>Presupuesto vigente respecto del inicial</td>
-<td>%</td>
-<td>Presupuesto vigente específico en NNA ÷ presupuesto inicial específico en NNA.</td>
-<td>presupuesto inicial específico</td>
+<td>¿Se gasta lo presupuestado?</td>
+<td><code>a_agreg_nna</code></td>
+<td>Presupuesto que se agregó en el año, por niño</td>
+<td>Bs/NNA</td>
+<td>(Presupuesto vigente específico en NNA − presupuesto inicial específico en NNA) ÷ población de 0 a 17 años. En bolivianos de 2025.</td>
+<td>población 0-17</td>
 </tr>
 <tr>
-<td>Alcaldía: ejecución y financiamiento</td>
-<td><code>a_fin_copart</code></td>
-<td>Financiado con coparticipación</td>
-<td>%</td>
-<td>Devengado específico con organismo financiador «TGN - Coparticipación Tributaria» ÷ devengado específico.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Alcaldía: ejecución y financiamiento</td>
-<td><code>a_fin_idh</code></td>
-<td>Financiado con IDH</td>
-<td>%</td>
-<td>Devengado específico con organismo «TGN - Impuesto Directo a los Hidrocarburos» ÷ devengado específico.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Alcaldía: ejecución y financiamiento</td>
-<td><code>a_fin_propios</code></td>
-<td>Financiado con recursos propios</td>
-<td>%</td>
-<td>Devengado específico con organismo «Recursos Específicos de los Gobiernos Autónomos Municipales» ÷ devengado específico.</td>
-<td>gasto específico</td>
-</tr>
-<tr>
-<td>Todo el gasto en el municipio (estimación)</td>
+<td>Todo el Estado en el municipio (estimación)</td>
 <td><code>t_esp_nna</code></td>
 <td>Gasto específico de todos los niveles por niño</td>
 <td>Bs/NNA</td>
@@ -1092,28 +1407,20 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 <td>población 0-17</td>
 </tr>
 <tr>
-<td>Todo el gasto en el municipio (estimación)</td>
+<td>Todo el Estado en el municipio (estimación)</td>
+<td><code>t_tot_nna</code></td>
+<td>Gasto total en NNA por niño (con indirecto y ampliado)</td>
+<td>Bs/NNA</td>
+<td>Gasto específico de todos los niveles + gasto indirecto (×0,5 madre-niño, ×0,33 familia) y ampliado (× proporción de 0-17 del departamento), sin empresas públicas subnacionales ÷ población 0-17. Bolivianos de 2025.</td>
+<td>población 0-17</td>
+</tr>
+<tr>
+<td>Todo el Estado en el municipio (estimación)</td>
 <td><code>t_alc_pct</code></td>
 <td>Parte que pone la alcaldía</td>
 <td>%</td>
 <td>Gasto específico de la alcaldía ÷ gasto específico de todos los niveles en el municipio.</td>
 <td>gasto específico de todos los niveles</td>
-</tr>
-<tr>
-<td>Todo el gasto en el municipio (estimación)</td>
-<td><code>t_rep_pct</code></td>
-<td>Parte estimada por reparto</td>
-<td>%</td>
-<td>Gasto repartido (planilla docente, bonos, programas nacionales, gasto departamental sin ubicación) ÷ gasto específico de todos los niveles.</td>
-<td>gasto específico de todos los niveles</td>
-</tr>
-<tr>
-<td>Todo el gasto en el municipio (estimación)</td>
-<td><code>t_tot_nna</code></td>
-<td>Gasto total en NNA por niño (con indirecto y ampliado)</td>
-<td>Bs/NNA</td>
-<td>Gasto específico de todos los niveles + gasto indirecto (×0,5 madre-niño, ×0,33 familia) y ampliado (× proporción de 0-17 del departamento), sin empresas municipales ÷ población 0-17. Bolivianos de 2025.</td>
-<td>población 0-17</td>
 </tr>
 <tr>
 <td>Contexto</td>
@@ -1133,30 +1440,177 @@ denominador (columna «Ponderador»); los montos se suman.</p>
 </tr>
 </tbody>
 </table></div>
-<h2 id="10-controles">10. Controles</h2>
-<pre><code>OK  suma de municipios (todos los niveles) = gasto específico nacional (MM Bs): dif. máx 0.0290
-OK  suma de alcaldías (perfiles) = alcaldías en la página nacional: dif. máx 0.0130
+<h3 id="10-controles">10. Controles</h3>
+<pre><code>OK  suma de municipios (todos los niveles) = gasto específico nacional (MM Bs): dif. máx 0.0280
+OK  suma de alcaldías (perfiles) = alcaldías en la página nacional: dif. máx 0.0100
 OK  suma de departamentos = nacional por nivel (central): dif. máx 0.0020
-OK  suma de municipios, ampliado = nacional: dif. máx 0.0060
-OK  mapa: valor de Bolivia de a_esp_nna = total ÷ total: dif. máx 0.0896
-OK  mapa: valor de Bolivia de t_esp_nna = total ÷ total: dif. máx 0.0881
-MAL mapa: valor de Bolivia de a_esp_pct = total ÷ total: dif. máx 0.0108
-HAY CUADRES QUE FALLAN
+OK  suma de municipios, ampliado = nacional: dif. máx 0.0070
+OK  mapa: valor de Bolivia de a_esp_nna = total ÷ total: dif. máx 0.0867
+OK  mapa: valor de Bolivia de t_esp_nna = total ÷ total: dif. máx 0.1251
+OK  mapa: valor de Bolivia de a_esp_pct = total ÷ total: dif. máx 0.0095
+TODO CUADRA
 </code></pre>
-<h2 id="11-limitaciones">11. Limitaciones</h2>
+<h3 id="11-limitaciones">11. Limitaciones</h3>
 <ul>
 <li>El gasto por niño es por habitante de 0 a 17 años, no por beneficiario: el presupuesto no dice a cuántos niños llegó.</li>
 <li>Las reglas leen texto libre: puede quedar error de clasificación en líneas chicas. Las alcaldías-año sin alimentación
   escolar o sin protección se listan en <code>salidas/revision_manual.csv</code> para revisión.</li>
 <li>El ampliado supone que la niñez usa salud, agua o deporte en proporción a su peso en la población.</li>
-<li>La capa «todo el gasto en el municipio» es una estimación: en 2024, el 86,4 % del gasto específico por municipio se asignó
+<li>La capa «todo el gasto en el municipio» es una estimación: en 2024, el 86,3 % del gasto específico por municipio se asignó
   por reparto (casi todo la planilla docente).</li>
 </ul>
 <p><strong>Referencias.</strong> MEFP, UNICEF y Red Parlamentaria por la Niñez (2017), <em>Presupuesto público para niñas, niños y adolescentes
 en Bolivia</em>. UNICEF Bolivia (2023), <em>Marco conceptual y metodología de estimación</em>. Curcio, Goldschmit y Robba (2012),
-<em>Gasto público dirigido a la niñez en América Latina y el Caribe</em>, CEPAL LC/W.482.</p></article></div>
+<em>Gasto público dirigido a la niñez en América Latina y el Caribe</em>, CEPAL LC/W.482.</p>
+<!-- GASTO:FIN -->
+    </article>
+  </div>
+
+  <div class="capitulo" id="indicadores"><span class="n">3</span><h2>Los indicadores sociales</h2><p>Cómo se calcularon, sus universos y sus controles</p></div>
+  <div class="met-doc">
+    <nav class="indice" aria-label="Los indicadores sociales">
+      <a href="#ind-universo">1. Universo y edades</a><a href="#ind-censo">2. Censo 2024</a><a href="#ind-eh">3. Encuesta de Hogares 2025</a><a href="#ind-edsa">4. EDSA 2023</a>
+      <a href="#ind-error">5. Margen de error y reglas</a><a href="#tres-fuentes">6. Tres fuentes frente a frente</a><a href="#ind-trabajo">7. Trabajo infantil: dos definiciones</a><a href="#ind-limites">8. Lo que el atlas no dice</a>
+    </nav>
+    <article class="tarjeta metodo">
+      <h3 id="ind-universo">1. Universo y edades</h3>
+      <p>El universo son las niñas, niños y adolescentes de <strong>0 a 17 años</strong>: el de la Ley 548, Código Niña, Niño y Adolescente («hasta los 18 años cumplidos»), que es también el denominador del gasto por niño. Todo se calcula <strong>por edad simple de 0 a 18</strong> —19 donde el estándar lo pide, como la fecundidad de 15 a 19— y el 18 se muestra como transición. Los tramos son primera infancia (0 a 5), niñez (6 a 11) y adolescencia (12 a 17).</p>
+      <p>Cada indicador declara su propio universo: la edad desde la que existe la pregunta. En el censo, la lectura y el nivel educativo se preguntan desde los 5 años, el trabajo desde los 7, el estado civil desde los 12 y los hijos, a las mujeres desde los 12.</p>
+      <h4>Cuántos indicadores hay, por tema y por fuente</h4>
+      <div class="scroll"><table id="t-temas"></table></div>
+
+      <h3 id="ind-censo">2. Censo 2024: un dato para cada municipio</h3>
+      <p>Se calcula con el microdato del INE, sobre las personas que residen habitualmente en el país, como los tabulados oficiales. Cada indicador sale por municipio, área, sexo y edad simple; el valor de Bolivia y de cada departamento es el cociente de los totales, calculado en la cadena y no en la página.</p>
+      <p><strong>Validación al registro.</strong> La asistencia escolar reproduce los cuadros del INE en todos los municipios —total, urbano y rural, a los 4-5, 6-11 y 12-17 años—: la misma tasa y la misma población en el denominador, sin una sola diferencia. Agua y saneamiento usan la definición oficial del INE, distinta en el área urbana y en la rural, y para toda la población dan los mismos totales que el INE.</p>
+      <p><strong>Conteo, no proyección.</strong> <span id="nota-pob">El conteo censal no tiene el ajuste por omisión que el INE aplica en sus proyecciones.</span> Los indicadores sociales usan el conteo; el gasto por niño, la proyección.</p>
+      <p><strong>Municipios chicos.</strong> Donde hay pocos casos en el denominador, una sola familia mueve la tasa: esos municipios se marcan con trama en los mapas y no entran en los rankings.</p>
+      <p><strong>Edad por edad en cada municipio.</strong> La página de cada indicador compara, edad por edad, a Bolivia con el municipio o el departamento que se elija, y con un segundo territorio. En cada municipio, una edad con menos de 50 casos va con rayas. No hay edad por edad municipal —sólo se comparan departamentos— en los indicadores que llegan sólo hasta departamento, en los conteos (por edad y municipio quedarían muy pocas personas y se podría identificar a alguien), en la maternidad y la fecundidad adolescentes (a los 12, 13 o 14 años serían celdas muy finas de un tema sensible) y donde la mitad de las celdas municipio × edad tiene menos de 50 casos (el trabajo en el campo y el trabajo familiar sin pago, que se calculan sobre quienes trabajan). La regla está en <code>74_exportar_indicadores.py</code>.</p>
+      <p><strong>Lo que el censo no puede decir.</strong> No pregunta horas ni tipo de tarea, así que no separa el trabajo adolescente permitido del prohibido ni mide el trabajo doméstico. No identifica a la madre y al padre de cada persona, así que no dice si un niño vive con los dos. Entre las adolescentes, muchas respuestas sobre hijos quedan «sin especificar»: la maternidad adolescente del censo es un piso. Y no mide nutrición, vacunas, aprendizajes, violencia ni ingresos: para eso están las encuestas.</p>
+
+      <h3 id="ind-eh">3. Encuesta de Hogares 2025</h3>
+      <p>Una muestra de hogares estratificada y por conglomerados —estratos y unidades primarias de muestreo (UPM)— en los nueve departamentos<span id="eh-muestra"></span>. Se estima con el factor de expansión de la Revisión 2025, ajustado a las proyecciones de población del INE, que corrigen la omisión censal<span id="eh-pob"></span>.</p>
+      <p><strong>Error de muestreo.</strong> Linealización de Taylor con estratos y UPM, el método que recomienda el INE; se comprobó con un jackknife, que da lo mismo. La pobreza por ingreso de toda la población reproduce a la décima la cifra oficial del INE.</p>
+      <p><strong>Trampas resueltas.</strong> La encuesta se levantó con las escuelas de vacaciones: la asistencia se mide con la definición del INE y no con «pasa clases». El módulo de empleo empieza a los 7 años. La discriminación se pregunta a un solo informante de 15 años o más por hogar. Y la fecundidad adolescente queda subcaptada<span id="eh-fec"></span>: para esa cifra, mejor el censo.</p>
+
+      <h3 id="ind-edsa">4. EDSA 2023</h3>
+      <p>La Encuesta de Demografía y Salud mide lo que ninguna otra fuente: peso, talla y hemoglobina; vacunas, lactancia, desarrollo infantil temprano, disciplina en la crianza, mortalidad en la niñez, salud sexual y reproductiva de las adolescentes y violencia. Es representativa para Bolivia, para el área urbana y la rural y para los nueve departamentos; nada municipal. Sus ponderadores sirven para proporciones, tasas y promedios, no para totales, y su error se mide como en la Encuesta de Hogares.</p>
+      <p id="edsa-estado">Sus indicadores están en cálculo: se suman al catálogo cuando estén listos.</p>
+
+      <h3 id="ind-error">5. Margen de error y reglas de publicación</h3>
+      <p>Ninguna cifra de encuesta se muestra sin su margen de error. El intervalo de 95 % es la estimación más y menos 1,96 errores estándar; el coeficiente de variación (CV), el error estándar dividido por la estimación. Cada cifra se califica con tres reglas:</p>
+      <div class="reglas" id="reglas"></div>
+      <p>Una cifra de 0 % o de 100 % con error estándar cero —ningún caso, o todos, en la muestra— tampoco se dibuja: su margen de error no se puede medir y su CV no existe, así que no cumple la regla de publicación. Las tablas de datos la muestran con esa aclaración.</p>
+      <p>Las cifras llegan calculadas de la cadena —valor, error estándar, CV, casos y calificación—: las páginas no suman ni promedian nada, sólo ordenan, filtran y dibujan el intervalo. Por edad, las encuestas se muestran por tramo y no año por año: con cada edad la muestra se achica y la cifra se vuelve ruido.</p>
+      <p><strong>Departamentos por tramo de edad.</strong> La página de cada indicador compara, tramo por tramo, a Bolivia con uno o dos departamentos. Cada celda departamento × tramo se estima del microdato con el mismo método —linealización de Taylor con estratos y UPM—, lleva su propio error estándar, CV y casos, y sigue las mismas reglas: la que no las cumple no se dibuja. Las retenciones por el calendario de campo alcanzan también a este cruce, y las celdas que no se publican viajan en los datos sin su cifra, sólo con sus casos: por departamento y tramo hay celdas chicas de temas sensibles, como las agresiones.</p>
+
+      <h3 id="tres-fuentes">6. Tres fuentes frente a frente</h3>
+      <p>Las tres fuentes son de años distintos —el censo de marzo de 2024, la EDSA de 2023, la Encuesta de Hogares de 2025—, no preguntan exactamente lo mismo, a veces responde otra persona por el niño, y el censo cuenta a todos mientras las encuestas estiman con una muestra. Por eso, cuando miden lo mismo, no siempre coinciden. El atlas no ajusta una con la otra: muestra cada cifra con su fuente y su año. Si la cifra del censo cae dentro del margen de error de la encuesta, las dos dicen lo mismo.</p>
+      <div class="scroll"><table id="t-pares"></table></div>
+
+      <h3 id="ind-trabajo">7. Trabajo infantil: dos definiciones</h3>
+      <div id="trabajo"><p>Cada fuente usa la definición con que el INE la publica, y la otra queda a la vista.</p></div>
+
+      <h3 id="ind-limites">8. Lo que el atlas no dice</h3>
+      <ul>
+        <li>Las encuestas no bajan a municipio: una cifra departamental no describe a cada municipio del departamento.</li>
+        <li>Hay un solo punto por fuente: el atlas no muestra tendencias de los indicadores sociales.</li>
+        <li>El cruce con el gasto muestra dónde está cada municipio, no por qué: un municipio puede gastar más justamente porque tiene más carencias. La presencia se mide; la explicación se declara.</li>
+        <li>El gasto por niño es por habitante de 0 a 17 años, no por beneficiario: el presupuesto no dice a cuántos niños llegó.</li>
+      </ul>
+    </article>
+  </div>
+
+  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto 2016-2025; INE, Censo de Población y Vivienda 2024, Encuesta de Hogares 2025, Encuesta de Demografía y Salud 2023 (microdatos) y proyecciones de población; Ministerio de Educación, SEIE. Clasificación del gasto: metodología MEFP-UNICEF con los ponderadores de UNICEF Bolivia (2023). Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script src="estilo/comun.js"></script>
+<script src="estilo/encuestas.js"></script>
 <script>
-function aplicar(d,g){document.body.classList.toggle("dark",d);if(g){try{localStorage.setItem("atlas-tema",d?"dark":"light");}catch(_){}}}
-(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}aplicar(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
-document.getElementById("tema").onclick=()=>aplicar(!document.body.classList.contains("dark"),true);
-</script></body></html>
+(() => {
+const { $, nf, pc } = Atlas, E = Atlas.enc, esc = E.esc;
+$("tema").onclick = () => Atlas.aplicarTema(!document.body.classList.contains("dark"), true);
+
+Promise.all([fetch("datos/catalogo_ind.json").then((r) => r.json()),
+  // la cifra de Bolivia de cada indicador del censo viaja en cada perfil municipal (campo b): se lee la de uno
+  fetch("datos/perfil_social/010101.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  fetch("datos/municipios.json").then((r) => r.json()), E.cargar("eh2025"), E.cargar("edsa2023")]).then(([CAT, PS, MUN, EH, EDSA]) => {
+  const FI = {}; CAT.indicadores.forEach((f) => (FI[f.id] = f));
+  const B = (id) => (PS && PS.ind && PS.ind[id] ? PS.ind[id].b : null);
+  const ENC = { eh2025: EH, edsa2023: EDSA }, DK = Object.keys(MUN.departamentos), TEMAS = E.temas(CAT);
+  const R = (EH && EH.reglas) || (EDSA && EDSA.reglas) || null;
+  const ind = (J, c) => J && J.indicadores.find((x) => x.cod === c);
+  const nac = (J, c) => J && J.valores[c] && J.valores[c].nac;
+  const valCenso = (id) => { const f = FI[id], b = B(id); if (!f || b == null) return null; return f.unidad === "%" ? pc(b) : f.unidad === "por 1.000" ? `${nf(b, 1)} por mil` : nf(b); };
+  const edCenso = (id) => { const f = FI[id], ed = f && (f.titular || f.edad); return ed ? `${ed[0]} a ${ed[1]} años` : ""; };
+
+  // reglas de publicación (de los datos)
+  if (R) {
+    $("reglas-corta").innerHTML = `publicable si el ${esc(R.publicable)}, con cautela si el ${esc(R.advertencia)} y no se publica si el ${esc(R.no_publicar)}`;
+    $("reglas").innerHTML = [["Publicable", R.publicable, "punto o barra llenos", "background:var(--t6)"],
+      ["Cautela", R.advertencia, "punto hueco, barra rayada, línea punteada y la palabra «cautela»", "box-shadow:inset 0 0 0 2px var(--t6)"],
+      ["No se publica", R.no_publicar, "no se dibuja: dice «muestra insuficiente» y la tabla va sin valor", "box-shadow:inset 0 0 0 1px var(--linea)"]]
+      .map(([t, c, m, s]) => `<div><b>${t}</b><span class="c">${esc(c)}</span><span class="m"><i style="${s}"></i>${m}</span></div>`).join("");
+  }
+  // la nota del conteo censal sale del catálogo
+  if (FI.pob && FI.pob.nota) $("nota-pob").textContent = FI.pob.nota;
+
+  // cuántos indicadores, por tema y fuente
+  const cuenta = {};
+  const suma = (t, k) => { cuenta[t] = cuenta[t] || { censo: 0, eh2025: 0, edsa2023: 0 }; cuenta[t][k]++; };
+  CAT.indicadores.filter((f) => f.id !== "pob").forEach((f) => suma(f.tema, "censo"));
+  E.ENCUESTAS.forEach((k) => ENC[k] && ENC[k].indicadores.forEach((x) => suma(E.temaDe(k, x), k)));
+  const cols = ["censo", "eh2025", ...(EDSA ? ["edsa2023"] : [])], tot = { censo: 0, eh2025: 0, edsa2023: 0 };
+  const filasT = Object.keys(TEMAS).filter((t) => cuenta[t]).map((t) => { cols.forEach((k) => (tot[k] += cuenta[t][k])); const s = cols.reduce((a, k) => a + cuenta[t][k], 0);
+    return `<tr><td>${esc(TEMAS[t].nombre)}</td>${cols.map((k) => `<td class="num">${cuenta[t][k] || "—"}</td>`).join("")}<td class="num"><b>${s}</b></td></tr>`; });
+  $("t-temas").innerHTML = `<tr><th>Tema</th>${cols.map((k) => `<th class="num">${E.FUENTES[k].corto}</th>`).join("")}<th class="num">Total</th></tr>${filasT.join("")}`
+    + `<tr><td><b>Todos</b></td>${cols.map((k) => `<td class="num"><b>${tot[k]}</b></td>`).join("")}<td class="num"><b>${cols.reduce((a, k) => a + tot[k], 0)}</b></td></tr>`;
+
+  // la Encuesta de Hogares, con sus cifras
+  if (EH) {
+    const de017 = EH.indicadores.filter((x) => /^0\s*-\s*17$/.test(String(x.poblacion).trim()));
+    const n = Math.max(0, ...de017.map((x) => (nac(EH, x.cod) || {}).n || 0));
+    if (n) $("eh-muestra").innerHTML = `, con <span class="v">${nf(n)}</span> niñas, niños y adolescentes de 0 a 17 años`;
+    const tot017 = de017.find((x) => x.tipo === "total"), t = tot017 && nac(EH, tot017.cod);
+    if (t && B("pob") != null) $("eh-pob").innerHTML = `: por eso la encuesta estima <span class="v">${nf(t.v)}</span> niñas, niños y adolescentes, más que los <span class="v">${nf(B("pob"))}</span> que contó el censo`;
+    const fec = nac(EH, "SAL16");
+    if (fec && E.publica(fec) && B("nacimientos_adolescentes") != null) $("eh-fec").innerHTML = ` —<span class="v">${nf(fec.v, 1)}</span> nacimientos por cada mil adolescentes de 15 a 19 años, contra <span class="v">${nf(B("nacimientos_adolescentes"), 1)}</span> en el censo—`;
+  }
+  if (EDSA) $("edsa-estado").innerHTML = `Sus <span class="v">${nf(EDSA.indicadores.length)}</span> indicadores ya están en el <a href="indicadores.html?f=edsa2023">catálogo</a>, cada uno con su margen de error.`;
+
+  // tres fuentes frente a frente
+  const enc = (k, c, cens) => {
+    const J = ENC[k], x = ind(J, c), cc = nac(J, c);
+    if (!x || !cc) return { html: "—", ic: null, x: null };
+    return { x, ic: E.publica(cc) ? E.ic(x, cc) : null, html: E.publica(cc) ? `<span class="junto"><span class="v">${E.fmt(x, cc.v)}</span> <span class="s">${E.pm(x, cc)}</span></span>${cc.c === "a" ? '<br><span class="cautela" style="margin-left:0">cautela</span>' : ""}<br><span class="s">${esc(E.poblacion(x.poblacion))}</span>` : `<span class="s">${E.motivo(cc)}</span>` };
+  };
+  const filasP = E.PARES.map((p) => {
+    const cens = (p.censo || []).filter((id) => valCenso(id) != null);
+    const e1 = (p.eh2025 || []).map((c) => enc("eh2025", c)), e2 = (p.edsa2023 || []).map((c) => enc("edsa2023", c));
+    const icRef = [...e1, ...e2].find((e) => e.ic);
+    let lect = cens.map((id) => { const b = B(id); if (!icRef || b == null) return ""; const dentro = b >= icRef.ic[0] && b <= icRef.ic[1];
+      return `<span class="${dentro ? "dentro" : "fuera"}">${cens.length > 1 ? `${esc(FI[id].nombre)}: ` : "el censo queda "}<b>${dentro ? "dentro" : "fuera"}</b> del margen de la encuesta</span>`; }).filter(Boolean).join("<br>");
+    // sin censo, las dos encuestas entre sí: ¿se tocan sus intervalos?
+    const ics = [...e1, ...e2].filter((e) => e.ic);
+    if (!cens.length && ics.length === 2) { const [a, z] = ics.map((e) => e.ic), toca = !(a[1] < z[0] || z[1] < a[0]);
+      lect = `<span class="${toca ? "dentro" : "fuera"}">los intervalos de las dos encuestas <b>${toca ? "se superponen" : "no se tocan"}</b></span>`; }
+    return `<tr><td><b>${esc(p.que)}</b>${p.por ? `<br><span class="s">${esc(p.por)}</span>` : ""}</td>`
+      + `<td>${cens.length ? cens.map((id) => `<a href="indicador.html?i=${encodeURIComponent(id)}" class="v">${valCenso(id)}</a>${cens.length > 1 ? ` <span class="s">${esc(FI[id].nombre)}</span>` : ""}<br><span class="s">${edCenso(id)}</span>`).join("<br>") : "—"}</td>`
+      + `<td>${e1.length ? e1.map((e) => e.html).join("<br>") : "—"}</td>${EDSA ? `<td>${e2.length ? e2.map((e) => e.html).join("<br>") : "—"}</td>` : ""}<td>${lect || '<span class="s">—</span>'}</td></tr>`;
+  });
+  $("t-pares").innerHTML = `<tr><th>Qué se mide</th><th>Censo 2024</th><th>EH 2025</th>${EDSA ? "<th>EDSA 2023</th>" : ""}<th>Lectura</th></tr>${filasP.join("")}`;
+
+  // trabajo infantil: cada fuente con su definición, todas a la vista
+  const t1 = FI.trabaja, t2 = FI.trabaja_amplio, o3 = ind(EH, "TRA03"), c3 = nac(EH, "TRA03"), o11 = ind(EH, "TRA11"), c11 = nac(EH, "TRA11");
+  const linea = (fte, nom, def, val, extra) => `<li><b>${fte}, «${esc(nom)}»:</b> <span class="v">${val}</span>${extra ? ` <span class="s">${extra}</span>` : ""}. ${def}</li>`;
+  // la definición y la nota de cada indicador del censo salen de su ficha (las variables entre comillas invertidas, como código)
+  const ficha = (f) => `${esc(f.definicion)} ${esc(f.nota || "").replace(/`([^`]+)`/g, "<code>$1</code>")}`;
+  const li = [];
+  if (t1 && B("trabaja") != null) li.push(linea("Censo 2024", t1.nombre, ficha(t1), valCenso("trabaja"), edCenso("trabaja")));
+  if (t2 && B("trabaja_amplio") != null) li.push(linea("Censo 2024", t2.nombre, ficha(t2), valCenso("trabaja_amplio"), edCenso("trabaja_amplio")));
+  if (o3 && E.publica(c3)) li.push(linea("Encuesta de Hogares 2025", o3.nombre, "El concepto con que el INE publica la ocupación incluye la producción para el consumo de la familia.", E.fmt(o3, c3.v), `${E.pm(o3, c3)} · ${esc(E.poblacion(o3.poblacion))}`));
+  if (o11 && E.publica(c11)) li.push(linea("Encuesta de Hogares 2025", o11.nombre, "De 14 a 17 años, la jornada extensa es de más de 40 horas por semana.", E.fmt(o11, c11.v), `${E.pm(o11, c11)}${c11.c === "a" ? " · cautela" : ""}`));
+  if (li.length) $("trabajo").innerHTML = `<p>Cada fuente usa la definición con que el INE la publica, y la otra queda a la vista:</p><ul>${li.join("")}</ul>`;
+}).catch((e) => console.error(e));
+})();
+</script>
+</body>
+</html>

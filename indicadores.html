@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indicadores · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Todos los indicadores sobre cómo viven las niñas, niños y adolescentes de Bolivia: Censo 2024, Encuesta de Hogares 2025 y EDSA 2023, cada cifra con su fuente y su año.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo/identidad.css">
+<style>
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+/* las tres fuentes */
+.fuentes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 0 0 10px }
+.fuente { background: var(--superficie); padding: 15px 18px 14px; border-top: 4px solid var(--c); min-width: 0; display: flex; flex-direction: column }
+.fuente .fk { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); font-weight: 600 }
+.fuente h2 { font-family: var(--fd); font-size: 18px; line-height: 1.2; color: var(--titulo); margin: 4px 0 6px; font-weight: 600 }
+.fuente p { font-size: 13.5px; margin: 0 0 10px; line-height: 1.5 }
+.fuente ul { list-style: none; margin: auto 0 0; padding: 8px 0 0; border-top: 1px solid var(--grilla); font-size: 13px; display: grid; gap: 4px }
+.fuente li b { font-family: var(--fm); font-weight: 600; color: var(--titulo) }
+.fuente li .nb { font-family: var(--f); color: var(--tinta) }
+.fuente .encalc { color: var(--estimacion); font-style: italic }
+.tres { font-size: 13.5px; color: var(--suave); margin: 0 0 22px; max-width: 64rem }
+/* buscador */
+.buscador { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; padding: 14px 16px; background: var(--superficie); border: 1px solid var(--linea); margin: 0 0 10px }
+.buscador .campo { flex: 1 1 340px; position: relative; min-width: 0 }
+.buscador input { width: 100%; font: inherit; font-size: 15px; padding: 9px 12px 9px 34px; border: 1px solid var(--linea); background: var(--papel); color: var(--tinta) }
+.buscador input:focus { outline: 2px solid var(--acento); outline-offset: -1px; border-color: var(--acento) }
+.buscador .lupa { position: absolute; left: 11px; top: 50%; width: 14px; height: 14px; margin-top: -7px; pointer-events: none; color: var(--suave) }
+.buscador .selector { margin: 0 }
+.cuenta { flex-basis: 100%; font-size: 13px; color: var(--suave); min-height: 20px }
+.cuenta b { font-family: var(--fm); color: var(--tinta); font-weight: 600 }
+.temas-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 4px }
+.temas-nav a { font-size: 12px; border: 1px solid var(--linea); padding: 3px 9px; color: var(--tinta); text-decoration: none; background: var(--superficie); white-space: nowrap }
+.temas-nav a:hover { border-color: var(--acento) }
+.temas-nav a b { font-family: var(--fm); color: var(--suave); font-weight: 500; margin-left: 3px }
+/* catálogo */
+.tema-sec { scroll-margin-top: 64px }
+.capitulo p b { font-family: var(--fm); font-weight: 600; color: var(--tinta) }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px }
+.ind { display: flex; flex-direction: column; gap: 5px; background: var(--superficie); border: 1px solid var(--linea); padding: 10px 13px 9px; color: var(--tinta);
+  text-decoration: none; min-width: 0; transition: border-color .15s ease, background-color .15s ease }
+.ind:hover { border-color: var(--acento); background: var(--papel) }
+.ind:focus-visible { outline: 2px solid var(--acento); outline-offset: 1px }
+.ind-a { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; color: var(--suave); min-height: 16px }
+.fte { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--tinta); letter-spacing: .02em; white-space: nowrap }
+.sw { width: 8px; height: 8px; display: inline-block; flex: 0 0 8px }
+.sw-censo { background: var(--t7) } .sw-eh2025 { background: var(--t5) } .sw-edsa2023 { background: var(--t3) }
+.niv { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap }
+.nueve { display: inline-flex; gap: 1.5px }
+.nueve i { width: 5px; height: 9px; display: block }
+.q-p { background: var(--t6) }
+.q-a { background: repeating-linear-gradient(135deg, var(--t6) 0 1.2px, var(--t2) 1.2px 2.6px) }
+.q-x { box-shadow: inset 0 0 0 1px var(--linea) }
+.ind-n { font-size: 14.5px; font-weight: 600; line-height: 1.3; color: var(--tinta) }
+.ind-b { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: auto; padding-top: 6px; border-top: 1px solid var(--grilla) }
+.ind-p { font-size: 12px; color: var(--suave); line-height: 1.35; min-width: 0 }
+.ind-v { font-family: var(--fm); font-size: 17px; font-weight: 600; color: var(--titulo); white-space: nowrap; text-align: right }
+.ind-v small { font-family: var(--f); font-size: 11px; font-weight: 500; color: var(--suave); margin-right: 3px; letter-spacing: 0 }
+.ind-v .u { font-family: var(--f); font-size: 11.5px; font-weight: 500; color: var(--suave); margin-left: 2px; letter-spacing: 0 }
+.ind-v .pm { font-size: 11.5px; font-weight: 500; color: var(--suave); margin-left: 4px }
+.ind-x { font-family: var(--f); font-size: 12px; font-style: italic; font-weight: 500; color: var(--suave) }
+.cautela { font-size: 10.5px; color: var(--estimacion); border: 1px dashed var(--estimacion); padding: 0 4px; white-space: nowrap; font-weight: 500 }
+.vacio { background: var(--superficie); border: 1px solid var(--linea); padding: 18px 20px; font-size: 14.5px; margin-top: 18px }
+@media (max-width: 1000px) {
+  .fuentes { grid-template-columns: 1fr }
+}
+@media (max-width: 560px) {
+  .buscador { padding: 12px 12px } .buscador .selector button { font-size: 12px; padding: 4px 8px }
+  .fuente { padding: 13px 14px 12px } .fuente h2 { font-size: 19px }
+  .tarjetas { grid-template-columns: 1fr; gap: 8px }
+}
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · cómo viven</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html" aria-current="page">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <div class="kick">Cómo viven · catálogo</div>
+  <h1>Indicadores</h1>
+  <p class="lede" id="lede">Cargando el catálogo…</p>
+  <div class="fuentes" id="fuentes"></div>
+  <p class="tres" id="tres"></p>
+
+  <div class="buscador" role="search">
+    <div class="campo">
+      <svg class="lupa" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="10.3" y1="10.3" x2="15" y2="15" stroke="currentColor" stroke-width="1.6"/></svg>
+      <label class="vh" for="q">Buscar un indicador</label>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar: pobreza, registro, deserción, DNA, desnutrición…">
+    </div>
+    <div class="selector" id="filtro" role="group" aria-label="Fuente"></div>
+    <div class="cuenta" id="cuenta" aria-live="polite"></div>
+  </div>
+  <nav class="temas-nav" id="temas-nav" aria-label="Temas"></nav>
+  <div id="catalogo"></div>
+
+  <footer>Fuentes: INE, Censo de Población y Vivienda 2024 (microdato; tasas sobre residentes habituales, como los tabulados del INE, que reproducen al registro); INE, Encuesta de Hogares 2025 y Encuesta de Demografía y Salud 2023 (microdato; cada cifra con su error de muestreo). <a href="metodologia.html#indicadores">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script src="estilo/comun.js"></script>
+<script src="estilo/encuestas.js"></script>
+<script>
+(() => {
+const { $, nf, pc } = Atlas, E = Atlas.enc, esc = E.esc;
+$("tema").onclick = () => Atlas.aplicarTema(!document.body.classList.contains("dark"), true);
+
+/* sinónimos: palabras que la gente busca y que no siempre están en el nombre del indicador.
+   Se prueban sobre el nombre y el tema (no sobre las notas, que nombran de todo y meten ruido). */
+const SINONIMOS = [
+  [/registro de nacimiento|certificado de nacimiento|cedula|documento de identidad/, "registro civil certificado partida nacimiento sereci identidad carnet documento"],
+  [/tema:proteccion|violencia|disciplina|castigo|situacion de calle|vivienda colectiva|discrimina|abuso|maltrato|delict|insegur/, "dna defensoria proteccion maltrato abuso"],
+  [/tema:trabajo|trabaj|ocupacion|ocupados/, "trabajo infantil laboral empleo dna defensoria"],
+  [/fuera de la escuela|no matricul|no asisten|abandono|asistencia|labores de casa/, "desercion abandono escolar"],
+  [/desnutric|talla|anemia|nutric|alimentaria|sin comer|lactancia|peso al nacer/, "desnutricion nutricion hambre comida"],
+  [/embaraz|fecundidad|nacimientos adolescentes|ya son madres|madre adolescente|parto/, "embarazo adolescente maternidad fecundidad"],
+  [/unida|union|casad/, "matrimonio infantil union temprana"],
+  [/pobreza|quintil/, "pobreza pobres"],
+  [/agua|caneria/, "agua potable"],
+  [/saneamiento|bano|letrina|alcantarillado/, "bano saneamiento alcantarillado"],
+  [/electric|energia/, "luz electricidad"],
+  [/internet|computadora|celular|tablet/, "internet conectividad tecnologia digital"],
+  [/bono|juancito|juana azurduy|\bbja\b|subsidio|renta dignidad/, "bono transferencia"],
+  [/alimentacion complementaria|desayuno/, "desayuno escolar"],
+  [/vacun|dosis/, "vacunas inmunizacion"],
+  [/seguro|\bsus\b|caja de salud/, "seguro de salud sus"],
+  [/dificultad|discapacidad/, "discapacidad"],
+  [/indigena|npioc|pueblo|lengua|originari|afroboliv/, "indigena originario pueblo lengua etnia"],
+  [/nacio|nacido|migr|emigr|remesa/, "migracion migrantes"],
+  [/atraso|rezago|sobreedad/, "rezago atraso repitencia"],
+  [/leer|escribir|sumar/, "analfabetismo alfabetizacion lectura"],
+  [/centro infantil|cuidado infantil|pre kinder|inicial|cuidador/, "guarderia wawa wasi kinder cuidado"],
+  [/emocional|suicid|autolesion/, "salud mental depresion suicidio"],
+  [/alcohol|tabaco/, "drogas consumo"],
+  [/lena|bosta|guano/, "lena humo cocina"],
+  [/piso de tierra|adobe|paredes/, "vivienda precaria"],
+  [/mortalidad|muerte|defuncion/, "mortalidad muerte"],
+  [/padre|monoparental|abuelos|nieto/, "familia padres"],
+];
+
+const qs = new URLSearchParams(location.search);
+let q = qs.get("q") || "", filtro = qs.get("f") || "todas";
+$("q").value = q;
+if (matchMedia("(max-width: 560px)").matches) $("q").placeholder = "Buscar: pobreza, DNA, deserción…";
+
+Promise.all([
+  fetch("datos/catalogo_ind.json").then((r) => r.json()),
+  // la cifra de Bolivia de cada indicador del censo viaja en cada perfil municipal (campo b): se lee la de uno
+  fetch("datos/municipios.json").then((r) => r.json()),
+  E.cargar("eh2025"), E.cargar("edsa2023"),
+]).then(([CAT, MUN, EH, EDSA]) => {
+  const TEMAS = E.temas(CAT), DK = Object.keys(MUN.departamentos), ENC = { eh2025: EH, edsa2023: EDSA };
+  const items = [];
+  // censo: los indicadores del catálogo (la población es la base de todos, no un indicador)
+  CAT.indicadores.filter((f) => f.id !== "pob").forEach((f) => {
+    const ed = f.titular || f.edad, b = f.bol ? f.bol.v : null;
+    const v = b == null ? '<span class="ind-x">s/d</span>' : f.unidad === "%" ? pc(b) : f.unidad === "por 1.000" ? `${nf(b, 1)}<span class="u">por mil</span>` : nf(b);
+    items.push({ fuente: "censo", id: f.id, nombre: f.nombre, tema: f.tema, pob: `${ed[0]} a ${ed[1]} años`, texto: f.definicion,
+      href: `indicador.html?i=${encodeURIComponent(f.id)}`, niv: `<span class="niv">${f.territorio === "departamento" ? "departamento" : "municipio"}</span>`,
+      valor: `<small>Bolivia</small>${v}`, marca: "" });
+  });
+  // encuestas: cada cifra con su margen de error y la cobertura de sus nueve departamentos
+  E.ENCUESTAS.forEach((clave) => {
+    const J = ENC[clave]; if (!J) return;
+    J.indicadores.forEach((x) => {
+      const V = J.valores[x.cod] || {}, b = V.nac, n = E.contar(V.dep, DK);
+      const cuad = ["p", "a", "x"].flatMap((c) => Array(n[c]).fill(`<i class="q-${c}"></i>`)).join("");
+      const tit = `${n.p} departamentos publicables, ${n.a} con cautela, ${n.x} con muestra insuficiente`;
+      items.push({ fuente: clave, id: x.cod, nombre: x.nombre, tema: E.temaDe(clave, x), pob: E.poblacion(x.poblacion), texto: x.definicion,
+        href: `encuesta.html?f=${clave}&i=${encodeURIComponent(x.cod)}`,
+        niv: n.p + n.a > 0 ? `<span class="niv" title="${tit}">departamento <span class="nueve" role="img" aria-label="${tit}">${cuad}</span></span>` : `<span class="niv" title="${tit}">sólo Bolivia</span>`,
+        valor: E.publica(b) ? `<small>Bolivia</small>${E.fmtHTML(x, b.v)}${E.margen(b) != null ? `<span class="pm">${E.pm(x, b)}</span>` : ""}` : `<span class="ind-x">${E.motivo(b)}</span>`,
+        marca: b && b.c === "a" ? '<span class="cautela">cautela</span>' : "" });
+    });
+  });
+  items.forEach((it) => {
+    const clave = E.norm(`${it.nombre} tema:${it.tema}`);
+    it.hay = E.norm([it.nombre, it.texto, it.pob, (TEMAS[it.tema] || TEMAS.otros).nombre, E.FUENTES[it.fuente].corto, E.FUENTES[it.fuente].largo, it.id].join(" "))
+      + " " + SINONIMOS.filter(([re]) => re.test(clave)).map(([, t]) => t).join(" ");
+    it.html = `<a class="ind" href="${it.href}"><span class="ind-a"><span class="fte"><i class="sw sw-${it.fuente}"></i>${E.FUENTES[it.fuente].corto}${it.marca ? ` ${it.marca}` : ""}</span>${it.niv}</span>`
+      + `<span class="ind-n">${esc(it.nombre)}</span><span class="ind-b"><span class="ind-p">${esc(it.pob)}</span><span class="ind-v">${it.valor}</span></span></a>`;
+  });
+
+  /* ── las tres fuentes, en una pantalla ─────────────────────────────────────────────────────────────────── */
+  const cuenta = (k) => items.filter((it) => it.fuente === k).length;
+  const nueve = (J) => (J ? J.indicadores.filter((x) => E.contar((J.valores[x.cod] || {}).dep, DK).p === DK.length).length : 0);
+  const muestra = (J) => (J ? Math.max(0, ...J.indicadores.filter((x) => /^0\s*-\s*17$/.test(String(x.poblacion).trim())).map((x) => ((J.valores[x.cod] || {}).nac || {}).n || 0)) : 0);
+  const nCenso = cuenta("censo"), nEH = cuenta("eh2025"), nED = cuenta("edsa2023"), nMun = MUN.municipios.length;
+  const fp = CAT.indicadores.find((f) => f.id === "pob"), pobCenso = fp && fp.bol ? fp.bol.v : null;
+  $("lede").innerHTML = `<b>${nf(items.length)} indicadores</b> sobre cómo viven las niñas, niños y adolescentes de Bolivia, de tres fuentes del INE. Cada cifra lleva su fuente y su año: las tres no se mezclan ni se calibran entre sí. Elegí uno para verlo edad por edad, por territorio y con sus brechas.`;
+  $("fuentes").innerHTML = [
+    ["censo", "--t7", "Censo de Población y Vivienda", `Marzo de 2024. Cuenta a todas las personas${pobCenso ? ` —${nf(pobCenso)} de 0 a 17 años—` : ""}, así que no tiene error de muestreo. Mide identidad, salud declarada, educación, trabajo, familia, vivienda y migración.`,
+      [`Llega hasta <span class="nb">municipio</span>: los <b>${nf(nMun)}</b>, por edad simple, sexo y área`, `<b>${nf(nCenso)}</b> <span class="nb">indicadores, validados contra los tabulados del INE</span>`]],
+    ["eh2025", "--t5", "Encuesta de Hogares", `2025. Una muestra de hogares${EH && muestra(EH) ? ` con <b class="nb">${nf(muestra(EH))}</b> niñas, niños y adolescentes` : ""}. Mide lo que el censo no pregunta: pobreza por ingreso, trabajo con horas, cuidado, bonos, alimentación e internet.`,
+      EH ? [`Llega hasta <span class="nb">departamento</span>, cuando la muestra alcanza: <b>${nf(nueve(EH))}</b> <span class="nb">resisten en los ${DK.length}</span>`, `<b>${nf(nEH)}</b> <span class="nb">indicadores, cada uno con su margen de error</span>`]
+        : ['<span class="encalc">No se pudo cargar: probá de nuevo más tarde</span>']],
+    ["edsa2023", "--t3", "Encuesta de Demografía y Salud", "2023. Una muestra de hogares con mediciones de peso, talla y hemoglobina. Es la única fuente de nutrición, anemia, vacunas, desarrollo infantil, disciplina, mortalidad en la niñez y violencia.",
+      EDSA ? [`Llega hasta <span class="nb">departamento</span>, cuando la muestra alcanza: <b>${nf(nueve(EDSA))}</b> <span class="nb">resisten en los ${DK.length}</span>`, `<b>${nf(nED)}</b> <span class="nb">indicadores, cada uno con su margen de error</span>`]
+        : ['Llega hasta <span class="nb">departamento</span>, cuando la muestra alcanza', '<span class="encalc">En cálculo: sus indicadores se suman a este catálogo cuando estén listos</span>']],
+  ].map(([k, c, t, p, li]) => `<article class="fuente" style="--c:var(${c})"><div class="fk">${E.FUENTES[k].corto}</div><h2>${t}</h2><p>${p}</p><ul>${li.map((x) => `<li>${x}</li>`).join("")}</ul></article>`).join("");
+  $("tres").innerHTML = `Tres fuentes, tres años. Cuando dos miden lo mismo pueden no coincidir —otro año, otra pregunta, otra persona que responde por el niño, y en las encuestas, el margen de error—; el atlas muestra las dos y no ajusta una con la otra. <a href="metodologia.html#tres-fuentes">Por qué difieren</a>.`;
+
+  /* ── filtro por fuente y buscador instantáneo ───────────────────────────────────────────────────────────── */
+  const OPS = [["todas", "Todas las fuentes"], ["censo", "Censo 2024"], ["eh2025", "EH 2025"], ...(EDSA ? [["edsa2023", "EDSA 2023"]] : [])];
+  if (!OPS.find((o) => o[0] === filtro)) filtro = "todas";
+  $("filtro").innerHTML = OPS.map(([k, t]) => `<button data-f="${k}" aria-pressed="${k === filtro}">${t}</button>`).join("");
+  $("filtro").querySelectorAll("button").forEach((b) => (b.onclick = () => { filtro = b.dataset.f; $("filtro").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b)); pintar(); }));
+  let cuadro = 0;
+  $("q").addEventListener("input", () => { cancelAnimationFrame(cuadro); cuadro = requestAnimationFrame(() => { q = $("q").value; pintar(); }); });
+
+  function pintar() {
+    const ws = E.norm(q).split(/\s+/).filter(Boolean);
+    const vis = items.filter((it) => (filtro === "todas" || it.fuente === filtro) && ws.every((w) => it.hay.includes(w)));
+    const grupos = Object.keys(TEMAS).map((k) => [k, vis.filter((it) => it.tema === k)]).filter(([, l]) => l.length);
+    const total = items.filter((it) => filtro === "todas" || it.fuente === filtro).length;
+    $("cuenta").innerHTML = ws.length || filtro !== "todas"
+      ? `<b>${nf(vis.length)}</b> de ${nf(total)} indicadores${ws.length ? ` con «${esc(q.trim())}»` : ""}${filtro !== "todas" ? ` · ${E.FUENTES[filtro].largo}` : ""}`
+      : `<b>${nf(items.length)}</b> indicadores en ${grupos.length} temas · el buscador ignora tildes y entiende sinónimos («deserción», «DNA», «desnutrición»)`;
+    $("temas-nav").innerHTML = grupos.map(([k, l]) => `<a href="#t-${k}">${esc(TEMAS[k].nombre)}<b>${l.length}</b></a>`).join("");
+    $("catalogo").innerHTML = grupos.length ? grupos.map(([k, l], i) => `<section class="tema-sec" id="t-${k}"><div class="capitulo"><span class="n">${i + 1}</span><h2>${esc(TEMAS[k].nombre)}</h2><p>${esc(TEMAS[k].descripcion || "")} · <b>${l.length}</b> ${l.length === 1 ? "indicador" : "indicadores"}</p></div><div class="tarjetas">${l.map((it) => it.html).join("")}</div></section>`).join("")
+      : `<p class="vacio">Ningún indicador coincide con «${esc(q.trim())}»${filtro !== "todas" ? ` en la ${E.FUENTES[filtro].largo}` : ""}. Probá con otra palabra${filtro !== "todas" ? ' o con <a href="#" id="todas">todas las fuentes</a>' : ""}.</p>`;
+    const t = $("todas"); if (t) t.onclick = (ev) => { ev.preventDefault(); $("filtro").querySelector('[data-f="todas"]').click(); };
+    const p = new URLSearchParams(); if (q.trim()) p.set("q", q.trim()); if (filtro !== "todas") p.set("f", filtro);
+    history.replaceState(null, "", p.toString() ? `?${p}` : location.pathname);
+  }
+  pintar();
+}).catch((e) => { $("lede").textContent = "No se pudo cargar el catálogo de indicadores."; console.error(e); });
+})();
+</script>
+</body>
+</html>

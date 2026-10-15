@@ -1,1185 +1,172 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bolivia · Atlas del Gasto en Niñez</title>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://unpkg.com/topojson-client@3/dist/topojson-client.min.js"></script>
-<script src="lib/echarts.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<!-- d3 y topojson-client vienen de dos CDN mas: abrir la conexion mientras se parsea el HTML ahorra un viaje (DNS+TLS) por cada uno -->
-<link rel="preconnect" href="https://d3js.org">
-<link rel="preconnect" href="https://unpkg.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+<title>Atlas de la Niñez y la Adolescencia · Bolivia</title>
+<meta name="description" content="Cómo viven las niñas, niños y adolescentes de Bolivia y cuánto gasta el Estado en ellos, municipio por municipio.">
+<script>
+  // los enlaces del atlas anterior (index.html#i=…&g=…&m=…) apuntaban al mapa: se los lleva al mapa nuevo
+  if (/[#&]i=/.test(location.hash)) location.replace("mapa.html" + location.hash);
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo/identidad.css">
 <style>
-:root{
-  /* ANCHO DE LOS PANELES: fuente unica de verdad. Lo usan .panel, .zc (anclado al borde del panel
-     derecho) y .termo (que descuenta los dos paneles). Fluido: se encoge con la pantalla en vez de
-     obligar a esconder la ficha en pantallas medianas -- proyectores y pantallas compartidas
-     (1024x768, 1280x720) caen justo ahi. */
-  --panel-w:clamp(15.5rem,23vw,20.5rem);
-  /* la ficha es más ancha que el menú: mete la serie, la dispersión de 343
-     burbujas, el histograma y la grilla de KPI (misma regla que el socioeconómico) */
-  --panel-det-w:clamp(19rem,30vw,27rem);
-  --f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;
-  --red:#c71e1d;--red-dk:#9b2226;--orange:#df5d25;--amber:#ee9b00;
-  --mint:#94d2bd;--teal:#0a9396;--teal-dk:#005f73;--ink:#001219;
-  /* IDENTIDAD DEL ATLAS FISCAL: top bar OXBLOOD derivado del rojo POPULI #9b2226.
-     El Atlas Socioeconómico usa teal #013a46 -> se leen como familia, no como copia.
-     Acento en arena #e9d8a6 (el mint del otro chirría sobre vino). */
-  --topbar:#5c1618;--arena:#e9d8a6;
-  --fondo:#f2efe8;--glass:#fffefbdb;--gris-card:#f1ede3;--linea:#ddd6c9;--linea-2:#eae4d7;
-  --tx:#16232c;--suave:#5f6f79;--faint:#93a3ac;--sel:#005f73;--warm:#ee9b00;--peek:138px;
-  --sh:0 1px 0 #12203508,0 10px 30px #12203512;
-  --card-solid:#fff;--card-hov:#f7f9fa;--kpi-on:#f6fbfc;--foot-bg:#ffffff88;
-  --topline:#3f0e10;--sheet-fade:#fffefbf2;
-}
-/* ── MODO OSCURO ── mismos tokens, valores nocturnos (el canvas se repinta desde JS) */
-body.dark{
-  color-scheme:dark;
-  --orange:#f0834a;--teal-dk:#5cc3c9;--sel:#43b3bd;--topbar:#3d0e10;--topline:#5c1618;
-  --fondo:#0b1318;--glass:#131f26e6;--gris-card:#16242c;--linea:#2b3d47;--linea-2:#22323b;
-  --tx:#e9eff2;--suave:#a1b3bd;--faint:#6f8794;
-  --card-solid:#1b2a33;--card-hov:#20313b;--kpi-on:#17323a;--foot-bg:#0f1a2040;
-  --sheet-fade:#131f26f2;
-  --sh:0 1px 0 #0000004d,0 12px 34px #00000073;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden}
-body{background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:13px;
-  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;
-  transition:background-color .3s ease,color .3s ease}
-#mapbox{position:fixed;inset:0}
-#map-wrap{position:absolute;inset:0}
-#map-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
-#pick{display:none}
-#fade{pointer-events:none;opacity:0}
-/* transiciones sutiles: entrada escalonada de tarjetas y KPIs */
-@keyframes cardIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-@keyframes kpiIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-@keyframes softIn{from{opacity:0}to{opacity:1}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-#catch{position:absolute;inset:0;z-index:5;cursor:grab}#catch:active{cursor:grabbing}
-
-/* TOP BAR */
-#top{position:fixed;top:0;left:0;right:0;height:54px;z-index:14;display:flex;align-items:center;gap:12px;
-  padding:0 15px;background:var(--topbar);border-bottom:1px solid var(--topline);color:#fff;
-  transition:background-color .3s ease,border-color .3s ease}
-/* botón de tema */
-.tbtog{width:27px;height:27px;flex:none;display:grid;place-items:center;cursor:pointer;color:#fff;
-  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);transition:background .18s,border-color .18s}
-.tbtog:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.4)}
-.tbtog svg{width:14px;height:14px;display:block}
-.tbtog .ic-sun{display:none}
-body.dark .tbtog .ic-moon{display:none}body.dark .tbtog .ic-sun{display:block}
-.logo{width:32px;height:32px;display:grid;place-items:center;flex-shrink:0}
-.logo svg{width:32px;height:32px}
-.t-tit{display:flex;flex-direction:column;line-height:1.05}
-.t-h{font-size:.86rem;font-weight:700;letter-spacing:-.01em}
-.t-h b{color:var(--warm);font-weight:700}
-.t-name{font-size:.58rem;color:rgba(255,255,255,.6);font-weight:500;margin-top:2px;letter-spacing:.02em}
-.top-sp{flex:1}
-/* desplegable dept (estilo del de categorías) */
-.tbdd{position:relative;font-size:.66rem;color:rgba(255,255,255,.7);font-weight:500}
-.tbdd .lab{margin-right:6px}
-.tbbtn{background:none;border:0;border-bottom:1.5px dotted rgba(255,255,255,.4);color:#fff;font-family:var(--f);
-  font-size:.72rem;font-weight:600;cursor:pointer;padding:0 2px 3px;display:inline-flex;align-items:center;gap:5px}
-.tbbtn .ar{color:rgba(255,255,255,.6);font-size:.7rem;transition:transform .2s}
-.tbdd.open .ar{transform:rotate(180deg)}
-.tbdrop{display:none;position:absolute;right:0;top:100%;margin-top:6px;z-index:30;background:var(--card-solid);color:var(--tx);
-  border:1px solid var(--linea);box-shadow:var(--sh);min-width:11rem;max-height:17rem;overflow:auto;scrollbar-width:none}
-.tbdd.open .tbdrop{display:block}
-.tbop{padding:6px 12px;font-size:.72rem;font-weight:500;cursor:pointer;border-top:1px solid var(--linea-2);white-space:nowrap}
-.tbop:first-child{border-top:0}.tbop:hover{background:var(--gris-card)}.tbop.on{color:var(--sel);font-weight:700}
-.t-s{font-size:.62rem;color:rgba(255,255,255,.6);font-weight:500;margin-left:12px}.t-s b{color:var(--arena);font-weight:700}
-/* stepper de año: eje primario del atlas fiscal, siempre a la vista */
-.yr{display:flex;align-items:center;gap:2px;flex:none;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
-.yr button{width:22px;height:25px;border:0;background:none;color:#fff;font-size:.8rem;cursor:pointer;font-family:var(--f);line-height:1}
-.yr button:hover:not(:disabled){background:rgba(255,255,255,.16)}
-.yr button:disabled{opacity:.28;cursor:default}
-.yr .yv{min-width:3.1rem;text-align:center;font-size:.82rem;font-weight:700;color:var(--arena);letter-spacing:.01em;cursor:pointer;padding:0 2px}
-.yr .yv small{display:block;font-size:.46rem;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:-2px}
-.yrdd{position:relative;flex:none}
-.yrdrop{display:none;position:absolute;right:0;top:100%;margin-top:6px;z-index:30;background:var(--card-solid);color:var(--tx);
-  border:1px solid var(--linea);box-shadow:var(--sh);min-width:6.5rem;max-height:17rem;overflow:auto;scrollbar-width:none}
-.yrdd.open .yrdrop{display:block}
-.yrop{padding:6px 14px;font-size:.74rem;font-weight:600;cursor:pointer;border-top:1px solid var(--linea-2);text-align:center}
-.yrop:first-child{border-top:0}.yrop:hover{background:var(--gris-card)}.yrop.on{color:var(--sel);font-weight:800}
-
-/* PANELES */
-.panel{position:fixed;top:62px;bottom:12px;width:var(--panel-w);z-index:8;background:var(--glass);
-  border:1px solid var(--linea);box-shadow:var(--sh);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  display:flex;flex-direction:column;overflow:hidden;transition:background-color .3s ease,border-color .3s ease}
-#panel-ind{left:12px}#panel-det{right:12px;width:var(--panel-det-w);display:none}.grip-bar,.pk{display:none}
-#panel-det,#panel-det>*{min-width:0}
-.p-body{flex:1;overflow:auto;scrollbar-width:none;padding:13px 14px}.p-body::-webkit-scrollbar{display:none}
-.p-foot{padding:10px 14px;border-top:1px solid var(--linea-2);font-size:.56rem;color:var(--suave);font-weight:500;line-height:1.8;background:var(--foot-bg)}
-.p-foot a{color:var(--teal-dk);text-decoration:none;font-weight:700}.p-foot a:hover{text-decoration:underline}.p-foot .sep{color:var(--faint);margin:0 5px}
-.cat-bar{padding:11px 14px;border-bottom:1px solid var(--linea-2);position:relative}
-.p-kick{font-size:.55rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.kick-n{font-size:.94em;letter-spacing:0;text-transform:none;font-weight:600;color:var(--faint);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.p-kick>span:first-child{flex:none}
-.cat-btn{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;background:none;
-  border:0;border-bottom:2px dotted var(--linea);padding:0 0 6px;font-family:var(--f)}
-.cat-btn .cn{font-size:1.05rem;font-weight:700;letter-spacing:-.02em}
-.cat-btn .ar{color:var(--suave);transition:transform .2s}
-.cat-bar.open .cat-btn .ar{transform:rotate(180deg)}
-.cat-drop{display:none;position:absolute;left:14px;right:14px;top:100%;z-index:20;background:var(--card-solid);
-  border:1px solid var(--linea);box-shadow:var(--sh);max-height:min(28rem,66vh);overflow:auto;scrollbar-width:none}
-.cat-bar.open .cat-drop{animation:softIn .16s ease both}
-.cat-bar.open .cat-drop{display:block}
-.cat-op{padding:7px 12px;font-size:.72rem;font-weight:500;cursor:pointer;border-top:1px solid var(--linea-2);display:flex;justify-content:space-between;align-items:center;gap:10px}
-.co-n{color:var(--faint);font-weight:600;font-size:.9em;flex:none}
-.cat-op:first-child{border-top:0}.cat-op:hover{background:var(--gris-card)}
-.cat-op.on{color:var(--sel);font-weight:700}.cat-op.off{color:var(--faint);cursor:not-allowed}
-.p-sub{font-size:.66rem;color:var(--suave);font-weight:500;margin:2px 0 0}
-
-/* ── Buscador (mismo que el socioeconómico) ── */
-.busca-caja{position:relative;margin-top:9px}
-#busca{width:100%;font-family:var(--f);font-size:.68rem;font-weight:500;padding:6px 9px;color:var(--tx);
-  background:var(--card-solid);border:1px solid var(--linea);border-radius:0;outline:none}
-#busca::placeholder{color:var(--faint)}#busca:focus{border-color:var(--sel)}
-.busca-res{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:22;max-height:min(46vh,340px);overflow-y:auto;
-  background:var(--card-solid);border:1px solid var(--linea);box-shadow:var(--sh)}
-.busca-res[hidden]{display:none}
-.bs-op{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;padding:6px 9px;background:none;border:0;
-  border-bottom:1px solid var(--linea-2);cursor:pointer;font-family:var(--f);color:inherit}
-.bs-op:last-child{border-bottom:0}.bs-op:hover,.bs-op.sel{background:var(--linea-2)}
-.bs-l{font-size:.7rem;font-weight:600;color:var(--tx);line-height:1.25}.bs-g{font-size:.58rem;color:var(--faint);font-weight:500}
-.bs-nada{padding:8px 9px;font-size:.65rem;color:var(--faint)}
-
-.lista{display:flex;flex-direction:column;gap:8px;margin-top:11px}
-.ind{display:grid;grid-template-columns:minmax(0,1fr) 110px;align-items:center;gap:.7rem;text-align:left;
-  cursor:pointer;width:100%;padding:.72rem;border:1px solid var(--linea-2);background:var(--gris-card);color:inherit;
-  transition:background-color .22s ease,border-color .22s ease,box-shadow .22s ease;
-  animation:cardIn .36s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--d,0ms)}
-.ind:hover{background:var(--card-hov)}
-.ind.on{background:var(--card-solid);border-color:var(--sel);box-shadow:inset 3px 0 0 var(--sel)}
-.i-nm{font-size:.83rem;font-weight:600;line-height:1.22;letter-spacing:-.005em}
-.i-df{font-size:.69rem;color:var(--suave);line-height:1.32;margin-top:.3rem;font-weight:500}
-.mini{width:110px;height:80px;flex:none;pointer-events:none;opacity:.6;filter:saturate(.32);transition:opacity .28s ease,filter .28s ease}
-.ind:hover .mini{opacity:.9;filter:saturate(.7)}
-.ind.on .mini{opacity:1;filter:saturate(.88)}
-/* en oscuro la desaturación tira a pardo: se apagan con brillo en vez de con saturación */
-body.dark .mini{opacity:.42;filter:saturate(.55) brightness(.9)}
-body.dark .ind:hover .mini{opacity:.8;filter:saturate(.85) brightness(.98)}
-body.dark .ind.on .mini{opacity:1;filter:none}
-
-.det-head{padding:14px;border-bottom:1px solid var(--linea-2)}
-.d-mun{font-family:var(--fd);font-size:1.28rem;font-weight:600;letter-spacing:-.01em;line-height:1.02}
-.d-sub{font-size:.61rem;color:var(--suave);font-weight:500;margin-top:5px}
-.d-links{display:block;margin-top:3px}.d-links .sep{color:var(--faint);margin:0 5px}
-.back{color:var(--teal-dk);cursor:pointer;font-weight:700;text-decoration:none}.back:hover{text-decoration:underline}
-/* serie 2016-2025 del indicador en pantalla, contra el promedio nacional */
-.serie{border:1px solid var(--linea-2);background:var(--card-solid);padding:10px 11px 7px;margin-bottom:9px}
-.sr-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-/* el titulo lleva la GESTION señalada: ", 2025" del mismo tamaño y peso que el nombre del
-   indicador; en ambar cuando es el año que pinta el mapa, en tinta cuando estas recorriendo otra */
-.sr-t{font-size:.66rem;font-weight:700;line-height:1.2;min-width:0;display:flex;color:var(--tx)}
-.sr-lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sr-sep{flex:none;margin-right:.3em}
-.sr-yr{flex:none;font-variant-numeric:tabular-nums;transition:color .18s}
-.sr-yr.now{color:var(--warm)}
-.sr-u{font-size:.54rem;color:var(--faint);font-weight:600;flex:none}
-/* la lectura ES la leyenda: mismo color que la marca del grafico + el valor de la gestion señalada.
-   Va POR DEBAJO del titulo en jerarquia (fuente menor): antes los valores iban en .68rem/800,
-   mas grandes que el propio titulo del grafico, y la tarjeta se veia desproporcionada.
-   OJO alineacion: nada de align-items:baseline aca — los items son inline-flex y su baseline la
-   define su primer hijo (el swatch, que no tiene texto), asi que nombre y valor caian a distinta
-   altura. Todo centrado y con line-height:1 para que la fila lea como una sola linea. */
-.sr-rd{display:flex;align-items:center;column-gap:13px;row-gap:3px;flex-wrap:wrap;margin:5px 0 4px;
-  font-size:.56rem;font-weight:600;color:var(--suave);line-height:1}
-.sr-rd .it{display:inline-flex;align-items:center;gap:5px;min-width:0;line-height:1}
-.sr-rd .it b{color:var(--tx);font-weight:700;font-size:.615rem;letter-spacing:-.01em;line-height:1;
-  font-variant-numeric:tabular-nums;flex:none}
-.sr-rd .sw{width:9px;height:9px;flex:none;background:var(--sel);border-radius: 0}
-.sr-rd .sw.li{height:0;width:13px;border-radius:0;background:none;border-top:2.5px dashed var(--suave)}
-.sr-rd .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1}
-/* la serie protagonista cede primero: su nombre usa el ancho libre y recorta solo si hace falta */
-.sr-rd .it:first-child{flex:1 1 auto;min-width:0}
-.sr-svg{display:block;width:100%;height:auto;overflow:visible;cursor:crosshair;touch-action:pan-y}
-.sr-svg .gl{stroke:var(--linea-2);stroke-width:1}
-.sr-svg .base{stroke:var(--faint);stroke-width:1.1;opacity:.75}
-.sr-svg .bar{fill:var(--sel);opacity:.68}
-.sr-svg .bar.now{fill:var(--warm);opacity:1}
-.sr-svg .bar.hov{opacity:1}
-.sr-svg .ln-na{fill:none;stroke:var(--suave);stroke-width:1.9;stroke-dasharray:4 2.6;stroke-linecap:round}
-.sr-svg .dot-na{fill:var(--suave)}
-.sr-svg .ax{fill:var(--faint);font-size:7px;font-weight:600;font-family:var(--f)}
-/* halo del color de la tarjeta: los rótulos del eje y se alinean con el título (x=0) y pisan la barra sin ensuciarse */
-.sr-svg .ay{fill:var(--suave);font-size:7.8px;font-weight:700;font-family:var(--f);
-  paint-order:stroke;stroke:var(--card-solid);stroke-width:2.6px;stroke-linejoin:round}
-.sr-svg .ax.now{fill:var(--warm);font-weight:800}
-.sr-svg .hit{fill:transparent}
-.sr-foot{font-size:.5rem;color:var(--faint);font-weight:500;line-height:1.35;margin-top:3px}
-/* ── El reparto de los 343, la lectura y el comparador (del socioeconómico) ── */
-#dist:empty,#lee:empty,#cmp:empty{display:none}
-#cmp{margin-bottom:1.15rem}#dist{margin-bottom:.2rem}#lee{margin-bottom:1rem}
-.dt-t{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:.57rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:.09em;color:var(--suave);margin-bottom:.4rem;min-width:0}
-.dt-t span{font-size:.58rem;font-weight:500;text-transform:none;letter-spacing:0;color:var(--faint);flex:none}
-.dt-t i{font-style:normal;font-weight:500;text-transform:lowercase;letter-spacing:0;color:var(--faint)}
-.dt{width:100%;height:120px;display:block;margin-bottom:.35rem;overflow:visible}
-.dt-hit{fill:transparent;cursor:crosshair;touch-action:none}.dt-hit.on{fill:var(--tx);fill-opacity:.07}
-.dt-pie{font-size:.55rem;color:var(--faint);font-weight:500;line-height:1.35;margin-bottom:.6rem}
-.dt-pais{stroke:var(--tx);stroke-width:.35;stroke-dasharray:1.4 1}
-.dt-dpto{stroke:var(--suave);stroke-width:.3;stroke-dasharray:.8 1}
-.dt-ax{font-size:2.1px;fill:var(--faint);font-weight:600;font-family:var(--f)}
-.dt-sell{stroke:var(--warm);stroke-width:.5}.dt-sel{fill:var(--warm)}
-#cmp-b{width:100%;min-width:0;max-width:100%;margin-top:9px;font-family:var(--f);font-size:.66rem;font-weight:500;
-  text-overflow:ellipsis;padding:5px 8px;color:var(--tx);background:var(--card-solid);border:1px solid var(--linea);
-  border-radius:0;outline:none;cursor:pointer}
-#cmp-b:focus{border-color:var(--sel)}
-.cmp{width:100%;height:auto;display:block;margin:.1rem 0 .35rem;overflow:visible}
-.cmp-p{cursor:pointer;fill-opacity:.82;stroke:var(--card-solid);stroke-width:.28;transition:fill-opacity .12s ease,stroke-width .12s ease}
-.cmp-p.hov{fill-opacity:1;stroke:var(--tx);stroke-width:.5}
-.cmp-ax{font-size:2.6px;fill:var(--faint);font-weight:600;font-family:var(--f)}
-.cmp-p.cmp-sel{fill:var(--warm);fill-opacity:1;stroke:var(--tx);stroke-width:.5}
-.lee{font-size:.66rem;line-height:1.45;color:var(--suave);margin:0 0 .7rem}
-.lee p{margin:0 0 .38rem}.lee p:last-child{margin-bottom:0}.lee b{color:var(--tx);font-weight:650}
-.lee-adv{color:var(--faint);font-style:italic}
-.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--linea-2);border:1px solid var(--linea-2)}
-.kpi{background:var(--card-solid);padding:.5rem .6rem;cursor:pointer;border-top:2px solid var(--teal);
-  transition:background-color .22s ease,border-color .22s ease;
-  animation:kpiIn .34s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--d,0ms)}
-.kpi:hover{background:var(--card-hov)}.kpi.on{border-top-color:var(--sel);background:var(--kpi-on)}
-.k-l{font-size:.57rem;color:var(--suave);line-height:1.15;height:2.3em;overflow:hidden;font-weight:600}
-.k-v{font-size:.96rem;font-weight:700;letter-spacing:-.02em;margin-top:.15rem}
-.k-c{margin-top:.3rem;padding-top:.26rem;border-top:1px solid var(--linea-2);display:flex;flex-direction:column;gap:.06rem}
-.k-c span{font-size:.55rem;color:var(--suave);display:flex;justify-content:space-between;font-weight:500}
-.k-c .up{color:var(--teal-dk);font-weight:700}.k-c .dn{color:var(--orange);font-weight:700}
-
-.zc{position:fixed;z-index:9;right:calc(var(--panel-det-w) + 26px);bottom:112px;display:flex;flex-direction:column;
-  border:1px solid var(--linea);background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:var(--sh)}
-.zc button{width:30px;height:30px;border:0;background:none;font-size:1rem;cursor:pointer;color:var(--tx);border-bottom:1px solid var(--linea-2);font-family:var(--f)}
-.zc button:last-child{border-bottom:0;font-size:.7rem}.zc button:hover{background:var(--gris-card)}
-
-/* ── La regla y el enlace a la lámina (del socioeconómico) ── */
-#regla{position:fixed;visibility:hidden;pointer-events:none;z-index:-1;
-  top:70px;bottom:84px;left:calc(var(--panel-w) + 30px);right:calc(var(--panel-det-w) + 30px)}
-#lamina{position:fixed;z-index:9;left:calc(var(--panel-w) + 26px);top:74px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-#lamina:empty{display:none}
-.lam-link{display:flex;align-items:center;gap:.55rem;padding:.5rem .72rem;text-decoration:none;color:var(--tx);background:var(--glass);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--linea);box-shadow:var(--sh);
-  transition:background-color .2s ease,border-color .2s ease}
-.lam-link:hover{background:var(--card-solid);border-color:var(--sel)}
-.lam-i{font-size:.95rem;color:var(--sel);line-height:1}
-.lam-tx{display:flex;flex-direction:column;line-height:1.2}.lam-tx b{font-size:.7rem;font-weight:600}
-.lam-tx em{font-size:.58rem;font-style:normal;color:var(--faint);font-weight:500;margin-top:1px}
-.lam-mas{font-size:.58rem;font-weight:700;color:var(--teal-dk);text-decoration:none;background:var(--glass);
-  border:1px solid var(--linea);padding:3px 8px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.lam-mas:hover{text-decoration:underline}
-
-.termo{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:8;
-  width:min(38rem,calc(100vw - var(--panel-w) - var(--panel-det-w) - 6rem));background:var(--glass);border:1px solid var(--linea);box-shadow:var(--sh);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:.6rem 1rem 1.05rem}
-.tm-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:.42rem}
-.tm-t{font-size:.75rem;font-weight:700}.tm-t small{color:var(--faint);font-weight:500;margin-left:.28rem}
-.tm-st{font-size:.58rem;color:var(--suave);font-weight:500;white-space:nowrap}.tm-st b{color:var(--tx);font-weight:700}
-.tm-row{display:flex;align-items:center;gap:10px}
-.tm-side{font-size:.63rem;color:var(--tx);font-weight:700;white-space:nowrap;flex:none}
-.tm-side .cap{color:var(--faint);font-weight:500}
-.tm-bar{flex:1;height:11px;position:relative;border-radius: 0}
-.tm-mk{position:absolute;top:-3px;width:1px;height:17px;background:var(--suave)}
-/* rótulo del pivote: sin él, la marca central es un palito sin explicación */
-.tm-mkl{position:absolute;top:16px;transform:translateX(-50%);font-size:.5rem;font-weight:600;
-  color:var(--faint);white-space:nowrap}
-/* dónde cae el municipio señalado en la rampa (del socioeconómico) */
-.tm-you{position:absolute;top:-5px;width:0;height:0;pointer-events:none;
-  transition:left .12s cubic-bezier(.3,.7,.3,1),opacity .14s ease;opacity:0}
-.tm-you.on{opacity:1}
-.tm-you i{position:absolute;left:-4px;top:0;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--tx)}
-.tm-you u{position:absolute;left:-1px;top:4px;width:2px;height:13px;background:var(--tx);box-shadow:0 0 0 1px var(--glass)}
-.tm-you span{position:absolute;bottom:13px;left:0;transform:translateX(-50%);white-space:nowrap;font-size:.54rem;font-weight:700;
-  color:var(--tx);background:var(--card-solid);border:1px solid var(--linea);padding:1px 5px;line-height:1.3}
-.tm-you.izq span{transform:none;left:-4px}.tm-you.der span{transform:none;right:-4px;left:auto}
-#tip{position:fixed;pointer-events:none;z-index:24;opacity:0;transition:opacity .1s;background:var(--glass);border:1px solid var(--linea);
-  box-shadow:0 10px 30px #12203522;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:.5rem .65rem;max-width:15rem}
-#tip .tn{font-size:.74rem;font-weight:700;letter-spacing:-.01em;line-height:1.15}#tip .td{font-size:.54rem;color:var(--suave);font-weight:500;margin-top:1px}
-#tip .tr{font-size:.56rem;color:var(--suave);margin-top:.34rem;padding-top:.32rem;border-top:1px solid var(--linea-2);display:flex;flex-direction:column;gap:.1rem}
-#tip .tr b{color:var(--tx);font-weight:700}#tip .tr span{display:flex;justify-content:space-between;gap:.7rem}
-.termo.swap .tm-t,.termo.swap .tm-st,.termo.swap .tm-side{animation:softIn .34s ease both}
-
-/* créditos */
-.cred{position:fixed;left:16px;bottom:16px;z-index:7;font-size:.58rem;color:var(--suave);font-weight:500;
-  background:var(--glass);border:1px solid var(--linea);padding:5px 10px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.cred a{color:var(--teal-dk);text-decoration:none;font-weight:700}.cred a:hover{text-decoration:underline}
-.cred .sep{color:var(--faint);margin:0 5px}
-
-#pop{position:fixed;pointer-events:none;z-index:20;opacity:0;transition:opacity .1s;background:var(--glass);
-  border:1px solid var(--linea);box-shadow:0 10px 30px #12203522;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:.55rem .7rem;min-width:11rem}
-#pop .pn{font-size:.8rem;font-weight:700;letter-spacing:-.01em}#pop .pd{font-size:.55rem;color:var(--suave);font-weight:500;margin-top:1px}
-#pop .pv{display:flex;align-items:baseline;gap:.35rem;margin-top:.38rem}#pop .pv b{font-size:1.02rem;font-weight:700;color:var(--teal-dk)}#pop .pv small{font-size:.54rem;color:var(--faint)}
-#pop .pr{font-size:.55rem;color:var(--suave);margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--linea-2);display:flex;justify-content:space-between}#pop .pr b{color:var(--tx);font-weight:700}
-/* Antes habia aqui un @media(max-width:1280px) and (min-width:821px) que hacia
-   #panel-det{display:none!important}: entre 821 y 1280px la ficha desaparecia y NO habia como verla
-   (el bottom-sheet movil recien entra en 820). Peor, ese !important le ganaba al style.display="flex"
-   inline que ponen renderNational/renderDept/renderMun, asi que el panel quedaba muerto.
-   Ya no hace falta: --panel-w encoge los paneles de forma continua. */
-@media(max-width:820px){
-  #top{height:48px;padding:0 11px;gap:8px}
-  .logo{width:26px;height:26px}.logo svg{width:26px;height:26px}
-  .t-tit{flex:1;min-width:0}.t-h{font-size:.72rem;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .t-name{display:none}.top-sp{display:none}.t-s{display:none}
-  .tbdd{flex:none}.tbdd .lab{display:none}.tbbtn{font-size:.7rem;padding-bottom:2px}
-  /* el stepper de año se compacta para no comerse el título */
-  .yr .yv{min-width:2.5rem;font-size:.75rem}.yr .yv small{display:none}
-  .yr button{width:18px;height:22px;font-size:.72rem}
-  .tbdrop{min-width:min(13rem,calc(100vw - 22px));max-height:60vh}
-  /* franja superior: categoría + tira de tarjetas (mini-mapa + nombre + definición) */
-  #panel-ind{top:48px;left:0;right:0;bottom:auto;width:auto;height:150px;border:0;border-bottom:1px solid var(--linea);flex-direction:column;overflow:visible}
-  .cat-bar{padding:7px 12px}.cat-btn .cn{font-size:.95rem}
-  /* el buscador comparte renglón con el selector: la franja de arriba tiene alto fijo */
-  #panel-ind .cat-bar{padding:6px 12px 7px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    grid-template-areas:"kick kick" "cat busca";gap:3px 9px;align-items:center}
-  #panel-ind .p-kick{grid-area:kick;margin:0}#panel-ind #cat-btn{grid-area:cat;padding-bottom:2px}
-  #panel-ind .busca-caja{grid-area:busca;margin:0}#busca{padding:5px 8px;font-size:.64rem}.busca-res{max-height:52vh}
-  .cat-drop{max-height:64vh;box-shadow:0 14px 30px rgba(16,26,20,.22)}.cat-op{padding:11px 13px;font-size:.82rem}
-  .p-body{padding:8px 0 8px 12px;overflow:hidden;flex:1}.p-sub{display:none}
-  .lista{flex-direction:row;overflow-x:auto;overflow-y:hidden;gap:9px;margin-top:0;height:100%;scroll-snap-type:x proximity;padding-right:12px}
-  .ind{display:grid;grid-template-columns:minmax(0,1fr) 82px;align-items:center;gap:.5rem;min-width:196px;max-width:196px;padding:.55rem;scroll-snap-align:start;height:calc(100% - 3px);overflow:hidden}
-  .mini{width:82px;height:auto;aspect-ratio:110/80;opacity:.95}
-  .i-nm{font-size:.73rem;line-height:1.16;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .i-df{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:.6rem;line-height:1.32;margin-top:.2rem;font-weight:500}
-  /* mapa: SIEMPRE completo; la ficha flota por encima (no se re-renderiza) */
-  #mapbox{inset:auto;top:202px;left:0;right:0;bottom:0}
-  #regla{top:206px;bottom:calc(var(--peek) + 10px);left:6px;right:6px}
-  #lamina{left:8px;top:210px;max-width:calc(100vw - 66px)}
-  .lam-link{padding:.42rem .6rem;background:var(--card-solid)}.lam-tx b{font-size:.64rem}.lam-tx em{font-size:.54rem}
-  .termo{left:8px;right:8px;transform:none;width:auto;bottom:8px;padding:.5rem .75rem .95rem;transition:opacity .2s}
-  body.sheet-open .termo{opacity:0;pointer-events:none}
-  .tm-t{font-size:.7rem}.tm-t small{font-size:.54rem}.tm-st{display:none}.tm-side{font-size:.6rem}
-  .tm-bar{height:10px}
-  .zc{right:8px;top:210px;bottom:auto;transition:none;background:var(--card-solid);z-index:12}
-  body.sheet-open .zc{top:210px;bottom:auto}
-  /* ── ficha municipal = bottom-sheet deslizable (peek / full) ── */
-  /* altura = 74vh (JS la fija en px exactos) para que el detent "full" quepa ENTERO en pantalla:
-     antes medía 88vh y bajaba 26vh -> la cola de la lista quedaba fuera de la pantalla y se cortaba */
-  #panel-det{display:flex!important;top:auto;bottom:0;left:0!important;right:0!important;width:auto!important;height:74vh;
-    border:0;border-radius:0;box-shadow:0 -12px 34px rgba(16,26,20,.20);
-    transform:translateY(100%);transition:transform .32s cubic-bezier(.22,.61,.36,1),background-color .3s ease;z-index:60}
-  #panel-det.dragging{transition:none}
-  /* degradado al pie = pista de que aún hay contenido; se apaga al llegar al final */
-  #panel-det::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38px;pointer-events:none;z-index:2;
-    background:linear-gradient(to top,var(--sheet-fade),transparent);opacity:1;transition:opacity .22s ease}
-  #panel-det.at-end::after{opacity:0}
-  .sheet-top{flex:none;padding:9px 14px 11px;touch-action:none;cursor:grab}
-  .grip-bar{display:block;width:40px;height:4px;border-radius: 0;background:var(--linea);margin:0 auto 9px}
-  .det-head{padding:0;border:0}.d-mun{font-size:1.1rem}.d-sub{font-size:.62rem;margin-top:3px}
-  .pk{display:flex;align-items:center;gap:.6rem;margin-top:9px;padding-top:9px;border-top:1px solid var(--linea-2)}
-  .pk .pk-chip{width:13px;height:13px;border-radius: 0;flex:none;box-shadow:0 0 0 1px rgba(128,140,148,.35)}
-  .pk .pk-lab{font-size:.55rem;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;line-height:1.2;flex:1;min-width:0}
-  .pk .pk-lab b{display:block;color:var(--tx);font-size:.74rem;font-weight:600;text-transform:none;letter-spacing:0;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .pk .pk-val{font-size:1.16rem;font-weight:700;color:var(--tx);white-space:nowrap}
-  .pk .pk-val small{font-size:.58rem;font-weight:600;color:var(--suave);margin-left:.15rem}
-  .pk .pk-rk{font-size:.54rem;color:var(--suave);text-align:right;line-height:1.3;flex:none}.pk .pk-rk b{color:var(--tx);font-weight:700}
-  #panel-det .p-body{flex:1;padding:4px 12px calc(30px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;
-    -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-  .k-v{font-size:.9rem}.k-l{font-size:.55rem}.k-c span{font-size:.53rem}
-  .p-foot{display:none}
-}
-.ficha{margin-top:12px;padding-top:10px;border-top:1px solid var(--linea);font-size:12px;line-height:1.5;color:var(--suave)}
-.ficha p{margin:0 0 7px}.ficha b{color:var(--tx);font-weight:600}
-.sr-ec{width:100%;height:178px;margin-top:2px}.dt-ec{width:100%;height:128px}.cmp-ec{width:100%;height:250px}
-.dt-ley{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.6rem;color:var(--suave);margin:4px 0 2px}.dt-ley b{color:var(--tx);font-weight:700}
-.tt span{border-radius:0!important}
+.portada { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: 34px; align-items: end; padding: 26px 0 10px }
+.portada h1 { font-size: clamp(32px, 4vw, 48px); margin: 6px 0 14px; max-width: 15em }
+.portada .lede { font-size: 17px; max-width: 40rem }
+.buscador label { display: block; font-size: 12.5px; color: var(--suave); margin: 0 0 6px }
+.buscador input { width: 100%; font: inherit; font-size: 15px; padding: 11px 13px; border: 1px solid var(--linea); background: var(--superficie); color: var(--tinta) }
+.buscador input:focus { outline: 2px solid var(--acento); outline-offset: 1px }
+.buscador .ayuda { font-size: 12px; color: var(--suave); margin-top: 6px }
+.puertas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 8px 0 30px }
+.puerta { background: var(--superficie); padding: 20px 20px 18px; text-decoration: none; color: var(--tinta); display: flex; flex-direction: column; gap: 8px; border-top: 4px solid var(--c) }
+.puerta:hover { background: var(--superficie-2) }
+.puerta .pt { font-family: var(--fd); font-size: 19px; font-weight: 600; color: var(--titulo); line-height: 1.15 }
+.puerta .pd { font-size: 14px; color: var(--suave); line-height: 1.45 }
+.puerta .pv { margin-top: auto; font-size: 13px; color: var(--acento); font-weight: 600 }
+.hallazgos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px }
+.hallazgo { background: var(--superficie); border: 1px solid var(--linea); padding: 16px 18px 10px; display: flex; flex-direction: column }
+.hallazgo .ht { font-family: var(--fd); font-size: 16.5px; font-weight: 600; color: var(--titulo); line-height: 1.2; margin: 0 0 6px }
+.hallazgo .hd { font-size: 13.5px; color: var(--suave); margin: 0 0 6px; line-height: 1.45 }
+.hallazgo .g { height: 210px }
+.hallazgo a { font-size: 12.5px; margin-top: auto; padding-top: 6px }
+.fuentes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea) }
+.fuente { background: var(--superficie); padding: 14px 15px }
+.fuente .fn { font-weight: 600; font-size: 14px }
+.fuente .fa { font-family: var(--fm); font-size: 12px; color: var(--acento); margin: 2px 0 6px }
+.fuente .fq { font-size: 12.5px; color: var(--suave); line-height: 1.45 }
+@media (max-width: 1000px) { .portada, .hallazgos { grid-template-columns: 1fr } .puertas { grid-template-columns: 1fr } .fuentes { grid-template-columns: 1fr 1fr } }
+@media (max-width: 560px) { .fuentes { grid-template-columns: 1fr } .portada .lede { font-size: 15.5px } }
 </style>
 </head>
 <body>
-<div id="mapbox"><div id="map-wrap"><canvas id="base"></canvas><canvas id="fade"></canvas><canvas id="over"></canvas><canvas id="pick"></canvas></div><div id="catch"></div></div>
-
-<div id="top">
-  <div class="logo"><svg viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="inherit">NNA</text></svg></div>
-  <div class="t-tit">
-    <div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div>
-    <div class="t-name">Presupuesto público en niñas, niños y adolescentes</div>
-  </div>
-  <div class="top-sp"></div>
-  <div class="yrdd" id="yr-dd">
-    <div class="yr">
-      <button id="y-prev" aria-label="Año anterior">‹</button>
-      <div class="yv" id="y-val" title="Elegir gestión">2025<small>gestión</small></div>
-      <button id="y-next" aria-label="Año siguiente">›</button>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · Centro de Estudios POPULI</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html" aria-current="page">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <section class="portada">
+    <div>
+      <div class="kick">Bolivia · 343 municipios</div>
+      <h1>Atlas de la Niñez y la Adolescencia</h1>
+      <p class="lede">Cómo viven las niñas, niños y adolescentes de Bolivia y cuánto gasta el Estado en ellos, municipio por municipio.</p>
     </div>
-    <div class="yrdrop" id="yr-drop"></div>
-  </div>
-  <div class="tbdd" id="dept-dd"><span class="lab">Zoom a</span><button class="tbbtn"><span id="dept-lab">Bolivia</span><span class="ar">▾</span></button><div class="tbdrop" id="dept-drop"></div></div>
-  <button class="tbtog" id="theme-btn" aria-label="Cambiar tema" title="Modo oscuro">
-    <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z"/></svg>
-    <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.7v2.1M12 19.2v2.1M2.7 12h2.1M19.2 12h2.1M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5"/></svg>
-  </button>
-  <div class="t-s">Presupuesto 2016–2025 · <b>343 municipios</b></div>
-</div>
-
-<div class="panel" id="panel-ind">
-  <div class="cat-bar" id="cat-bar">
-    <div class="p-kick"><span>Categoría</span><span class="kick-n" id="kick-n"></span></div>
-    <!-- Marcador de carga: el JS lo reemplaza por curCat.label al leer el catálogo.
-         Decía "Demografía", que es una categoría del atlas SOCIOECONÓMICO — herencia
-         de cuando este atlas se clonó de aquél. Se veía un instante al abrir el link. -->
-    <button class="cat-btn" id="cat-btn"><span class="cn">Alcaldía: cuánto gasta</span><span class="ar">▾</span></button>
-    <div class="cat-drop" id="cat-drop"></div>
-    <div class="busca-caja">
-      <input id="busca" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar indicador…" aria-label="Buscar indicador">
-      <div class="busca-res" id="busca-res" hidden></div>
+    <div class="buscador">
+      <label for="buscar">Buscá tu municipio</label>
+      <input id="buscar" type="search" placeholder="Por ejemplo: El Alto, Uncía, Riberalta…" list="lista-mun" autocomplete="off">
+      <datalist id="lista-mun"></datalist>
+      <div class="ayuda">Abre su perfil: quiénes son, cómo viven y cuánto se gasta en ellos.</div>
     </div>
+  </section>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="puertas">
+    <a class="puerta" href="mapa.html" style="--c:var(--o5)"><span class="pt">Cuánto se gasta</span><span class="pd">Lo que gastan las alcaldías, las gobernaciones y el nivel central en programas para la niñez, de 2016 a 2025, en un mapa de los 343 municipios.</span><span class="pv">Ver el mapa del gasto →</span></a>
+    <a class="puerta" href="indicadores.html" style="--c:var(--t5)"><span class="pt">Cómo viven</span><span class="pd">Identidad, salud, educación, trabajo, familia, vivienda, pobreza y protección, edad por edad, con el Censo 2024 y las encuestas del INE.</span><span class="pv">Ver los indicadores →</span></a>
+    <a class="puerta" href="bolivia.html" style="--c:var(--titulo)"><span class="pt">Bolivia y sus departamentos</span><span class="pd">Todo el Estado junto: quién gasta cada boliviano, en qué se va y con qué se paga, y cada gobernación con lo que hace por la niñez.</span><span class="pv">Ver Bolivia →</span></a>
   </div>
-  <div class="p-body"><div class="p-sub" id="p-sub">elegí un indicador para verlo en el mapa</div><div class="lista" id="lista"></div></div>
-  <div class="p-foot"><a href="nacional.html">Bolivia y departamentos</a><span class="sep">·</span><a href="metodologia.html">Metodología</a><br>Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a> · Presupuesto Abierto (MEFP), INE, Ministerio de Educación</div>
-</div>
 
-<div class="panel" id="panel-det">
-  <div class="sheet-top" id="sheet-grip">
-    <span class="grip-bar"></span>
-    <div class="det-head"><div class="d-mun" id="d-mun"></div><div class="d-sub" id="d-sub"></div></div>
-    <div class="pk" id="pk"></div>
-    <select id="cmp-b" aria-label="Comparar con otro indicador"></select>
+  <div class="capitulo"><h2>Tres cosas que muestran los datos</h2><p>Cada una abre su página</p></div>
+  <div class="hallazgos">
+    <div class="hallazgo"><div class="ht" id="h1-t"></div><p class="hd" id="h1-d"></p><div class="g" id="g1"></div><a href="encuesta.html?f=eh2025&i=POB01">La pobreza infantil, departamento por departamento →</a></div>
+    <div class="hallazgo"><div class="ht" id="h2-t"></div><p class="hd" id="h2-d"></p><div class="g" id="g2"></div><a href="bolivia.html">Quién gasta cada boliviano →</a></div>
+    <div class="hallazgo"><div class="ht" id="h3-t"></div><p class="hd" id="h3-d"></p><div class="g" id="g3"></div><a href="indicador.html?i=trabaja">El trabajo infantil, municipio por municipio →</a></div>
   </div>
-  <div class="p-body"><div id="serie-box"></div><div id="cmp"></div><div id="dist"></div><div id="lee"></div><div class="kgrid" id="kgrid"></div></div>
-</div>
 
-<!-- la regla marca el hueco donde el mapa puede dibujarse, declarado por CSS (ver el socioeconómico) -->
-<div id="regla" aria-hidden="true"></div>
-<div id="lamina"></div>
+  <div class="capitulo"><h2>De dónde salen los datos</h2><p>Cuatro fuentes oficiales, cada una con su año y su alcance</p></div>
+  <div class="fuentes">
+    <div class="fuente"><div class="fn">Censo de Población y Vivienda</div><div class="fa">INE · marzo de 2024</div><div class="fq">Cuenta a todos: llega a cada municipio, por edad simple, sexo y área. Reproducimos al registro sus tabulados oficiales.</div></div>
+    <div class="fuente"><div class="fn">Encuesta de Hogares</div><div class="fa">INE · 2025</div><div class="fq">Pobreza por ingresos, trabajo con horas, programas y alimentación. Es una muestra: llega a departamentos y cada cifra lleva su margen de error.</div></div>
+    <div class="fuente"><div class="fn">Encuesta de Demografía y Salud</div><div class="fa">INE · 2023</div><div class="fq">Nutrición, anemia, vacunas, desarrollo infantil, crianza, embarazo adolescente y violencia. Llega a departamentos.</div></div>
+    <div class="fuente"><div class="fn">Presupuesto Abierto</div><div class="fa">Ministerio de Economía · 2016-2025</div><div class="fq">Lo que se presupuestó y lo que se gastó en programas para la niñez, entidad por entidad, sin contar dos veces.</div></div>
+  </div>
 
-<div class="zc"><button id="z-in">+</button><button id="z-out">−</button><button id="z-rst">⤢</button></div>
-
-<div class="termo">
-  <div class="tm-top"><div class="tm-t" id="tm-t">—</div><div class="tm-st" id="tm-st"></div></div>
-  <div class="tm-row"><span class="tm-side" id="tm-lo"></span><div class="tm-bar" id="tm-bar"><div class="tm-you" id="tm-you"><span></span><i></i><u></u></div></div><span class="tm-side" id="tm-hi"></span></div>
-</div>
-
-<div id="pop"><div class="pn"></div><div class="pd"></div><div class="pv"><b></b><small></small></div><div class="pr"></div></div>
-<div id="tip"><div class="tn"></div><div class="td"></div><div class="tr"></div></div>
-
+  <footer>Atlas de la Niñez y la Adolescencia · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>. Las cifras de cada fuente llevan su año: el censo es de 2024, la EDSA de 2023 y la Encuesta de Hogares de 2025. <a href="metodologia.html">Cómo se calculó todo</a>.</footer>
+</main>
+<script src="lib/echarts.min.js"></script>
+<script src="estilo/comun.js"></script>
 <script>
-// catálogo, datos y años se cargan desde fiscal_catalogo.json / fiscal_data.json
-// PALETA: espectro POPULI. A DIFERENCIA del atlas socioeconómico, acá la rampa se ORIENTA
-// por la dirección favorable del indicador (campo `dir` del IGF), porque un indicador fiscal
-// sí tiene lado bueno y lado malo. Pintar "alto = rojo" siempre mentiría: en Inversión/Gasto
-// alto es BUENO. Y para `dir:0` (contexto, como Coparticipación/Ing. Total) va una rampa
-// secuencial sin rojo, que no emite juicio.
-const ESP=["#00323d","#005f73","#0a9396","#94d2bd","#e9d8a6","#eda13e","#df5d25","#c71e1d","#8f1f22"];
-const RAMP_HI_BAD =d3.interpolateRgbBasis(ESP);              // alto = rojo   (dir -1)
-const RAMP_HI_GOOD=d3.interpolateRgbBasis([...ESP].reverse());// alto = teal   (dir  1)
-// dir:0 (contexto) — pasa al ESPECTRO COMPLETO, igual que el resto del sitio y que el
-// atlas socioeconómico. Antes usaba media rampa (crema→petróleo) para no "emitir juicio".
-// Con el pivote en la MEDIANA el eje de tono no dice bueno/malo sino POR DEBAJO / POR
-// ENCIMA de lo típico, así que el rojo deja de ser una valoración y pasa a ser una
-// dirección. Sin orientar por `dir`: para un indicador de contexto no hay lado favorable.
-const RAMP_NEUTRAL=d3.interpolateRgbBasis(ESP);              // alto = rojo = muy sobre la mediana
-const UNI={"Bs/hab":"Bs","Bs/NNA":"Bs por niño","Bs/est.":"Bs por estudiante"};
-const fmt=(v,u)=>{if(v==null||isNaN(v))return"s/d";
-  if(UNI[u])return d3.format(",")(Math.round(v)).replace(/,/g,".")+" "+UNI[u];
-  if(u==="MM Bs")return(+v).toFixed(Math.abs(v)<10?2:1).replace(".",",")+" MM Bs";
-  if(u==="%")return(+v).toFixed(1).replace(".",",")+"%";
-  return(+v).toFixed(1).replace(".",",")+" "+u;};
-const fmtShort=(v,u)=>{if(v==null||isNaN(v))return"";
-  if(v===0)return"0";                                   // el cero se escribe "0", no "0,0"
-  if(UNI[u])return Math.abs(v)>=1000?(v/1000).toFixed(1).replace(".",",")+"k":String(Math.round(v));
-  return(+v).toFixed(Math.abs(v)<10?1:0).replace(".",",");};
-const sgn=(d,u)=>(d>=0?"▲":"▼")+" "+(UNI[u]||u==="MM Bs"?fmt(Math.abs(d),u):u==="%"?fmt(Math.abs(d),"").trim()+" pp":fmt(Math.abs(d),"").trim());
-const dpr=Math.min(window.devicePixelRatio||1,2);
-const fitC=(cv,w,h,rf)=>{cv.width=w*dpr;cv.height=h*dpr;return cv.getContext("2d",rf?{willReadFrequently:true}:undefined);};
+(() => {
+const { $, css, nf, bs, pc, deCada, base, ejeX, ejeY, barra, alfa } = Atlas;
+Promise.all([fetch("datos/municipios.json").then((r) => r.json()), fetch("datos/ind/pob.json").then((r) => r.json()),
+  fetch("datos/ind/trabaja.json").then((r) => r.json()), fetch("datos/ind/privaciones_2.json").then((r) => r.json()),
+  fetch("datos/eh2025.json").then((r) => r.json()), fetch("datos/gasto/nacional.json").then((r) => r.json())])
+.then(([MUN, POB, TRA, PRIV, EH, NAC]) => {
+  const M = MUN.municipios, DEP = MUN.departamentos;
+  $("lista-mun").innerHTML = M.map((m) => `<option value="${m.n} (${DEP[m.d]})">`).join("");
+  const ir = () => { const t = $("buscar").value.trim().toLowerCase(); if (!t) return;
+    const m = M.find((x) => `${x.n} (${DEP[x.d]})`.toLowerCase() === t) || M.find((x) => x.n.toLowerCase() === t) || M.find((x) => x.n.toLowerCase().startsWith(t));
+    if (m) location.href = `perfil.html?m=${m.c}`; };
+  $("buscar").addEventListener("change", ir);
+  $("buscar").addEventListener("keydown", (e) => { if (e.key === "Enter") ir(); });
 
-// ── TEMA ── el CSS va por variables; el canvas no, así que sus colores viven acá
-const THEME={
-  light:{world:"#e8e2d6",worldLine:"#d8d1c1",off:"#ece6da",lineOn:"rgba(11,17,24,.72)",lineOff:"rgba(11,17,24,.16)",
-    nd:"#dfe5ea",alpha:.7,miniLine:"rgba(15,22,30,.28)",miniBol:"rgba(12,20,28,.72)",hov:"rgba(0,18,25,.7)",sel:"#e0912a",
-    // el límite departamental es la MISMA tinta que el municipal, más gruesa
-    lineDpto:"rgba(6,12,18,.92)",velo:"rgba(242,239,232,.74)"},
-  // OJO: en oscuro la división municipal va OSCURA igual que en claro — una línea clara se difumina
-  // contra los tonos claros de la rampa (arena, mint) y se pierde el corte limpio entre municipios.
-  // Solo lo que se apoya sobre fondo oscuro (contorno país del minimapa, depto fuera de foco) va claro.
-  dark:{world:"#132029",worldLine:"#1e2f39",off:"#182831",lineOn:"rgba(8,14,20,.78)",lineOff:"rgba(214,232,240,.13)",
-    nd:"#243440",alpha:.84,miniLine:"rgba(8,14,20,.6)",miniBol:"rgba(232,244,250,.58)",hov:"rgba(255,255,255,.9)",sel:"#f2ad3f",
-    lineDpto:"rgba(4,9,14,.95)",velo:"rgba(11,19,24,.76)"}};
-let TH=THEME.light;
-const reduceMo=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
-function applyTheme(dark,save){document.body.classList.toggle("dark",dark);TH=dark?THEME.dark:THEME.light;
-  const b=document.getElementById("theme-btn");if(b)b.title=dark?"Modo claro":"Modo oscuro";
-  if(save){try{localStorage.setItem("atlas-tema",dark?"dark":"light");}catch(_){}}}
-// preferencia guardada; si no hay, la del sistema
-(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}
-  applyTheme(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
+  // cifras de entrada: cada una con su fuente y su año
+  const i = NAC.anios.length - 1, anio = NAC.anios[i];
+  const porNino = 1e6 * NAC.esp[i] / NAC.pob_0_17[i];
+  const central = NAC.nivel_esp["Nivel central"][i] / NAC.esp[i] * 100;
+  const pob = EH.valores.POB01.nac, adultos = EH.valores.POB06 && EH.valores.POB06.nac;
+  const card = (lab, v, u, c, clase = "") => `<div class="kpi ${clase}"><div class="kl">${lab}</div><div class="kv">${v}</div><div class="ku">${u}</div><div class="kc">${Atlas.juntos(c)}</div></div>`;
+  $("kpis").innerHTML =
+    card("Niñas, niños y adolescentes", nf(POB.bol.v), "de 0 a 17 años", "Censo 2024")
+    + card("Viven en pobreza por ingresos", pc(pob.v), `entre ${pc(pob.v - 1.96 * pob.ee)} y ${pc(pob.v + 1.96 * pob.ee)}`, `Encuesta de Hogares 2025${adultos ? ` · adultos: <b>${pc(adultos.v)}</b>` : ""}`)
+    + card("Trabajan, de 7 a 17 años", pc(TRA.bol.v), `${nf(TRA.bol.num)} niñas, niños y adolescentes`, "Censo 2024")
+    + card("El Estado gasta por cada uno", bs(porNino), `al año, en programas sólo para la niñez (${anio})`, "Presupuesto Abierto", "gasto")
+    + card("Lo gasta el nivel central", pc(central, 0), "sobre todo el sueldo de los maestros", `alcaldías: <b>${pc(NAC.nivel_esp["Alcaldías"][i] / NAC.esp[i] * 100, 0)}</b>`, "gasto");
 
-Promise.all([fetch("municipios.topojson").then(r=>r.json()),fetch("sudamerica.topojson").then(r=>r.json()),
-  fetch("catalogo.json").then(r=>r.json()),fetch("datos.json").then(r=>r.json())]).then(([topo,wtopo,cat,DATA])=>{
-  const geo=topojson.feature(topo,topo.objects.data),F=geo.features,bolivia=topojson.merge(topo,topo.objects.data.geometries);
-  // límites departamentales: los arcos entre dos municipios de DISTINTO departamento (de los datos, no de un archivo)
-  const mallaDepto=topojson.mesh(topo,topo.objects.data,(a,b)=>
-    a!==b&&DATA[a.properties.sigep]&&DATA[b.properties.sigep]
-    &&DATA[a.properties.sigep].dpto!==DATA[b.properties.sigep].dpto);
-  const world=topojson.feature(wtopo,wtopo.objects.countries).features.filter(w=>{const c=d3.geoCentroid(w);return c[0]>-95&&c[0]<-28&&c[1]>-58&&c[1]<18;});
-  const GRUPOS=cat.grupos,YEARS=cat.anios,cache={};let curCat=GRUPOS[0],INDS=curCat.indicadores;
-  let yIdx=YEARS.length-1;                       // eje temporal: gestión en pantalla (arranca en la última)
-  const byDpto={};for(const s in DATA){const d=DATA[s].dpto;(byDpto[d]=byDpto[d]||[]).push(DATA[s]);}
-  const DEPTOS=Object.keys(byDpto).sort(),allRows=Object.values(DATA),SIG=Object.keys(DATA);
-  const porIne={};for(const s in DATA)porIne[DATA[s].cod_ine]=s;
-  // promedio nacional/departamental PONDERADO POR POBLACIÓN del año.
-  // Para los per cápita esto es exactamente total Bs / total habitantes; para los % es el
-  // promedio que vive el boliviano medio (no el municipio medio). Se rotula así en la ficha.
-  // ATLAS DE NIÑEZ: cada indicador declara su ponderador (`ind.w`: población 0-17, matrícula fiscal,
-  // presupuesto, gasto específico…). El promedio ponderado por el denominador ES el cociente de los totales:
-  // el valor de Bolivia y de cada departamento es el agregado real, no el municipio medio. Los montos se suman.
-  function agg(rows,ind,yi){let n=0,d=0;
-    if(ind.agg==="suma"){let k=0;rows.forEach(r=>{const v=r.s[ind.key][yi];if(v!=null){n+=v;k++;}});return k?n:null;}
-    rows.forEach(r=>{const v=r.s[ind.key][yi],ws=(ind.w&&r.w&&r.w[ind.w])||r.pob,w=ws[yi];if(v!=null&&w!=null&&w>0){n+=v*w;d+=w;}});
-    return d?n/d:null;}
-  // ── ESCALA DE ANCLA FIJA ───────────────────────────────────────────────────
-  // El pivote y los extremos se calculan UNA sola vez, sobre la gestión de
-  // referencia, y quedan congelados para todas las gestiones.
-  //
-  // Antes se recalculaban año por año con la mediana móvil. Eso resolvía bien el
-  // sesgo —las distribuciones fiscales tienen colas largas y una escala secuencial
-  // pura dejaba al 80% de los municipios apilado en el extremo pálido— pero traía
-  // dos efectos que engañan al lector:
-  //   · un municipio podía cambiar de color entre gestiones SIN haber cambiado su
-  //     valor: bastaba con que se movieran los demás. Al recorrer el eje temporal
-  //     eso se leía como un cambio que no ocurrió.
-  //   · el mismo tono significaba magnitudes distintas en cada indicador, porque
-  //     cada uno tenía su propio centro.
-  // Con ancla fija el color responde «¿cuánto tenés?» en vez de «¿cómo te
-  // comparás con los demás, hoy?», que es lo que la gente cree estar leyendo.
-  //
-  // El pivote se elige según la naturaleza del indicador:
-  //   · con signo (Resultado Fiscal) -> el CERO. Es el caso ideal: el centro existe.
-  //   · ratios y estructura (%)      -> el PROMEDIO NACIONAL ponderado por población.
-  //                                     Es una magnitud real —la del país—, no un
-  //                                     artefacto de la muestra.
-  //   · per cápita y montos          -> la mediana de la gestión de referencia,
-  //                                     congelada (no hay un "valor país" comparable).
-  const BASE_YI=YEARS.length-1;                  // gestión de referencia: la más reciente
-  const domCache={},pivInfo={};
-  function dominio(ind){
-    if(domCache[ind.key]!==undefined)return domCache[ind.key];
-    const vals=allRows.map(d=>d.s[ind.key]&&d.s[ind.key][BASE_YI]).filter(v=>v!=null&&!isNaN(v)).sort(d3.ascending);
-    if(!vals.length)return domCache[ind.key]=null;
-    const lo=d3.quantile(vals,.02),hi=d3.quantile(vals,.98);
-    if(ind.div){const m=Math.max(Math.abs(lo),Math.abs(hi))||1;pivInfo[ind.key]={pivReal:0,pivTipo:"cero"};return domCache[ind.key]=[-m,0,m];}
-    let piv=(ind.unit==="%")?agg(allRows,ind,BASE_YI):null,pivTipo="valor de Bolivia";
-    if(piv==null||isNaN(piv)){piv=d3.quantile(vals,.5);pivTipo="mediana";}
-    // ⚠️ SE GUARDA EL PIVOTE REAL Y SU NOMBRE. El recorte a ±8 % del rango evita que
-    //    la rampa se degenere, pero el número recortado ya no es el promedio ni la
-    //    mediana: la leyenda rotula el real y nombra el recorte (como el
-    //    socioeconómico y como las láminas del Banco).
-    pivInfo[ind.key]={pivReal:piv,pivTipo};
-    const pad=(hi-lo)*.08;
-    if(pad>0)piv=Math.min(Math.max(piv,lo+pad),hi-pad);
-    return domCache[ind.key]=[lo,piv,hi];
+  const g1 = echarts.init($("g1")), g2 = echarts.init($("g2")), g3 = echarts.init($("g3"));
+  function pintar() {
+    // 1. pobreza: niños frente a adultos, con su margen de error
+    const filas = [["Adultos (18 y más)", adultos], ["Niñas, niños y adolescentes", pob]].filter((x) => x[1]);
+        $("h1-t").textContent = adultos ? "Los niños son más pobres que los adultos" : "La pobreza infantil";
+    $("h1-d").textContent = `${pc(pob.v)} de las niñas, niños y adolescentes vive en un hogar pobre por ingresos, contra ${adultos ? pc(adultos.v) : "s/d"} de los adultos. Encuesta de Hogares 2025; la raya fina es el margen de error.`;
+    g1.setOption({ ...base(), legend: { show: false }, grid: { left: 6, right: 44, top: 10, bottom: 18, containLabel: true },
+      tooltip: { show: false },
+      xAxis: { type: "value", max: 100, splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), formatter: (v) => v + " %" } },
+      yAxis: { type: "category", data: filas.map((x) => x[0]), axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: css("--tinta"), fontSize: 12, width: 110, overflow: "break" } },
+      series: [{ type: "bar", data: filas.map((x, k) => ({ value: x[1].v, itemStyle: { color: k ? css("--t6") : css("--t3") } })), barWidth: 26 },
+        { type: "custom", renderItem: (pr, api) => { const a = api.coord([api.value(0), api.value(2)]), b = api.coord([api.value(1), api.value(2)]);
+            return { type: "group", children: [
+              { type: "line", shape: { x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, style: { stroke: css("--tinta"), lineWidth: 1.5 } },
+              { type: "line", shape: { x1: b[0], y1: b[1] - 5, x2: b[0], y2: b[1] + 5 }, style: { stroke: css("--tinta"), lineWidth: 1.5 } },
+              { type: "text", x: b[0] + 7, y: b[1], style: { text: pc(api.value(3)), fill: css("--tinta"), font: "600 12.5px Figtree", verticalAlign: "middle" } }] }; },
+          encode: { x: [0, 1], y: 2 }, data: filas.map((x) => [x[1].v - 1.96 * x[1].ee, x[1].v + 1.96 * x[1].ee, x[0], x[1].v]), z: 5 }] }, true);
+    // 2. los tres bolsillos, por niño
+    const niv = [["Alcaldías", "--alcaldia"], ["Gobernaciones", "--gobernacion"], ["Nivel central", "--central"]];
+    const pn = (k) => 1e6 * NAC.nivel_esp[k][i] / NAC.pob_0_17[i];
+    $("h2-t").textContent = `De cada Bs 100, ${nf(central, 0)} los gasta el nivel central`;
+    $("h2-d").textContent = `Por cada niña, niño o adolescente, en ${anio}: ${niv.map(([k]) => `${k.toLowerCase()} ${bs(pn(k))}`).join(", ")}. Programas sólo para la niñez, sin contar dos veces.`;
+    g2.setOption({ ...base(), legend: { ...base().legend, data: niv.map((x) => x[0]) }, grid: { left: 6, right: 26, top: 40, bottom: 18, containLabel: true },
+      tooltip: { ...base().tooltip, trigger: "item", formatter: (p) => `${p.seriesName}: <b>${bs(p.value)}</b> por niño` },
+      xAxis: { type: "value", splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), formatter: (v) => nf(v) } },
+      yAxis: { type: "category", data: [String(anio)], axisTick: { show: false }, axisLine: { show: false }, axisLabel: { show: false } },
+      series: niv.map(([k, c]) => ({ name: k, type: "bar", stack: "t", data: [pn(k)], barWidth: 40, itemStyle: { color: css(c), borderColor: css("--superficie"), borderWidth: 1.5 } })) }, true);
+    // 3. trabajo infantil por edad
+    const E = TRA.edad_simple;
+    const a17 = E.bol[E.edades.indexOf(17)], a7 = E.bol[E.edades.indexOf(7)];
+    const dc = deCada(a17);
+    $("h3-t").textContent = dc ? `A los 17 años ${dc.startsWith("uno") ? "trabaja" : "trabajan"} ${dc}` : `A los 17 años trabaja el ${pc(a17)}`;
+    $("h3-d").textContent = `El trabajo empieza temprano y crece con cada año: ${pc(a7)} a los 7, ${pc(a17)} a los 17. Desde 2018 la edad mínima para trabajar es 14 años. Censo 2024.`;
+    g3.setOption({ ...base(), legend: { show: false }, grid: { left: 6, right: 8, top: 24, bottom: 18, containLabel: true }, tooltip: { show: false },
+      xAxis: { ...ejeX(E.edades.map(String)), axisLabel: { color: css("--suave"), fontFamily: "Figtree", fontSize: 10.5 } },
+      yAxis: { ...ejeY((v) => v + " %"), splitNumber: 2 },
+      series: [{ type: "bar", data: E.bol.map((v, k) => ({ value: v, itemStyle: { color: E.edades[k] < 14 ? css("--t6") : css("--t4") } })), barWidth: "70%",
+        markLine: { silent: true, symbol: "none", label: { show: true, formatter: "edad mínima", position: "end", color: css("--suave"), fontSize: 10.5 },
+          lineStyle: { color: css("--suave"), type: "dashed" }, data: [{ xAxis: "14" }] } }] }, true);
   }
-  function scale(ind,yi){yi=(yi===undefined?yIdx:yi);const ck=ind.key+"|"+yi;if(cache[ck])return cache[ck];
-    const vals=allRows.map(d=>d.s[ind.key]&&d.s[ind.key][yi]).filter(v=>v!=null&&!isNaN(v)).sort(d3.ascending);
-    const dom=dominio(ind);
-    if(!vals.length||!dom)return cache[ck]={vacio:true,color:()=>TH.nd,lo:null,hi:null,med:null,min:null,max:null,avg:null,n:0};
-    const ramp=ind.dir>0?RAMP_HI_GOOD:ind.dir<0?RAMP_HI_BAD:RAMP_NEUTRAL;
-    const dv=d3.scaleDiverging(ramp).domain(dom).clamp(true);
-    const color=v=>v==null||isNaN(v)?TH.nd:dv(v);
-    // lo/med/hi salen del dominio CONGELADO (la leyenda es la misma en todas las
-    // gestiones, que es justamente el punto); min/max/avg/n sí son del año en pantalla.
-    const pi=pivInfo[ind.key]||{pivReal:dom[1],pivTipo:"mediana"};
-    return cache[ck]={lo:dom[0],med:dom[1],hi:dom[2],piv:dom[1],pivReal:pi.pivReal,pivTipo:pi.pivTipo,dv,color,
-      min:vals[0],max:vals[vals.length-1],avg:agg(allRows,ind,yi),n:vals.length};}
-  const valOf=(s,k)=>DATA[s]&&DATA[s].s[k]?DATA[s].s[k][yIdx]:null;
-  let cur=INDS[0],sel=null,hov=null,zt=d3.zoomIdentity,focusDept=null,zr=d3.zoomIdentity;
-
-  // desplegables
-  function wireDrop(barSel,btnSel){const bar=document.getElementById(barSel);
-    document.getElementById(btnSel).onclick=e=>{e.stopPropagation();document.querySelectorAll(".cat-bar,.tbdd,.yrdd").forEach(x=>{if(x!==bar)x.classList.remove("open")});bar.classList.toggle("open");};}
-  const catBar=document.getElementById("cat-bar");
-  function renderCatDrop(){document.getElementById("cat-drop").innerHTML=GRUPOS.map(g=>`<div class="cat-op ${g.key===curCat.key?'on':''}" data-g="${g.key}"><span>${g.label}</span><span class="co-n">${g.indicadores.length}</span></div>`).join("");
-    document.querySelectorAll("#cat-drop .cat-op").forEach(op=>op.onclick=()=>{setCategory(op.dataset.g);escribirURL(true);});}
-  document.querySelector("#cat-btn .cn").textContent=curCat.label;
-  wireDrop("cat-bar","cat-btn");
-  const deptDD=document.getElementById("dept-dd");
-  document.getElementById("dept-drop").innerHTML=[`<div class="tbop on" data-d="">Bolivia (todo)</div>`].concat(DEPTOS.map(d=>`<div class="tbop" data-d="${d}">${d}</div>`)).join("");
-  deptDD.querySelector(".tbbtn").onclick=e=>{e.stopPropagation();catBar.classList.remove("open");yrDD.classList.remove("open");deptDD.classList.toggle("open");};
-  document.querySelectorAll("#dept-drop .tbop").forEach(op=>op.onclick=()=>{deptDD.classList.remove("open");setDept(op.dataset.d);escribirURL(true);});
-  // ── eje temporal: stepper ‹ 2025 › + desplegable de gestión ──
-  const yrDD=document.getElementById("yr-dd");
-  document.getElementById("yr-drop").innerHTML=YEARS.map((y,i)=>`<div class="yrop" data-i="${i}">${y}</div>`).join("");
-  function setYear(i){i=Math.max(0,Math.min(YEARS.length-1,i));if(i===yIdx)return;yIdx=i;paintYear();}
-  function yearChrome(){
-    document.getElementById("y-val").innerHTML=YEARS[yIdx]+"<small>gestión</small>";
-    document.getElementById("y-prev").disabled=yIdx===0;
-    document.getElementById("y-next").disabled=yIdx===YEARS.length-1;
-    document.querySelectorAll("#yr-drop .yrop").forEach((o,i)=>o.classList.toggle("on",i===yIdx));}
-  function paintYear(){yearChrome();
-    buildCards();                       // los mini-mapas son del año en pantalla
-    fadeSwap(drawBase);drawOver();termo();renderLamina();
-    sel?renderMun(sel.properties.sigep):renderSummary();}
-  document.getElementById("y-prev").onclick=e=>{e.stopPropagation();setYear(yIdx-1);escribirURL(true);};
-  document.getElementById("y-next").onclick=e=>{e.stopPropagation();setYear(yIdx+1);escribirURL(true);};
-  document.getElementById("y-val").onclick=e=>{e.stopPropagation();
-    catBar.classList.remove("open");deptDD.classList.remove("open");yrDD.classList.toggle("open");};
-  document.querySelectorAll("#yr-drop .yrop").forEach(o=>o.onclick=e=>{e.stopPropagation();
-    yrDD.classList.remove("open");setYear(+o.dataset.i);escribirURL(true);});
-  document.addEventListener("click",()=>{catBar.classList.remove("open");deptDD.classList.remove("open");yrDD.classList.remove("open");});
-  document.getElementById("theme-btn").onclick=e=>{e.stopPropagation();
-    applyTheme(!document.body.classList.contains("dark"),true);
-    buildCards();fadeSwap(drawBase);drawOver();renderSerie(sel?sel.properties.sigep:null,sel?null:focusDept);repintarFicha();};
-
-  const projMini=d3.geoMercator().fitExtent([[2,2],[108,78]],geo);
-  // la geometría se proyecta UNA vez y se guarda como Path2D: 53.094 puntos que
-  // antes se re-proyectaban en cada tarjeta, en cada cambio de gestión
-  const pathMini=(()=>{const g=d3.geoPath(projMini);return F.map(f=>new Path2D(g(f)));})();
-  const pathMiniBol=new Path2D(d3.geoPath(projMini)(bolivia));
-  const lista=document.getElementById("lista");
-  function buildCards(){lista.innerHTML="";INDS.forEach((ind,i)=>{const sc=scale(ind);
-    const el=document.createElement("button");el.className="ind"+(ind.key===cur.key?" on":"");el.dataset.k=ind.key;
-    el.style.setProperty("--d",Math.min(i,14)*16+"ms");
-    el.title=ind.label+" — "+ind.desc;
-    el.innerHTML=`<div><div class="i-nm">${ind.label}</div><div class="i-df">${ind.desc}</div></div>`;
-    const cv=document.createElement("canvas");cv.className="mini";el.appendChild(cv);lista.appendChild(el);
-    const c=fitC(cv,110,80);c.setTransform(dpr,0,0,dpr,0,0);c.lineWidth=.22;c.strokeStyle=TH.miniLine;
-    F.forEach((f,j)=>{const pa=pathMini[j];c.fillStyle=sc.color(valOf(f.properties.sigep,ind.key));c.fill(pa);c.stroke(pa);});
-    c.lineWidth=.75;c.strokeStyle=TH.miniBol;c.stroke(pathMiniBol);
-    el.onclick=()=>{select(ind);escribirURL(true);};});}
-  const TOT_IND=GRUPOS.reduce((a,g)=>a+g.indicadores.length,0);
-  function updateHints(){const kn=document.getElementById("kick-n");if(kn)kn.textContent=`${GRUPOS.length} categorías · ${TOT_IND} indicadores`;
-    const ps=document.getElementById("p-sub");if(ps)ps.textContent=`${INDS.length} indicadores · elegí uno para verlo en el mapa`;}
-  function setCategory(gkey){const g=GRUPOS.find(x=>x.key===gkey);if(!g)return;curCat=g;INDS=g.indicadores;cur=INDS[0];
-    document.querySelector("#cat-btn .cn").textContent=g.label;catBar.classList.remove("open");
-    buildCards();renderCatDrop();updateHints();fadeSwap(drawBase);drawOver();termo();renderLamina();sel?renderMun(sel.properties.sigep):renderSummary();}
-
-  const wrap=document.getElementById("map-wrap");
-  const base=document.getElementById("base"),fade=document.getElementById("fade"),over=document.getElementById("over"),pick=document.getElementById("pick"),catchEl=document.getElementById("catch"),regla=document.getElementById("regla");
-  let bctx,fctx,octx,pctx,proj,W,H,L,R,T,B,idx=new Map();
-  function setT(ctx){ctx.setTransform(dpr*zt.k,0,0,dpr*zt.k,dpr*zt.x,dpr*zt.y);}
-  // crossfade: congela el mapa actual en #fade, dibuja el nuevo debajo y desvanece el viejo
-  function fadeSwap(fn){
-    if(!fctx||reduceMo()){fn();return;}
-    fctx.setTransform(1,0,0,1,0,0);fctx.clearRect(0,0,fade.width,fade.height);
-    try{fctx.drawImage(base,0,0);}catch(_){fn();return;}
-    fade.style.transition="none";fade.style.opacity="1";
-    fn();
-    void fade.offsetWidth;
-    fade.style.transition="opacity .45s cubic-bezier(.4,0,.2,1)";fade.style.opacity="0";}
-  // trazos del mapa grande ya proyectados; se rehacen SÓLO en layout()
-  let pathMuni=[],pathMundo=[],pathDepto=null,pathPais=null;
-  function armarPaths(){const g=d3.geoPath(proj);
-    pathMuni=F.map(f=>new Path2D(g(f)));pathMundo=world.map(x=>new Path2D(g(x)));
-    pathDepto=new Path2D(g(mallaDepto));pathPais=new Path2D(g(bolivia));}
-  function drawBase(){const sc=scale(cur);bctx.setTransform(dpr,0,0,dpr,0,0);bctx.clearRect(0,0,W,H);setT(bctx);
-    bctx.fillStyle=TH.world;bctx.strokeStyle=TH.worldLine;bctx.lineWidth=.5/zt.k;
-    pathMundo.forEach(pa=>{bctx.fill(pa);bctx.stroke(pa);});
-    bctx.lineWidth=.45/zt.k;
-    F.forEach((f,j)=>{const s=f.properties.sigep,off=focusDept&&DATA[s].dpto!==focusDept,pa=pathMuni[j];
-      bctx.globalAlpha=off?1:TH.alpha;bctx.fillStyle=off?TH.off:sc.color(valOf(s,cur.key));bctx.fill(pa);bctx.globalAlpha=1;
-      bctx.strokeStyle=off?TH.lineOff:TH.lineOn;bctx.stroke(pa);});
-    // la división departamental va ENCIMA de los rellenos, más gruesa que la municipal,
-    // y cierra contra la frontera (la malla sola deja abiertos los departamentos de borde)
-    bctx.lineWidth=1.08/zt.k;bctx.strokeStyle=TH.lineDpto;bctx.lineJoin="round";
-    bctx.stroke(pathDepto);bctx.stroke(pathPais);}
-  function drawPick(){pctx.setTransform(dpr,0,0,dpr,0,0);pctx.clearRect(0,0,W,H);setT(pctx);
-    F.forEach((f,i)=>{const c=i+1;pctx.fillStyle=`rgb(${(c>>16)&255},${(c>>8)&255},${c&255})`;pctx.fill(pathMuni[i]);});}
-  // el pincel del histograma: se OSCURECE el resto, no se pintan los elegidos
-  let pincel=null;
-  const _pos=new Map();F.forEach((f,i)=>_pos.set(f,i));
-  function drawOver(){octx.setTransform(dpr,0,0,dpr,0,0);octx.clearRect(0,0,W,H);setT(octx);
-    if(pincel&&pincel.size){const velo=new Path2D();
-      F.forEach((f,j)=>{if(!pincel.has(f.properties.sigep))velo.addPath(pathMuni[j]);});
-      octx.fillStyle=TH.velo;octx.fill(velo);}
-    const trazo=f=>{const i=_pos.get(f);return i===undefined?null:pathMuni[i];};
-    if(hov){const pa=trazo(hov);if(pa){octx.lineWidth=1/zt.k;octx.strokeStyle=TH.hov;octx.stroke(pa);}}
-    if(sel){const pa=trazo(sel);if(pa){octx.lineWidth=1.4/zt.k;octx.strokeStyle=TH.sel;octx.stroke(pa);}}}
-  let _rafPincel=0;
-  function setPincel(s){const nuevo=s&&s.size?s:null;
-    if(nuevo===pincel)return;
-    if(nuevo&&pincel&&nuevo.size===pincel.size){let igual=true;for(const x of nuevo)if(!pincel.has(x)){igual=false;break;}if(igual)return;}
-    pincel=nuevo;if(_rafPincel)return;_rafPincel=requestAnimationFrame(()=>{_rafPincel=0;drawOver();});}
-  // el zoom repinta de cero: cortar cualquier crossfade en curso para no arrastrar una imagen vieja
-  function render(){zr=zt;wrap.style.transform="none";fade.style.transition="none";fade.style.opacity="0";drawBase();drawPick();drawOver();}
-  function cssZoom(){const s=zt.k/zr.k;wrap.style.transformOrigin="0 0";wrap.style.transform="translate("+(zt.x-s*zr.x)+"px,"+(zt.y-s*zr.y)+"px) scale("+s+")";}
-  function layout(){sizeSheet();W=wrap.clientWidth;H=wrap.clientHeight;fitC(base,W,H);fitC(fade,W,H);fitC(over,W,H);fitC(pick,W,H,true);
-    bctx=base.getContext("2d");fctx=fade.getContext("2d");octx=over.getContext("2d");pctx=pick.getContext("2d",{willReadFrequently:true});
-    // el hueco sale de la REGLA (CSS): una sola fuente de verdad para dónde terminan los paneles.
-    // ⛔ NUNCA medir #panel-det: arranca en display:none y devuelve un rect de ceros.
-    const rg=regla.getBoundingClientRect(),mb=wrap.getBoundingClientRect();
-    L=Math.max(0,rg.left-mb.left);R=Math.min(W,rg.right-mb.left);T=Math.max(0,rg.top-mb.top);B=Math.min(H,rg.bottom-mb.top);
-    proj=d3.geoMercator().fitExtent([[L,T],[R,B]],geo);
-    armarPaths();idx.clear();F.forEach((f,i)=>idx.set(i+1,f));render();}
-
-  const zoom=d3.zoom().scaleExtent([1,12]).on("zoom",e=>{zt=e.transform;cssZoom();}).on("end",()=>render());
-  d3.select(catchEl).call(zoom);
-  document.getElementById("z-in").onclick=()=>d3.select(catchEl).transition().duration(250).call(zoom.scaleBy,1.6);
-  document.getElementById("z-out").onclick=()=>d3.select(catchEl).transition().duration(250).call(zoom.scaleBy,1/1.6);
-  // el botón ⤢ vuelve a Bolivia, pero NO descarta el municipio señalado (solo resetea la vista)
-  document.getElementById("z-rst").onclick=()=>setDept("",true);
-  // único punto de entrada para cambiar el foco: sincroniza top bar + mapa + ficha
-  function setDept(dp,keepSel){focusDept=dp||null;
-    document.getElementById("dept-lab").textContent=dp||"Bolivia";
-    document.querySelectorAll("#dept-drop .tbop").forEach(o=>o.classList.toggle("on",(o.dataset.d||"")===(dp||"")));
-    zoomToDept(dp);
-    if(keepSel&&sel)renderMun(sel.properties.sigep);else renderSummary();}
-  function zoomToDept(dp){focusDept=dp||null;drawBase();drawOver();
-    if(!dp){d3.select(catchEl).transition().duration(400).call(zoom.transform,d3.zoomIdentity);return;}
-    const feats=F.filter(f=>DATA[f.properties.sigep].dpto===dp),b=d3.geoPath(proj).bounds({type:"FeatureCollection",features:feats});
-    const bw=b[1][0]-b[0][0],bh=b[1][1]-b[0][1],cx=(b[0][0]+b[1][0])/2,cy=(b[0][1]+b[1][1])/2;
-    const k=Math.max(1,Math.min(12,.86*Math.min((R-L)/bw,(B-T)/bh)));
-    const t=d3.zoomIdentity.translate((L+R)/2,(T+B)/2).scale(k).translate(-cx,-cy);
-    d3.select(catchEl).transition().duration(500).call(zoom.transform,t);}
-
-  const pop=document.getElementById("pop");
-  const pixel=e=>{const r=wrap.getBoundingClientRect();return pctx.getImageData(Math.round((e.clientX-r.left)*dpr),Math.round((e.clientY-r.top)*dpr),1,1).data;};
-  // picking robusto: muestrea un bloque y devuelve el municipio válido más cercano al toque (tolera bordes antialiaseados y municipios chicos)
-  function featAt(e){const r=wrap.getBoundingClientRect(),x=Math.round((e.clientX-r.left)*dpr),y=Math.round((e.clientY-r.top)*dpr);
-    const rad=Math.round(7*dpr),x0=Math.max(0,x-rad),y0=Math.max(0,y-rad),x1=Math.min(pick.width-1,x+rad),y1=Math.min(pick.height-1,y+rad);
-    const bw=x1-x0+1,bh=y1-y0+1;if(bw<1||bh<1)return null;
-    const img=pctx.getImageData(x0,y0,bw,bh).data,cx=x-x0,cy=y-y0;let best=null,bd=1e18;
-    for(let j=0;j<bh;j++)for(let i=0;i<bw;i++){const o=(j*bw+i)<<2;if(img[o+3]===0)continue;const f=idx.get((img[o]<<16)+(img[o+1]<<8)+img[o+2]);if(!f)continue;const d=(i-cx)*(i-cx)+(j-cy)*(j-cy);if(d<bd){bd=d;best=f;}}
-    return best;}
-  catchEl.addEventListener("mousemove",e=>{if(innerWidth<=820){pop.style.opacity=0;return;}const px=pixel(e),f=idx.get((px[0]<<16)+(px[1]<<8)+px[2])||null;
-    if(f!==hov){hov=f;drawOver();}
-    marcarTermo(f?f.properties.sigep:null);if(!f)termoVuelve();
-    if(f){const sig=f.properties.sigep,d=DATA[sig],sc=scale(cur),v=d.s[cur.key][yIdx],rk=rankOf(sig);
-      pop.querySelector(".pn").textContent=d.nombre;pop.querySelector(".pd").textContent=d.dpto+" · "+cur.label+" · "+YEARS[yIdx];
-      pop.querySelector(".pv b").textContent=fmt(v,cur.unit);pop.querySelector(".pv small").textContent=v==null?"":cur.unit;
-      pop.querySelector(".pr").innerHTML=`<span>${rk?`Puesto <b>${rk.pos}</b>/${rk.n}`:"Sin dato"}</span>`
-        +`<span>${v!=null&&sc.avg!=null?`vs. país <b>${sgn(v-sc.avg,cur.unit)}</b>`:""}</span>`;
-      pop.style.opacity=1;pop.style.left=Math.min(e.clientX+16,innerWidth-200)+"px";pop.style.top=Math.min(e.clientY+16,innerHeight-110)+"px";
-    }else pop.style.opacity=0;});
-  catchEl.addEventListener("mouseleave",()=>{hov=null;drawOver();pop.style.opacity=0;termoVuelve();});
-  let _tapXY=null;
-  catchEl.addEventListener("pointerdown",e=>{_tapXY=[e.clientX,e.clientY];});
-  catchEl.addEventListener("pointerup",e=>{if(!_tapXY)return;const mv=Math.hypot(e.clientX-_tapXY[0],e.clientY-_tapXY[1]);_tapXY=null;if(mv>8)return;const f=featAt(e);if(f){sel=f;drawOver();renderMun(f.properties.sigep);}else{sel=null;drawOver();renderSummary();}termoVuelve();escribirURL(true);});
-
-  // ── el municipio, situado en la rampa ──
-  const youEl=document.getElementById("tm-you");
-  function marcarTermo(sig){if(!youEl)return;const sc=scale(cur);
-    if(!sig||sc.vacio){youEl.classList.remove("on");return;}
-    const v=DATA[sig].s[cur.key][yIdx];
-    if(v==null||isNaN(v)||sc.lo==null){youEl.classList.remove("on");return;}
-    const q=Math.min(1,Math.max(0,(v-sc.lo)/((sc.hi-sc.lo)||1)));
-    youEl.style.left=(q*100).toFixed(2)+"%";youEl.classList.toggle("izq",q<.10);youEl.classList.toggle("der",q>.90);
-    youEl.querySelector("span").textContent=DATA[sig].nombre+" · "+fmt(v,cur.unit);youEl.classList.add("on");}
-  const termoVuelve=()=>marcarTermo(sel?sel.properties.sigep:null);
-  // ── tooltip de los gráficos del panel ──
-  const tipEl=document.getElementById("tip");
-  function tip(ev,titulo,sub,filas){
-    tipEl.querySelector(".tn").textContent=titulo;tipEl.querySelector(".td").textContent=sub||"";
-    tipEl.querySelector(".tr").innerHTML=(filas||[]).map(([a,b])=>`<span>${a}<b>${b}</b></span>`).join("");
-    tipEl.style.opacity=1;const w=tipEl.offsetWidth||180,h=tipEl.offsetHeight||70;
-    let x=ev.clientX+14;if(x+w>innerWidth-8)x=ev.clientX-w-14;let y=ev.clientY+14;if(y+h>innerHeight-8)y=ev.clientY-h-14;
-    tipEl.style.left=Math.max(8,x)+"px";tipEl.style.top=Math.max(8,y)+"px";}
-  const sinTip=()=>{tipEl.style.opacity=0;};
-
-  const termoEl=document.querySelector(".termo");
-  function termo(){const sc=scale(cur);
-    if(!reduceMo()){termoEl.classList.remove("swap");void termoEl.offsetWidth;termoEl.classList.add("swap");}
-    const ramp=cur.dir>0?RAMP_HI_GOOD:cur.dir<0?RAMP_HI_BAD:RAMP_NEUTRAL;
-    document.getElementById("tm-t").innerHTML=cur.label+` <small>${cur.unit} · ${YEARS[yIdx]}</small>`;
-    document.getElementById("tm-bar").style.background=`linear-gradient(to right,${d3.range(0,1.001,.04).map(t=>ramp(t)).join(",")})`;
-    // los extremos rotulados deben ser los del DOMINIO pintado, no los p2/p98 crudos:
-    // en los indicadores de pivote cero el dominio es simétrico ±m y decir "-36,2 / +35,0" mentiría
-    const d0=sc.dv?sc.dv.domain():[sc.lo,sc.med,sc.hi];
-    document.getElementById("tm-lo").innerHTML=`<span class="cap">≤ </span>${fmt(d0[0],cur.unit)}`;
-    document.getElementById("tm-hi").innerHTML=`<span class="cap">≥ </span>${fmt(d0[d0.length-1],cur.unit)}`;
-    const bar=document.getElementById("tm-bar");bar.querySelectorAll(".tm-mk,.tm-mkl").forEach(m=>m.remove());
-    if(sc.vacio){bar.style.background=TH.nd;document.getElementById("tm-st").innerHTML="<b>sin dato</b> en esta gestión";return;}
-    // TODAS las escalas son divergentes, así que el centro SIEMPRE es un pivote real y
-    // va marcado y rotulado. El rótulo tiene que decir QUÉ es ese centro, porque desde
-    // el paso a ancla fija ya no es siempre la mediana:
-    //   · con signo (Resultado Fiscal) -> "cero"
-    //   · ratios y estructura (%)      -> "promedio nacional" (ponderado por población)
-    //   · per cápita y montos          -> "mediana" de la gestión de referencia
-    // Decía "mediana" en todos los casos; en los ratios eso pasó a ser falso.
-    const m=document.createElement("div");m.className="tm-mk";m.style.left="50%";bar.appendChild(m);
-    const ml=document.createElement("div");ml.className="tm-mkl";ml.style.left="50%";
-    // se rotula el pivote REAL con su nombre; si se recortó para que la rampa no se
-    // degenere, se dice dónde quedó la marca en vez de rebautizar un borde
-    const recortado=sc.pivReal!=null&&Math.abs(sc.pivReal-sc.piv)>1e-9;
-    ml.textContent=cur.div?"cero":sc.pivTipo+" "+fmt(sc.pivReal,cur.unit)+(recortado?" (marca en "+fmt(sc.piv,cur.unit)+")":"");
-    bar.appendChild(ml);
-    document.getElementById("tm-st").innerHTML=`<b>${sc.n}</b> con dato · mín <b>${fmt(sc.min,cur.unit)}</b> · máx <b>${fmt(sc.max,cur.unit)}</b>`;
-    termoVuelve();}
-
-  // cambiar de indicador NO reconstruye la ficha (evita el parpadeo y conserva el scroll):
-  // solo mueve el resalte, repinta el mapa con crossfade y actualiza el bloque peek
-  function select(ind){cur=ind;
-    document.querySelectorAll(".ind").forEach(c=>c.classList.toggle("on",c.dataset.k===ind.key));
-    document.querySelectorAll("#kgrid .kpi").forEach(el=>el.classList.toggle("on",el.dataset.k===ind.key));
-    fadeSwap(drawBase);drawOver();termo();renderLamina();olvidarComparar();
-    renderSerie(sel?sel.properties.sigep:null,sel?null:focusDept);repintarFicha();
-    if(sel)renderPeek(sel.properties.sigep);else if(focusDept)renderPeekDept(focusDept);else renderPeekNat();}
-
-  // ── el enlace a la lámina del Banco de Gráficos ──
-  // ★ SÓLO SE OFRECE LO QUE EXISTE: el Banco publica indice_laminas.json (clave →
-  //   gestión → lámina). Hoy las láminas fiscales son de la gestión de referencia;
-  //   en otra gestión el botón lo dice («Descargar el mapa de 2025») en vez de mentir.
-  const GAL="https://centro-de-estudios-populi.github.io/galeria-populi/";
-  let LAM={};
-  /* sin láminas del Banco en este atlas */
-  const slugDe=t=>t.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-  function renderLamina(){
-    const el=document.getElementById("lamina");if(!el)return;
-    const modos=LAM[cur.key]||(cur.lam?{[String(YEARS[BASE_YI])]:cur.lam}:null);
-    if(!modos){el.innerHTML="";return;}
-    const g=String(YEARS[yIdx]),propio=modos[g],s=propio||modos[String(YEARS[BASE_YI])];
-    if(!s){el.innerHTML="";return;}
-    const gLam=propio?g:String(YEARS[BASE_YI]);
-    el.innerHTML=`<a class="lam-link" href="${GAL}graficas/${s}.png" download="${slugDe(cur.label)}-bolivia-igf-${gLam}.png"`
-      +` title="Lámina de «${cur.label}» · las 343 entidades, gestión ${gLam}">`
-      +`<span class="lam-i" aria-hidden="true">▤</span>`
-      +`<span class="lam-tx"><b>${propio?"Descargar este mapa":"Descargar el mapa de "+gLam}</b>`
-      +`<em>Lámina PNG lista para imprimir</em></span></a>`
-      +`<a class="lam-mas" href="${GAL}g/${s}/" target="_blank" rel="noopener" title="La ficha de esta lámina en el Banco de Gráficos">ver en el Banco de Gráficos ↗</a>`;}
-
-  const cls=x=>x>=0?"up":"dn";
-  const pctTxt=v=>(v*100).toFixed(1).replace(".",",")+"%";
-  // puesto del departamento entre los 9, ORIENTADO POR dir igual que el ranking municipal:
-  // puesto 1 = el mejor según la dirección favorable del indicador, no "el más alto"
-  function deptRank(dp,ind,yi){
-    const arr=DEPTOS.map(d=>[d,agg(byDpto[d],ind,yi)]).filter(x=>x[1]!=null)
-      .sort((a,b)=>ind.dir<0?d3.ascending(a[1],b[1]):d3.descending(a[1],b[1]));
-    const p=arr.findIndex(x=>x[0]===dp);return p<0?null:{pos:p+1,n:arr.length};}
-  // la ficha por defecto sigue al foco del top bar: el departamento si hay zoom a uno, el país si no
-  const renderSummary=()=>focusDept?renderDept(focusDept):renderNational();
-
-  // ── SERIE 2016–2025 del indicador en pantalla, contra el promedio nacional ──
-  // sig=null -> resumen nacional: la serie nacional pasa a ser la línea principal.
-  // SR_L = banda izquierda reservada a los rótulos del eje y (para que las barras no los pisen)
-  // SR_B alto = espacio para los años COMPLETOS en diagonal
-  const SR_W=262,SR_H=150,SR_T=15,SR_B=22,SR_L=23,SR_R=7;
-  const ok=v=>v!=null&&!isNaN(v);
-  function linePath(arr,x,y){let d="",pen=false;
-    arr.forEach((v,i)=>{if(!ok(v)){pen=false;return;}
-      d+=(pen?"L":"M")+x(i).toFixed(1)+" "+y(v).toFixed(1)+" ";pen=true;});
-    return d.trim();}
-  let srShow=null;                                  // fn que refresca la lectura al pasar por una gestión
-  // sig = municipio (barras) → se le superponen su DEPARTAMENTO (línea sólida) y el PAÍS (punteada)
-  // dp  = resumen departamental (barras = depto) → se le superpone el PAÍS
-  // ninguno = resumen nacional (barras = país, sin líneas: no se compara consigo mismo)
-  // ── PANEL DERECHO EN ECHARTS (atlas de niñez) ──────────────────────────────────────────────
-  // Reemplaza los tres gráficos SVG del motor (serie, reparto, comparación). Conserva lo que los
-  // conectaba con el mapa: señalar una gestión mueve la lectura, pasar por una barra del reparto
-  // enciende esos municipios (setPincel), tocar un círculo de la comparación abre ese municipio.
-  const CV=v=>getComputedStyle(document.body).getPropertyValue(v).trim();
-  const EC={};
-  function ecEn(el,clave){if(EC[clave]){EC[clave].dispose();delete EC[clave];}
-    const c=echarts.init(el,null,{renderer:"canvas"});EC[clave]=c;return c;}
-  const ecFuera=clave=>{if(EC[clave]){EC[clave].dispose();delete EC[clave];}};
-  new ResizeObserver(()=>Object.values(EC).forEach(c=>{try{c.resize();}catch(_){}})).observe(document.getElementById("panel-det"));
-  const ttBase=()=>({className:"tt",confine:true,backgroundColor:CV("--card-solid"),borderColor:CV("--linea"),borderWidth:1,padding:[8,10],
-    textStyle:{color:CV("--tx"),fontFamily:"Inter",fontSize:11.5},extraCssText:"border-radius:0;box-shadow:0 8px 24px rgba(0,18,25,.16)"});
-  const sw=(col,tipo)=>tipo==="linea"?`<span style="display:inline-block;width:12px;border-top:2px solid ${col};margin:0 6px 3px 0"></span>`
-    :tipo==="punteada"?`<span style="display:inline-block;width:12px;border-top:2px dashed ${col};margin:0 6px 3px 0"></span>`
-    :`<span style="display:inline-block;width:9px;height:9px;background:${col};margin-right:6px"></span>`;
-  // sig = municipio (barras) + su departamento (línea) + Bolivia (punteada)
-  // dp  = departamento (barras) + Bolivia · ninguno = Bolivia sola
-  function renderSerie(sig,dp){
-    const box=document.getElementById("serie-box");
-    const dpto=sig?DATA[sig].dpto:(dp||null);
-    const nat=YEARS.map((_,i)=>agg(allRows,cur,i));
-    const depA=dpto&&byDpto[dpto]?YEARS.map((_,i)=>agg(byDpto[dpto],cur,i)):null;
-    const mu=sig?DATA[sig].s[cur.key]:null;
-    const prim=mu||(dp?depA:null)||nat;
-    const nom=sig?DATA[sig].nombre:(dp||"Bolivia");
-    const capas=[];
-    if(sig&&depA)capas.push({lab:"Alcaldías de "+dpto,arr:depA,col:CV("--faint"),tipo:"linea"});
-    if(sig||dp)capas.push({lab:"Bolivia",arr:nat,col:CV("--tx"),tipo:"punteada"});
-    if(!prim.some(ok)&&!capas.some(c=>c.arr.some(ok))){ecFuera("serie");box.innerHTML="";srShow=null;return;}
-    const huecos=prim.filter(v=>!ok(v)).length,colNow=CV("--warm"),colBar=CV("--sel");
-    box.innerHTML=`<div class="serie">
-      <div class="sr-top"><div class="sr-t"><span class="sr-lbl">${cur.label}</span><span class="sr-sep">,</span><span class="sr-yr" id="sr-yr"></span></div><div class="sr-u">${cur.unit}</div></div>
-      <div class="sr-rd" id="sr-rd"></div><div class="sr-ec"></div>
-      <div class="sr-foot">${YEARS[0]}–${YEARS[YEARS.length-1]} · ${cur.agg==="suma"?"Bolivia = suma de los municipios":"valor de Bolivia: total entre total"} · pasá por una gestión para leer sus valores.${huecos?" "+huecos+" sin dato.":""}</div></div>`;
-    const rd=box.querySelector("#sr-rd"),yrEl=box.querySelector("#sr-yr");
-    const item=(m,lab,v)=>`<span class="it">${m}<span class="nm">${lab}</span><b>${fmt(v,cur.unit)}</b></span>`;
-    srShow=i=>{yrEl.textContent=YEARS[i];yrEl.classList.toggle("now",i===yIdx);
-      rd.innerHTML=item(sw(i===yIdx?colNow:colBar),nom,prim[i])+capas.map(c=>item(sw(c.col,c.tipo),c.lab,c.arr[i])).join("");};
-    srShow(yIdx);
-    const ch=ecEn(box.querySelector(".sr-ec"),"serie");
-    ch.setOption({animationDuration:500,animationEasing:"cubicOut",animationDurationUpdate:400,
-      grid:{left:2,right:6,top:16,bottom:2,containLabel:true},
-      tooltip:{...ttBase(),trigger:"axis",axisPointer:{type:"shadow",shadowStyle:{color:"rgba(120,130,135,.12)"}},
-        formatter:ps=>{const i=ps[0].dataIndex;srShow(i);
-          let h=`<b>${YEARS[i]}</b>${i===yIdx?` <span style="color:${colNow};font-weight:700">· en el mapa</span>`:""}<br>${sw(i===yIdx?colNow:colBar)}${nom}: <b>${fmt(prim[i],cur.unit)}</b>`;
-          capas.forEach(c=>{h+=`<br>${sw(c.col,c.tipo)}${c.lab}: <b>${fmt(c.arr[i],cur.unit)}</b>`;});
-          if(sig&&ok(prim[i])&&ok(nat[i]))h+=`<br><span style="color:${CV("--suave")}">frente a Bolivia: ${sgn(prim[i]-nat[i],cur.unit)}</span>`;
-          return h;}},
-      xAxis:{type:"category",data:YEARS.map(String),axisTick:{show:false},axisLine:{lineStyle:{color:CV("--linea")}},
-        axisLabel:{interval:0,color:CV("--faint"),fontSize:9.5,fontWeight:600,fontFamily:"Inter",
-          formatter:(v,i)=>i===yIdx?`{now|${v}}`:"’"+v.slice(2),rich:{now:{color:colNow,fontWeight:800,fontSize:10,fontFamily:"Inter"}}}},
-      yAxis:{type:"value",min:v=>Math.min(0,v.min),splitNumber:3,axisLabel:{color:CV("--suave"),fontSize:9.5,fontFamily:"Inter",formatter:v=>fmtShort(v,cur.unit)},
-        splitLine:{lineStyle:{color:CV("--linea-2"),type:"dashed"}}},
-      series:[{name:nom,type:"bar",barMaxWidth:18,barCategoryGap:"34%",
-          data:prim.map((v,i)=>({value:ok(v)?v:null,itemStyle:{color:i===yIdx?colNow:colBar,opacity:i===yIdx?1:.78}})),
-          label:{show:true,position:"top",distance:3,fontSize:10,fontWeight:700,fontFamily:"Inter",color:CV("--tx"),
-            formatter:p=>p.dataIndex===yIdx&&ok(p.value)?fmtShort(p.value,cur.unit):""},
-          emphasis:{focus:"none",itemStyle:{opacity:1}}},
-        ...capas.map(c=>({name:c.lab,type:"line",z:5,data:c.arr.map(v=>ok(v)?v:null),symbol:"circle",symbolSize:4.5,
-          lineStyle:{color:c.col,width:c.tipo==="punteada"?1.5:2,type:c.tipo==="punteada"?"dashed":"solid"},itemStyle:{color:c.col},emphasis:{disabled:true}}))]});
-    ch.getZr().on("globalout",()=>srShow&&srShow(yIdx));}
-  function wireKpi(){document.querySelectorAll("#kgrid .kpi").forEach(el=>el.onclick=()=>{select(INDS.find(i=>i.key===el.dataset.k));escribirURL(true);});}
-  // ── ficha = bottom-sheet deslizable en móvil (peek / full / hidden) ──
-  const sheet=document.getElementById("panel-det"),grip=document.getElementById("sheet-grip");
-  const isMob=()=>innerWidth<=820;
-  let sheetState="hidden";
-  const peekPx=()=>parseInt(getComputedStyle(document.documentElement).getPropertyValue("--peek"))||138;
-  const detBody=sheet.querySelector(".p-body");
-  // el sheet mide EXACTAMENTE lo que se ve en el detent "full" (translateY=0): así nada queda bajo la pantalla
-  function sizeSheet(){if(!isMob()){sheet.style.height="";return;}sheet.style.height=Math.round(innerHeight*.74)+"px";}
-  function detentY(s){const H=sheet.clientHeight;if(s==="full")return 0;if(s==="peek")return Math.max(0,H-peekPx());return H;}
-  function checkEnd(){sheet.classList.toggle("at-end",detBody.scrollTop+detBody.clientHeight>=detBody.scrollHeight-4);}
-  detBody.addEventListener("scroll",checkEnd,{passive:true});
-  const resetScroll=()=>{detBody.scrollTop=0;requestAnimationFrame(checkEnd);};
-  function setSheet(s){
-    if(!isMob()){sheet.style.transform="";document.body.classList.remove("sheet-open");return;}
-    sheetState=s;sheet.style.transform="translateY("+detentY(s)+"px)";
-    document.body.classList.toggle("sheet-open",s!=="hidden");}
-  function setDetailVisible(v){if(!isMob())return;if(v){if(sheetState==="hidden")setSheet("peek");}else setSheet("hidden");}
-  const curY=()=>{const m=/translateY\(([-\d.]+)px\)/.exec(sheet.style.transform);return m?parseFloat(m[1]):detentY("hidden");};
-  let dg=false,dY0=0,dT0=0,dMv=0;
-  grip.addEventListener("pointerdown",e=>{if(!isMob())return;dg=true;dY0=e.clientY;dT0=curY();dMv=0;sheet.classList.add("dragging");try{grip.setPointerCapture(e.pointerId);}catch(_){}});
-  grip.addEventListener("pointermove",e=>{if(!dg)return;dMv=Math.max(dMv,Math.abs(e.clientY-dY0));const y=Math.max(detentY("full"),Math.min(sheet.clientHeight,dT0+(e.clientY-dY0)));sheet.style.transform="translateY("+y+"px)";});
-  function endDrag(){if(!dg)return;dg=false;sheet.classList.remove("dragging");
-    if(dMv<6){setSheet(sheetState==="full"?"peek":"full");return;}
-    const y=curY(),cand=[["full",detentY("full")],["peek",detentY("peek")],["hidden",sheet.clientHeight]];
-    let best=cand[0],bd=1e9;cand.forEach(c=>{const d=Math.abs(c[1]-y);if(d<bd){bd=d;best=c;}});
-    if(best[0]==="hidden"){renderSummary();setSheet("hidden");}else setSheet(best[0]);}
-  grip.addEventListener("pointerup",endDrag);grip.addEventListener("pointercancel",endDrag);
-  function renderNational(){setDetailVisible(false);sel=null;drawOver();
-    document.getElementById("panel-det").style.display="flex";
-    document.getElementById("d-mun").textContent="Bolivia";
-    document.getElementById("d-sub").innerHTML=`Resumen nacional · gestión <b>${YEARS[yIdx]}</b> · 343 municipios`;
-    renderSerie(null);
-    document.getElementById("kgrid").innerHTML=INDS.map((ind,i)=>{const sc=scale(ind);
-      return `<div class="kpi ${ind.key===cur.key?'on':''}" data-k="${ind.key}" style="--d:${Math.min(i,14)*14}ms">
-        <div class="k-l">${ind.label}</div><div class="k-v">${fmt(agg(allRows,ind,yIdx),ind.unit)}</div>
-        <div class="k-c"><span>mín <b>${fmt(sc.min,ind.unit)}</b></span><span>máx <b>${fmt(sc.max,ind.unit)}</b></span></div></div>`;}).join("");
-    renderPeekNat();wireKpi();repintarFicha();resetScroll();}
-  // resumen del DEPARTAMENTO como un todo: sale al elegirlo en el top bar mientras no haya municipio
-  // señalado. Agregación = la misma fn agg (promedio ponderado por población del año, que para los
-  // per cápita es exactamente total Bs / total habitantes).
-  function renderDept(dp){const rows=byDpto[dp];if(!rows)return;sel=null;drawOver();setDetailVisible(true);
-    document.getElementById("panel-det").style.display="flex";
-    document.getElementById("d-mun").textContent=dp;
-    document.getElementById("d-sub").innerHTML=`Resumen departamental · gestión <b>${YEARS[yIdx]}</b> · ${rows.length} municipios`
-      +`<span class="d-links"><a class="back" id="back-nac">‹ resumen nacional</a></span>`;
-    document.getElementById("back-nac").onclick=()=>{setDept("");escribirURL(true);};
-    renderSerie(null,dp);
-    document.getElementById("kgrid").innerHTML=INDS.map((ind,i)=>{
-      const vv=agg(rows,ind,yIdx),nv=agg(allRows,ind,yIdx),rk=deptRank(dp,ind,yIdx);
-      const c1=vv==null||nv==null?"vs. país <b>s/d</b>":`vs. país <b class="${cls(vv-nv)}">${sgn(vv-nv,ind.unit)}</b>`;
-      const c2=rk?`puesto <b>${rk.pos}/${rk.n}</b>`:"puesto <b>s/d</b>";
-      return `<div class="kpi ${ind.key===cur.key?'on':''}" data-k="${ind.key}" style="--d:${Math.min(i,14)*14}ms">
-        <div class="k-l">${ind.label}</div><div class="k-v">${fmt(vv,ind.unit)}</div>
-        <div class="k-c"><span>${c1}</span><span>${c2}</span></div></div>`;}).join("");
-    renderPeekDept(dp);wireKpi();repintarFicha();resetScroll();}
-  function renderMun(sig){const r=DATA[sig];if(!r)return;setDetailVisible(true);
-    document.getElementById("panel-det").style.display="flex";
-    document.getElementById("d-mun").textContent=r.nombre;
-    document.getElementById("d-sub").innerHTML=`${r.prov}, ${r.dpto} · gestión <b>${YEARS[yIdx]}</b>`
-      +`<span class="d-links">`
-      +(r.dash?`<a class="back" href="${r.dash}" target="_blank" rel="noopener">perfil completo ↗</a><span class="sep">·</span>`:"")
-      +`<a class="back" id="back-nac">${focusDept?"‹ resumen departamental":"‹ resumen nacional"}</a></span>`;
-    document.getElementById("back-nac").onclick=()=>{sel=null;drawOver();renderSummary();escribirURL(true);};
-    renderSerie(sig);
-    document.getElementById("kgrid").innerHTML=INDS.map((ind,i)=>{
-      const vv=r.s[ind.key][yIdx],dv=agg(byDpto[r.dpto],ind,yIdx),nv=agg(allRows,ind,yIdx);
-      const c1=vv==null||dv==null?"vs. depto <b>s/d</b>":`vs. depto <b class="${cls(vv-dv)}">${sgn(vv-dv,ind.unit)}</b>`;
-      const c2=vv==null||nv==null?"vs. país <b>s/d</b>":`vs. país <b class="${cls(vv-nv)}">${sgn(vv-nv,ind.unit)}</b>`;
-      return `<div class="kpi ${ind.key===cur.key?'on':''}" data-k="${ind.key}" style="--d:${Math.min(i,14)*14}ms">
-        <div class="k-l">${ind.label}</div><div class="k-v">${fmt(vv,ind.unit)}</div>
-        <div class="k-c"><span>${c1}</span><span>${c2}</span></div></div>`;}).join("");
-    renderPeek(sig);wireKpi();repintarFicha();resetScroll();}
-  // bloque "peek": lo único de la ficha que depende del indicador en pantalla
-  // el ranking se ordena según la dirección favorable: puesto 1 = el mejor, no "el más alto"
-  function rankOf(sig){const k=cur.key,v=DATA[sig].s[k][yIdx];if(v==null)return null;
-    const arr=allRows.map(x=>x.s[k][yIdx]).filter(x=>x!=null).sort(cur.dir<0?d3.ascending:d3.descending);
-    return{pos:arr.indexOf(v)+1,n:arr.length};}
-  function renderPeek(sig){const r=DATA[sig];if(!r)return;
-    const psc=scale(cur),v=r.s[cur.key][yIdx],rk=rankOf(sig);
-    document.getElementById("pk").innerHTML=`<span class="pk-chip" style="background:${psc.color(v)}"></span>`
-      +`<span class="pk-lab">Indicador en pantalla<b>${cur.label}</b></span>`
-      +`<span class="pk-val">${fmt(v,cur.unit)}</span>`
-      +`<span class="pk-rk">${rk?`Puesto <b>${rk.pos}</b>/${rk.n}`:"Sin dato"}<br>${v!=null&&psc.avg!=null?`vs. país <b>${sgn(v-psc.avg,cur.unit)}</b>`:""}</span>`;}
-  // peek del resumen departamental: el valor es el agregado del depto, el puesto es entre los 9
-  function renderPeekDept(dp){const rows=byDpto[dp];if(!rows)return;
-    const psc=scale(cur),v=agg(rows,cur,yIdx),nv=agg(allRows,cur,yIdx),rk=deptRank(dp,cur,yIdx);
-    document.getElementById("pk").innerHTML=`<span class="pk-chip" style="background:${psc.color(v)}"></span>`
-      +`<span class="pk-lab">Indicador en pantalla<b>${cur.label}</b></span>`
-      +`<span class="pk-val">${fmt(v,cur.unit)}</span>`
-      +`<span class="pk-rk">${rk?`Puesto <b>${rk.pos}</b>/${rk.n}`:"Sin dato"}<br>${v!=null&&nv!=null?`vs. país <b>${sgn(v-nv,cur.unit)}</b>`:""}</span>`;}
-  // peek nacional: sin puesto ni comparación (el país no se compara consigo mismo), rango de los 343
-  function renderPeekNat(){const psc=scale(cur),v=agg(allRows,cur,yIdx);
-    document.getElementById("pk").innerHTML=`<span class="pk-chip" style="background:${psc.color(v)}"></span>`
-      +`<span class="pk-lab">Indicador en pantalla<b>${cur.label}</b></span>`
-      +`<span class="pk-val">${fmt(v,cur.unit)}</span>`
-      +`<span class="pk-rk">mín <b>${fmt(psc.min,cur.unit)}</b><br>máx <b>${fmt(psc.max,cur.unit)}</b></span>`;}
-
-  // ════════════════════════════════════════════════════════════════════════
-  //  EL REPARTO DE LAS 343, Y LO QUE EL DIBUJO NO PUEDE DECIR (del socioeconómico)
-  // ════════════════════════════════════════════════════════════════════════
-  const N_BIN=30,clamp=(v,a,b)=>v==null||!isFinite(v)?null:Math.min(b,Math.max(a,v));
-  const valDe=(s,ind)=>{const r=DATA[s];return r&&r.s[ind.key]?r.s[ind.key][yIdx]:null;};
-  function reparto(){const sc=scale(cur);if(sc.vacio)return null;
-    const vs=[];for(const s of SIG){const v=valDe(s,cur);if(v!=null&&!isNaN(v))vs.push([s,v]);}
-    if(vs.length<8)return null;
-    const lo=sc.lo,hi=sc.hi,paso=(hi-lo)/N_BIN||1,bins=new Array(N_BIN).fill(0);
-    for(const [,v] of vs)bins[Math.max(0,Math.min(N_BIN-1,Math.floor((v-lo)/paso)))]++;
-    return{sc,vs,lo,hi,paso,bins,tope:Math.max(...bins)};}
-  // reparto de los municipios en el eje del mapa: barras con el color del mapa; pasar = encender en el mapa
-  function distribucion(){const el=document.getElementById("dist");if(!el)return;
-    const r=reparto();if(!r){ecFuera("dist");el.innerHTML="";setPincel(null);return;}
-    const {sc,vs,lo,hi,paso,bins}=r;
-    const porBin=Array.from({length:N_BIN},()=>[]);
-    for(const [s,v] of vs)porBin[Math.max(0,Math.min(N_BIN-1,Math.floor((v-lo)/paso)))].push([s,v]);
-    el.innerHTML=`<div class="dt-t">Cómo se reparten los ${vs.length} municipios<span>eje del mapa · ${fmt(sc.lo,cur.unit)} a ${fmt(sc.hi,cur.unit)}</span></div>`
-      +`<div class="dt-ec"></div><div class="dt-ley" id="dt-ley"></div><div class="dt-pie">Pasá por una barra —o tocala— para encender esos municipios en el mapa. Los extremos juntan todo lo que queda fuera del eje.</div>`;
-    const ch=ecEn(el.querySelector(".dt-ec"),"dist");
-    // las marcas van SIN rótulo dentro del gráfico (en vertical se montaban): se leen en la leyenda de abajo
-    const marcas=[],ley=[];
-    const pv=clamp(sc.pivReal,lo,hi);
-    if(pv!=null){marcas.push({xAxis:pv,lineStyle:{color:CV("--tx"),type:"dashed",width:1.3}});ley.push([sw(CV("--tx"),"punteada"),`${sc.pivTipo} <b>${fmt(sc.pivReal,cur.unit)}</b>`]);}
-    if(focusDept){const vd0=agg(byDpto[focusDept],cur,yIdx),vd=clamp(vd0,lo,hi);
-      if(vd!=null){marcas.push({xAxis:vd,lineStyle:{color:CV("--suave"),width:1.4}});ley.push([sw(CV("--suave"),"linea"),`${focusDept} <b>${fmt(vd0,cur.unit)}</b>`]);}}
-    if(sel){const v=valDe(sel.properties.sigep,cur);
-      if(v!=null&&isFinite(v)){marcas.push({xAxis:clamp(v,lo,hi),lineStyle:{color:CV("--warm"),width:2.4}});ley.push([sw(CV("--warm"),"linea"),`${DATA[sel.properties.sigep].nombre} <b>${fmt(v,cur.unit)}</b>`]);}}
-    el.querySelector("#dt-ley").innerHTML=ley.map(([m,t])=>`<span>${m}${t}</span>`).join("");
-    ch.setOption({animationDuration:450,animationEasing:"cubicOut",grid:{left:2,right:8,top:20,bottom:2,containLabel:true},
-      tooltip:{...ttBase(),trigger:"item",formatter:p=>{const [a,b,n,j]=p.value;if(!n)return"";
-        const orden=porBin[j].slice().sort((x,y)=>d3.descending(x[1],y[1])),nombres=orden.slice(0,4).map(q=>DATA[q[0]].nombre);
-        return `<b>${fmt(a,cur.unit)} a ${fmt(b,cur.unit)}</b><br>${n} ${n===1?"municipio":"municipios"}`
-          +`<br><span style="color:${CV("--suave")}">${nombres.join(" · ")}${orden.length>4?" · y "+(orden.length-4)+" más":""}</span>`;}},
-      xAxis:{type:"value",min:lo,max:hi,splitLine:{show:false},axisTick:{show:false},axisLine:{lineStyle:{color:CV("--linea")}},
-        axisLabel:{color:CV("--faint"),fontSize:9.5,fontFamily:"Inter",hideOverlap:true,formatter:v=>fmtShort(v,cur.unit)}},
-      yAxis:{type:"value",minInterval:1,splitNumber:2,axisLabel:{color:CV("--faint"),fontSize:9,fontFamily:"Inter"},splitLine:{lineStyle:{color:CV("--linea-2"),type:"dashed"}}},
-      series:[{type:"custom",data:bins.map((n,j)=>({value:[lo+j*paso,lo+(j+1)*paso,n,j],itemStyle:{color:sc.color(lo+(j+.5)*paso)}})),
-        encode:{x:[0,1],y:2},
-        renderItem:(pr,api)=>{const a=api.coord([api.value(0),api.value(2)]),b=api.coord([api.value(1),0]);
-          return {type:"rect",shape:{x:a[0]+.6,y:a[1],width:Math.max(1,b[0]-a[0]-1.2),height:Math.max(0,b[1]-a[1])},
-            style:{fill:api.visual("color")},emphasis:{style:{stroke:CV("--tx"),lineWidth:1.4}}};},
-        markLine:{silent:true,symbol:"none",animation:false,label:{show:false},data:marcas}}]});
-    ch.on("mouseover",p=>{const j=p.value&&p.value[3];if(j==null)return;const lista=porBin[j];setPincel(lista.length?new Set(lista.map(q=>q[0])):null);});
-    ch.on("mouseout",()=>setPincel(null));
-    ch.getZr().on("globalout",()=>setPincel(null));}
-  function lectura(){const el=document.getElementById("lee");if(!el)return;
-    const r=reparto();if(!r){el.innerHTML="";return;}
-    const {vs}=r,orden=vs.slice().sort((a,b)=>d3.descending(a[1],b[1])),alto=orden[0],bajo=orden[orden.length-1],nom=s=>DATA[s].nombre,li=[];
-    const dif=Math.abs(alto[1]-bajo[1]),difTxt=cur.unit==="%"?fmt(dif,"").trim()+" pp":fmt(dif,cur.unit);
-    li.push(`<b>${nom(alto[0])}</b> encabeza con ${fmt(alto[1],cur.unit)} y <b>${nom(bajo[0])}</b> cierra con ${fmt(bajo[1],cur.unit)}: ${difTxt} entre las dos puntas.`);
-    const ref=r.sc.pivReal,deRef=r.sc.pivTipo==="mediana"?"de la mediana":r.sc.pivTipo==="cero"?"de cero":"del valor de Bolivia";
-    if(ref!=null&&isFinite(ref)){const arriba=vs.filter(x=>x[1]>ref).length;
-      li.push(`<b>${arriba}</b> de ${vs.length} ${arriba===1?"queda":"quedan"} por encima ${deRef} (${fmt(ref,cur.unit)}) en ${YEARS[yIdx]}.`);}
-    if(sel){const s=sel.properties.sigep,v=valDe(s,cur);if(v!=null&&isFinite(v)){const rk=rankOf(s);
-      li.push(`<b>${DATA[s].nombre}</b> está en el puesto <b>${rk?rk.pos:"—"}</b> de ${rk?rk.n:vs.length}${ref!=null&&isFinite(ref)?`, ${v>ref?"por encima":v<ref?"por debajo":"justo en"} ${deRef}`:""}`
-        +` — el puesto 1 es ${cur.dir<0?"el valor más bajo":cur.dir>0?"el valor más alto":"el valor más alto"}.`);}}
-    el.innerHTML=`<div class="lee">${li.map(t=>`<p>${t}</p>`).join("")}</div>`
-      +`<div class="ficha"><p><b>Qué es.</b> ${cur.desc||""}</p><p><b>Cómo se lee.</b> ${cur.lee||""}</p><p><b>Cómo se calcula.</b> ${cur.calc||""}</p></div>`;}
-  // ── comparar dos indicadores: dispersión + ρ de Spearman ──
-  let indB=null;
-  function rangos(v){const idx=v.map((x,i)=>[x,i]).sort((a,b)=>a[0]-b[0]),r=new Array(v.length);let i=0;
-    while(i<idx.length){let j=i;while(j+1<idx.length&&idx[j+1][0]===idx[i][0])j++;const med=(i+j)/2+1;for(let k=i;k<=j;k++)r[idx[k][1]]=med;i=j+1;}return r;}
-  function spearman(xs,ys){if(xs.length<8)return null;const rx=rangos(xs),ry=rangos(ys),n=xs.length,mx=d3.mean(rx),my=d3.mean(ry);
-    let num=0,dx=0,dy=0;for(let i=0;i<n;i++){const a=rx[i]-mx,b=ry[i]-my;num+=a*b;dx+=a*a;dy+=b*b;}return dx&&dy?num/Math.sqrt(dx*dy):null;}
-  const fmtNum=v=>v==null||isNaN(v)?"—":(v<0?"−":"")+Math.abs(v).toFixed(2).replace(".",",");
-  const TODOS=()=>GRUPOS.flatMap(g=>g.indicadores);
-  function montarComparar(){const s=document.getElementById("cmp-b");if(!s)return;
-    s.innerHTML=`<option value="">Comparar con…</option>`+GRUPOS.map(g=>`<optgroup label="${g.label}">`
-      +g.indicadores.filter(i=>i.key!==cur.key).map(i=>`<option value="${i.key}"${indB&&indB.key===i.key?" selected":""}>${i.label}</option>`).join("")+`</optgroup>`).join("");
-    s.onchange=()=>{indB=s.value?TODOS().find(i=>i.key===s.value)||null:null;dispersion();};}
-  function olvidarComparar(){if(indB&&indB.key===cur.key)indB=null;}
-  function radioPob(){const ps=SIG.map(s=>DATA[s].pob&&DATA[s].pob[yIdx]).filter(v=>v>0);
-    const lo=Math.log(d3.min(ps)),hi=Math.log(d3.max(ps));return v=>!v||v<=0?0.42:0.32+1.93*((Math.log(v)-lo)/((hi-lo)||1));}
-  // comparación de dos indicadores: un círculo por municipio, área ∝ población 0-17, color del mapa
-  function dispersion(){const el=document.getElementById("cmp");if(!el)return;
-    if(!indB||indB.key===cur.key){ecFuera("cmp");el.innerHTML="";return;}
-    const scA=scale(cur),pts=[];
-    for(const s of SIG){const a=valDe(s,cur),b=valDe(s,indB);if(a==null||b==null||isNaN(a)||isNaN(b))continue;pts.push([s,a,b]);}
-    if(pts.length<8){ecFuera("cmp");el.innerHTML=`<div class="dt-t">Comparar<span>sin pares suficientes</span></div>`;return;}
-    const pob=s=>(DATA[s].pob&&DATA[s].pob[yIdx])||0,pmax=d3.max(pts,p=>pob(p[0]))||1,tam=s=>3.5+20*Math.sqrt(pob(s)/pmax);
-    const rho=spearman(pts.map(p=>p[1]),pts.map(p=>p[2])),f=Math.abs(rho||0);
-    const fuerza=f>=.7?"muy de la mano":f>=.5?"bastante de la mano":f>=.3?"algo de la mano":"casi sin relación",sentido=rho>0?"suben juntos":"cuando uno sube, el otro baja";
-    const sigSel=sel?sel.properties.sigep:null;
-    el.innerHTML=`<div class="dt-t">${cur.label} <i>contra</i> ${indB.label}<span>${pts.length} municipios · ${YEARS[yIdx]}</span></div><div class="cmp-ec"></div>`
-      +`<div class="dt-pie">↑ ${indB.label} · → ${cur.label} · el área del círculo es proporcional a la población de 0 a 17 años · tocá un círculo para abrir ese municipio</div>`
-      +`<div class="lee"><p>Van <b>${fuerza}</b>${rho==null?"":" — "+sentido}. <span class="lee-adv">ρ de Spearman ${fmtNum(rho)}, sobre el ORDEN de los ${pts.length} municipios y no sobre los valores. Dice cómo se acompañan, no que uno cause al otro.</span></p></div>`;
-    const ch=ecEn(el.querySelector(".cmp-ec"),"cmp");
-    const data=pts.slice().sort((p,q)=>pob(q[0])-pob(p[0])).map(([s,a,b])=>{const es=s===sigSel;
-      return {value:[a,b],s,symbolSize:tam(s)*(es?1.25:1),z:es?10:2,
-        itemStyle:{color:es?CV("--warm"):scA.color(a),borderColor:es?CV("--tx"):CV("--card-solid"),borderWidth:es?2:.7,opacity:es?1:.88},
-        label:es?{show:true,formatter:DATA[s].nombre,position:"top",distance:6,color:CV("--tx"),fontWeight:800,fontSize:10.5,fontFamily:"Inter",backgroundColor:CV("--card-solid"),padding:[1,4]}:{show:false}};});
-    const eje=(u)=>({type:"value",scale:true,splitLine:{lineStyle:{color:CV("--linea-2"),type:"dashed"}},axisLine:{lineStyle:{color:CV("--linea")}},
-      axisLabel:{color:CV("--faint"),fontSize:9.5,fontFamily:"Inter",hideOverlap:true,formatter:v=>fmtShort(v,u)}});
-    ch.setOption({animationDuration:450,grid:{left:2,right:10,top:12,bottom:2,containLabel:true},
-      tooltip:{...ttBase(),trigger:"item",formatter:p=>{const s=p.data.s;
-        return `<b>${DATA[s].nombre}</b> <span style="color:${CV("--suave")}">· ${DATA[s].dpto}</span><br>${cur.label}: <b>${fmt(p.value[0],cur.unit)}</b>`
-          +`<br>${indB.label}: <b>${fmt(p.value[1],indB.unit)}</b><br><span style="color:${CV("--suave")}">población 0-17: ${d3.format(",")(Math.round(pob(s))).replace(/,/g,".")}</span>`;}},
-      xAxis:eje(cur.unit),yAxis:eje(indB.unit),
-      series:[{type:"scatter",data,emphasis:{scale:1.18,itemStyle:{borderColor:CV("--tx"),borderWidth:1.6,opacity:1}}}]});
-    ch.on("mouseover",p=>{if(p.data&&p.data.s)setPincel(new Set([p.data.s]));});
-    ch.on("mouseout",()=>setPincel(null));
-    ch.on("click",p=>{const s=p.data&&p.data.s,ft=s&&F.find(x=>x.properties.sigep===s);if(!ft)return;
-      sel=ft;setPincel(null);drawOver();renderMun(s);termoVuelve();escribirURL(true);});}
-  const repintarFicha=()=>{montarComparar();dispersion();distribucion();lectura();termoVuelve();};
-
-  // ════════════════════════════════════════════════════════════════════════
-  //  EL ATLAS SE PUEDE COMPARTIR, BUSCAR Y RECORRER SIN EL RATÓN
-  // ════════════════════════════════════════════════════════════════════════
-  // ── 1 · el estado vive en la URL: #i=<clave>&g=<gestión>&d=<dpto>&m=<cod_ine> ──
-  let _urlQuieta=false,_listo=false;
-  function estadoActual(){const e={};if(cur)e.i=cur.key;if(yIdx!==YEARS.length-1)e.g=YEARS[yIdx];
-    if(focusDept)e.d=focusDept;if(sel)e.m=DATA[sel.properties.sigep].cod_ine;return e;}
-  function escribirURL(empujar){if(_urlQuieta||!_listo)return;const e=estadoActual();
-    const q=Object.keys(e).map(k=>k+"="+encodeURIComponent(e[k])).join("&"),url=location.pathname+(q?"#"+q:"");
-    if(url===location.pathname+location.hash)return;try{history[empujar?"pushState":"replaceState"](e,"",url);}catch(_){}}
-  function leerURL(){const h=location.hash.replace(/^#/,"");if(!h)return null;const e={};
-    h.split("&").forEach(p=>{const i=p.indexOf("=");if(i>0)e[p.slice(0,i)]=decodeURIComponent(p.slice(i+1));});
-    return Object.keys(e).length?e:null;}
-  const esRecarga=()=>{try{const nv=performance.getEntriesByType("navigation")[0];return !!nv&&nv.type==="reload";}catch(_){return false;}};
-  function aplicarEstado(e){_urlQuieta=true;
-    try{
-      const gi=e.g?YEARS.indexOf(+e.g):-1;if(gi>=0&&gi!==yIdx){yIdx=gi;yearChrome();}
-      const g=e.i&&GRUPOS.find(x=>x.indicadores.some(y=>y.key===e.i));if(g)setCategory(g.key);
-      const ind=e.i&&INDS.find(x=>x.key===e.i);if(ind)select(ind);
-      if(e.d&&byDpto[e.d])setDept(e.d);
-      const s=e.m&&(porIne[e.m]||(DATA[e.m]?e.m:null));
-      if(s){const f=F.find(x=>x.properties.sigep===s);if(f){sel=f;drawOver();renderMun(s);}}else renderSummary();
-      if(gi>=0){buildCards();fadeSwap(drawBase);drawOver();termo();renderLamina();}
-    }catch(err){console.warn("no se pudo restaurar el estado",err);}
-    finally{_urlQuieta=false;}}
-  addEventListener("popstate",()=>{const e=leerURL();if(e)aplicarEstado(e);else{sel=null;setDept("");}});
-
-  // ── 2 · buscador ──
-  const _norm=t=>(t||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-  function buscarIndicadores(q){const nq=_norm(q).trim();if(nq.length<2)return[];const term=nq.split(/\s+/),res=[];
-    GRUPOS.forEach(g=>g.indicadores.forEach(i=>{const heno=_norm(i.label+" "+(i.desc||"")+" "+g.label);
-      if(!term.every(t=>heno.includes(t)))return;res.push({i,g,peso:_norm(i.label).includes(nq)?0:1});}));
-    return res.sort((a,b)=>a.peso-b.peso).slice(0,30);}
-  function irA(key,gkey){const g=GRUPOS.find(x=>x.key===gkey);if(g&&g.key!==curCat.key)setCategory(g.key);
-    const ind=INDS.find(x=>x.key===key);if(ind){select(ind);const el=document.querySelector(`.ind[data-k="${key}"]`);if(el)el.scrollIntoView({block:"nearest"});escribirURL(true);}}
-  (function montarBuscador(){const inp=document.getElementById("busca"),caja=document.getElementById("busca-res");if(!inp||!caja)return;
-    const cerrar=()=>{caja.innerHTML="";caja.hidden=true;};
-    inp.addEventListener("input",()=>{const r=buscarIndicadores(inp.value);
-      if(!r.length){if(_norm(inp.value).trim().length>=2){caja.innerHTML=`<div class="bs-nada">Nada con «${inp.value}»</div>`;caja.hidden=false;}else cerrar();return;}
-      caja.innerHTML=r.map(({i,g})=>`<button class="bs-op" data-k="${i.key}" data-g="${g.key}"><span class="bs-l">${i.label}</span><span class="bs-g">${g.label} · ${i.unit}</span></button>`).join("");
-      caja.hidden=false;caja.querySelectorAll(".bs-op").forEach(b=>b.onclick=()=>{irA(b.dataset.k,b.dataset.g);inp.value="";cerrar();inp.blur();});});
-    inp.addEventListener("keydown",ev=>{if(ev.key==="Escape"){inp.value="";cerrar();inp.blur();}if(ev.key==="Enter"){const p=caja.querySelector(".bs-op");if(p)p.click();}});
-    document.addEventListener("click",ev=>{if(!ev.target.closest(".busca-caja"))cerrar();});})();
-
-  // ── 3 · teclado: ↑↓ indicadores · ←→ [ ] gestiones · Esc · / ──
-  addEventListener("keydown",ev=>{const t=ev.target;
-    if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT"||t.isContentEditable))return;
-    if(ev.ctrlKey||ev.metaKey||ev.altKey)return;
-    const pos=INDS.findIndex(x=>x.key===cur.key);
-    const ir=d=>{const nn=INDS[(pos+d+INDS.length)%INDS.length];if(nn){select(nn);const el=document.querySelector(`.ind[data-k="${nn.key}"]`);if(el)el.scrollIntoView({block:"nearest"});escribirURL(true);}};
-    switch(ev.key){
-      case "ArrowDown":ev.preventDefault();ir(1);break;
-      case "ArrowUp":ev.preventDefault();ir(-1);break;
-      case "[":case "ArrowLeft":ev.preventDefault();setYear(yIdx-1);escribirURL(true);break;
-      case "]":case "ArrowRight":ev.preventDefault();setYear(yIdx+1);escribirURL(true);break;
-      case "Escape":if(sel){ev.preventDefault();sel=null;drawOver();renderSummary();escribirURL(true);}break;
-      case "/":ev.preventDefault();{const b=document.getElementById("busca");if(b)b.focus();}break;}});
-
-  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{layout();setSheet(isMob()?sheetState:"hidden");},120);});
-  yearChrome();buildCards();renderCatDrop();updateHints();layout();termo();renderLamina();renderNational();
-  if(isMob())setSheet("peek");
-  // el estado de la URL se aplica DESPUÉS del primer pintado; recargar empieza limpio
-  (function(){const e=leerURL();if(e){if(esRecarga())delete e.m;aplicarEstado(e);}_listo=true;escribirURL(false);})();
-});
+  $("tema").onclick = () => { Atlas.aplicarTema(!document.body.classList.contains("dark"), true); pintar(); };
+  addEventListener("resize", () => [g1, g2, g3].forEach((c) => c.resize()));
+  Atlas.listo(pintar);
+}).catch((e) => console.error(e));
+})();
 </script>
 </body>
 </html>

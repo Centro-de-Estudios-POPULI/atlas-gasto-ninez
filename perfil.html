@@ -2,80 +2,71 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Perfil municipal · Atlas del Gasto en Niñez</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-<script src="lib/echarts.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perfil municipal · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Cómo viven las niñas, niños y adolescentes de cada municipio de Bolivia y cuánto gasta el Estado en ellos.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="estilo/identidad.css">
 <style>
-:root{--f:"Inter",system-ui,sans-serif;--fd:"Playfair Display",Georgia,serif;
-  --red:#c71e1d;--amber:#ee9b00;--teal:#0a9396;--teal-dk:#005f73;--ink:#001219;--tenue:#c9cdce;
-  --topbar:#5c1618;--topline:#3f0e10;--fondo:#f2efe8;--card:#fff;--linea:#ddd6c9;--linea-2:#eae4d7;
-  --tx:#16232c;--suave:#5f6f79;--faint:#93a3ac;--foco-tx:#c71e1d;--ref:#001219;--ctx:#c9cdce;--grid:#eae4d7}
-body.dark{--fondo:#0b1318;--card:#141414;--linea:#26343d;--linea-2:#1d2a32;--tx:#e2e8f0;--suave:#9aabb5;--faint:#6e7a7d;
-  --foco-tx:#e8706b;--ref:#e2e8f0;--ctx:#3a4549;--grid:#22313a;--topbar:#3d0e10;--topline:#5c1618}
-*,*::before,*::after{box-sizing:border-box;border-radius:0}
-html,body{margin:0;background:var(--fondo);color:var(--tx);font-family:var(--f);font-size:15px;line-height:1.5}
-a{color:var(--teal-dk)}body.dark a{color:#5cc3c9}
-#top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--topbar);color:#fff;border-bottom:1px solid var(--topline)}
-#top .logo{width:30px;height:30px;flex:0 0 30px}
-#top .t-h{font-weight:700;font-size:15px;line-height:1.2}#top .t-h b{color:var(--amber);font-weight:700}
-#top .t-n{font-size:11.5px;opacity:.8}
-#top .sp{flex:1}
-#top a.volver{color:#fff;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.35);padding:5px 10px;white-space:nowrap}
-#top a.volver:hover{background:rgba(255,255,255,.1)}
-.yr{display:flex;align-items:stretch;border:1px solid rgba(255,255,255,.35)}
-.yr button{background:none;border:0;color:#fff;font:inherit;font-size:16px;padding:0 10px;cursor:pointer}
-.yr button:disabled{opacity:.3;cursor:default}
-.yr .yv{font-weight:700;color:var(--amber);font-size:17px;padding:3px 6px;min-width:52px;text-align:center}
-.tema{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;width:34px;height:32px;cursor:pointer;font-size:15px}
-main{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
-.kick{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave);font-weight:600}
-h1{font-family:var(--fd);font-weight:700;font-size:clamp(30px,4.2vw,46px);line-height:1.05;margin:6px 0 10px}
-.lede{font-size:17px;max-width:62rem;margin:0 0 18px;color:var(--tx)}
-.lede b{font-weight:700}
-.aviso{border-left:3px solid var(--amber);background:var(--card);padding:10px 14px;margin:0 0 16px;font-size:14px}
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--linea);border:1px solid var(--linea);margin:0 0 28px}
-.kpi{background:var(--card);padding:14px 14px 12px;min-width:0}
-.kpi .kl{font-size:12px;color:var(--suave);line-height:1.3;min-height:31px}
-.kpi .kv{font-size:26px;font-weight:700;line-height:1.1;margin:6px 0 2px;letter-spacing:-.01em;white-space:nowrap}
-.kpi .ku{font-size:12px;color:var(--suave)}
-.kpi .kc{font-size:12px;color:var(--suave);margin-top:8px;border-top:1px solid var(--linea-2);padding-top:6px}
-.kpi .kc b{color:var(--tx);font-weight:600}
-.kpi.est{background:linear-gradient(var(--card),var(--card)) padding-box}
-.kpi.est .kl::after{content:" · estimación";color:var(--amber);font-weight:600}
-section{background:var(--card);border:1px solid var(--linea);padding:18px 18px 10px;margin:0 0 18px}
-h2{font-family:var(--fd);font-weight:700;font-size:22px;margin:0 0 4px}
-h2 em{font-style:italic;font-weight:400;color:var(--suave)}
-.nota{font-size:13px;color:var(--suave);margin:0 0 10px;max-width:60rem}
-.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.g{width:100%;height:320px}
-.gt{font-size:13px;font-weight:600;margin:6px 0 0}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:6px 8px;border-bottom:1px solid var(--linea-2);text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left}
-th{font-size:11.5px;color:var(--suave);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.lineas td:first-child{white-space:normal;min-width:14rem}
-.lineas td.sub{color:var(--suave);font-size:12px;white-space:normal;text-align:left}
-.scroll{overflow-x:auto}
-.btn{background:none;border:1px solid var(--linea);color:var(--tx);font:inherit;font-size:13px;padding:6px 12px;cursor:pointer;margin:0 0 10px}
-.btn:hover{border-color:var(--teal)}
-footer{font-size:12.5px;color:var(--suave);margin-top:26px;border-top:1px solid var(--linea);padding-top:12px}
-.tt span{border-radius:0!important}
-@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.dos{grid-template-columns:1fr}}
-@media (max-width:560px){#top{flex-wrap:wrap;gap:8px 10px;padding:8px 12px}#top .t-n{display:none}#top .sp{display:none}
-  main{padding:16px 12px 30px}.kpis{grid-template-columns:1fr 1fr}.kpi .kv{font-size:21px}.lede{font-size:15.5px}.g{height:280px}
-  section{padding:14px 12px 8px}}
+/* componentes propios del perfil */
+.marca-mun { display: inline-block; width: 9px; height: 9px; background: var(--foco); border-radius: 50%; margin-right: 5px; vertical-align: 0 }
+.ley { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--suave); margin: 0 0 6px }
+.ley i { display: inline-block; vertical-align: -1px; margin-right: 5px }
+.ley .p { width: 9px; height: 9px; border-radius: 50%; background: var(--foco) }
+.ley .d { width: 2px; height: 12px; background: var(--dpto) }
+.ley .b { width: 0; height: 12px; border-left: 2px dashed var(--bolivia) }
+.grupo { margin: 4px 0 14px }
+.grupo h4 { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--suave); margin: 14px 0 2px; font-weight: 600 }
+.fila { display: grid; grid-template-columns: minmax(0, 1.55fr) 84px minmax(120px, 1.25fr) minmax(0, .95fr); gap: 4px 14px; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--grilla) }
+.fila:last-child { border-bottom: 0 }
+.fila .nom { font-size: 14px; line-height: 1.3 }
+.fila .nom small { display: block; font-size: 11.5px; color: var(--suave) }
+.fila .val { font-family: var(--fm); font-size: 17px; font-weight: 600; color: var(--titulo); text-align: right; white-space: nowrap }
+.fila .val.poco { color: var(--suave); font-weight: 500 }
+.fila .cuenta { font-size: 12px; color: var(--suave); line-height: 1.35 }
+.fila .cuenta b { color: var(--tinta); font-weight: 600; font-family: var(--fm); font-size: 12px }
+.pista { position: relative; height: 22px }
+.pista::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: var(--grilla) }
+.pista .m { position: absolute; top: 4px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--foco);
+  border: 2px solid var(--superficie); box-sizing: content-box; margin-top: -2px }
+.pista .dt { position: absolute; top: 3px; width: 2px; height: 16px; margin-left: -1px; background: var(--dpto) }
+.pista .bt { position: absolute; top: 2px; height: 18px; margin-left: -1px; border-left: 2px dashed var(--bolivia) }
+.pista .esc { position: absolute; top: 20px; font-size: 10px; color: var(--suave); font-family: var(--fm) }
+.pista .ic { position: absolute; top: 8px; height: 6px; background: var(--foco); opacity: .18 }
+.cautela { font-size: 10.5px; color: var(--estimacion); border: 1px dashed var(--estimacion); padding: 0 4px; margin-left: 4px; white-space: nowrap }
+.mejor { font-size: 10.5px; color: var(--suave); border: 1px solid var(--linea); padding: 0 4px; margin-left: 4px; white-space: nowrap }
+.bolsillos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 4px 0 16px }
+.bolsillo { background: var(--superficie); padding: 14px 16px 12px; border-top: 4px solid var(--c) }
+.bolsillo .bn { font-weight: 600; font-size: 14px }
+.bolsillo .bv { font-family: var(--fm); font-size: 26px; font-weight: 600; color: var(--titulo); margin: 6px 0 0; line-height: 1.1 }
+.bolsillo .bu { font-size: 12px; color: var(--suave) }
+.bolsillo .bq { font-size: 12.5px; color: var(--suave); margin-top: 8px; border-top: 1px solid var(--grilla); padding-top: 7px; line-height: 1.4 }
+.barra-niño { display: flex; height: 14px; margin: 2px 0 6px; background: var(--grilla) }
+.barra-niño span { display: block; height: 100% }
+.cruce-ctl { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: 13px; margin: 0 0 6px }
+.cruce-ctl label { color: var(--suave) }
+.lectura-cruce { font-size: 14px; margin: 4px 0 10px; max-width: 62rem }
+.compacta .fila { grid-template-columns: minmax(0, 1fr) 76px; gap: 2px 10px; padding: 7px 0 6px }
+.compacta .fila .pista { grid-column: 1 / -1; height: 18px } .compacta .fila .pista .esc { display: none } .compacta .fila .cuenta { grid-column: 1 / -1; font-size: 11.5px }
+@media (max-width: 1000px) { .bolsillos { grid-template-columns: 1fr } }
+@media (max-width: 640px) {
+  .fila { grid-template-columns: minmax(0, 1fr) 76px; } .fila .pista { grid-column: 1 / -1; height: 18px } .fila .pista .esc { display: none } .fila .cuenta { grid-column: 1 / -1 }
+}
 </style>
 </head>
 <body>
 <header id="top">
-  <svg class="logo" viewBox="0 0 200 200"><rect x="16" y="16" width="168" height="168" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="9"/><text x="100" y="121" text-anchor="middle" font-size="62" font-weight="700" letter-spacing="2" fill="rgba(255,255,255,.92)" font-family="Inter,sans-serif">NNA</text></svg>
-  <div><div class="t-h"><b>Bolivia:</b> Atlas del Gasto en Niñez</div><div class="t-n">Perfil municipal</div></div>
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · perfil municipal</div></div>
+  </a>
   <div class="sp"></div>
-  <div class="yr"><button id="y-prev" aria-label="Año anterior">‹</button><div class="yv" id="y-val">—</div><button id="y-next" aria-label="Año siguiente">›</button></div>
-  <a class="volver" id="volver" href="index.html">‹ Volver al mapa</a>
-  <button class="tema" id="tema" aria-label="Cambiar tema">◐</button>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html">Indicadores</a><a href="bolivia.html">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <div class="yr" title="Año del gasto"><button id="y-prev" aria-label="Año anterior">‹</button><div class="yv" id="y-val">—</div><button id="y-next" aria-label="Año siguiente">›</button></div>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
 </header>
 <main>
   <div class="kick" id="kick">Perfil municipal</div>
@@ -84,136 +75,385 @@ footer{font-size:12.5px;color:var(--suave);margin-top:26px;border-top:1px solid 
   <div id="aviso"></div>
   <div class="kpis" id="kpis"></div>
 
-  <section><h2>Cuánto gasta la alcaldía en la niñez, y en qué</h2>
-    <p class="nota">Gasto específico: programas dirigidos sólo a niñas, niños y adolescentes. Millones de bolivianos de 2025. Los años sin barra son años sin presupuesto publicado para esta alcaldía.</p>
-    <div class="dos"><div><div class="gt">Por componente</div><div class="g" id="g-comp"></div></div>
-      <div><div class="gt">Por cada niño, niña o adolescente, frente al departamento y a Bolivia</div><div class="g" id="g-nna"></div></div></div></section>
+  <div class="capitulo"><span class="n">1</span><h2>Quiénes son</h2><p>Censo de Población y Vivienda 2024</p></div>
+  <section class="tarjeta">
+    <h3>Las niñas, niños y adolescentes del municipio, edad por edad</h3>
+    <p class="nota" id="nota-pir"></p>
+    <div class="dos ancho-izq">
+      <div><div class="g" id="g-pir" style="height:420px"></div></div>
+      <div><div class="gt">Rasgos que los describen</div>
+        <div class="ley"><span><i class="p"></i><span class="mun-n">Municipio</span></span><span><i class="d"></i><span class="dep-n">Departamento</span></span><span><i class="b"></i>Bolivia</span></div>
+        <div id="rasgos" class="compacta"></div></div>
+    </div>
+  </section>
 
-  <section><h2>En qué partidas se fue, <span class="anio"></span></h2>
-    <p class="nota">Gasto específico de la alcaldía según el objeto del gasto, en millones de bolivianos del año. A la derecha, las líneas presupuestarias más grandes.</p>
-    <div class="dos"><div class="g" id="g-rubro"></div><div class="scroll"><table class="lineas" id="t-lineas"></table></div></div></section>
+  <div class="capitulo"><span class="n">2</span><h2>Cómo viven</h2><p>Censo 2024 · cada fila compara al municipio con su departamento y con Bolivia</p></div>
+  <section class="tarjeta">
+    <h3>Las carencias que más pesan, una por una</h3>
+    <p class="nota">Porcentaje de niñas, niños y adolescentes de la edad indicada que viven cada situación. Más a la derecha, más común. Las filas marcadas «↑ mejor» son logros: ahí lo deseable es estar a la derecha. El puesto ordena a los municipios de la cifra más alta (puesto 1) a la más baja.</p>
+    <div class="ley"><span><i class="p"></i><span class="mun-n">Municipio</span></span><span><i class="d"></i><span class="dep-n">Departamento</span></span><span><i class="b"></i>Bolivia</span></div>
+    <div id="como-viven"></div>
+  </section>
+  <section class="tarjeta">
+    <h3>Lo que el censo no mide: pobreza, salud, crianza y programas <em>(<span class="dep-n">departamento</span>)</em></h3>
+    <p class="nota">La Encuesta de Hogares 2025 y la Encuesta de Demografía y Salud 2023 del INE miden lo que el censo no pregunta, pero sus muestras sólo alcanzan para departamentos. La franja clara alrededor del punto es el margen de error (95 %); las filas marcadas «cautela» tienen un coeficiente de variación de 15 a 30 % y las que no tienen muestra suficiente no se muestran.</p>
+    <div class="ley"><span><i class="p"></i><span class="dep-n">Departamento</span></span><span><i class="b"></i>Bolivia</span></div>
+    <div id="eh-dep"></div>
+  </section>
 
-  <section><h2>Cómo se ejecuta y con qué se paga</h2>
-    <p class="nota">Presupuesto inicial, vigente (con las modificaciones del año) y devengado del gasto específico, en millones de bolivianos del año; y de dónde vino el dinero.</p>
-    <div class="dos"><div><div class="gt">Inicial, vigente y ejecutado</div><div class="g" id="g-ejec"></div></div>
-      <div><div class="gt">Fuente de financiamiento (% del gasto específico)</div><div class="g" id="g-fin"></div></div></div></section>
+  <div class="capitulo"><span class="n">3</span><h2>Cuánto gasta el Estado en ellos, nivel por nivel</h2><p>Presupuesto Abierto 2016-2025 · bolivianos de 2025</p></div>
+  <section class="tarjeta">
+    <h3>Los tres bolsillos del Estado, <span class="anio"></span></h3>
+    <p class="nota" id="nota-bolsillos"></p>
+    <div class="barra-niño" id="barra-nino" aria-hidden="true"></div>
+    <div class="bolsillos" id="bolsillos"></div>
+    <div class="dos">
+      <div><div class="gt">Por cada niña, niño o adolescente, según quién lo gasta</div><div class="g" id="g-ter"></div></div>
+      <div><div class="gt">Lo que gasta la alcaldía por cada uno, frente a su departamento y a Bolivia</div><div class="g" id="g-nna"></div></div>
+    </div>
+  </section>
 
-  <section><h2>Todo el gasto en niñez en el municipio <em>(estimación)</em></h2>
-    <p class="nota" id="nota-ter"></p>
-    <div class="g" id="g-ter"></div></section>
+  <div class="capitulo"><span class="n">4</span><h2>En qué gasta la alcaldía</h2><p>De lo general a cada línea del presupuesto</p></div>
+  <section class="tarjeta">
+    <h3>El gasto de la alcaldía en la niñez, abierto paso a paso, <span class="anio"></span></h3>
+    <p class="nota">Elegí la pregunta y andá abriendo: cada clic baja un nivel, hasta la línea del presupuesto. «Sólo específico» son los programas dirigidos únicamente a niñas, niños y adolescentes; «con indirecto y ampliado» suma la parte que les llega de los programas para la madre y el niño, la familia y toda la población. «¿Quién gasta en el territorio?» junta a la alcaldía con lo que la gobernación y el nivel central gastan en el municipio.</p>
+    <div id="desagregado"></div>
+  </section>
 
-  <section><h2>Niñas, niños y estudiantes</h2>
-    <p class="nota">Población por tramo de edad (INE, a mitad de año) y matrícula de educación regular (Ministerio de Educación, SEIE; 2025 repite 2024).</p>
-    <div class="dos"><div><div class="gt">Población de 0 a 17 años</div><div class="g" id="g-pob"></div></div>
-      <div><div class="gt">Estudiantes de inicial, primaria y secundaria</div><div class="g" id="g-mat"></div></div></div></section>
+  <div class="capitulo"><span class="n">5</span><h2>Presupuesto y ejecución</h2><p>Lo aprobado, lo modificado y lo gastado</p></div>
+  <section class="tarjeta">
+    <div class="dos">
+      <div><div class="gt">Presupuesto inicial, final y lo que se gastó (millones de bolivianos del año)</div><div class="g" id="g-ejec"></div></div>
+      <div><div class="gt">Con qué se pagó (% del gasto en programas para la niñez)</div><div class="g" id="g-fin"></div></div>
+    </div>
+  </section>
 
-  <section><h2>Los datos</h2>
-    <p class="nota">Serie completa de los indicadores del perfil. Montos por niño y por estudiante en bolivianos de 2025.</p>
-    <button class="btn" id="csv">Descargar CSV</button><div class="scroll"><table id="tabla"></table></div></section>
+  <div class="capitulo"><span class="n">6</span><h2>Necesidades y recursos</h2><p>El municipio entre los 343 del país</p></div>
+  <section class="tarjeta">
+    <h3>¿Gasta más quien más lo necesita?</h3>
+    <p class="nota">Cada punto es un municipio. La altura es una carencia de sus niñas y niños (Censo de marzo de 2024); la distancia a la derecha, lo que gastó por cada uno en los tres años anteriores al censo (promedio 2021-2023, en bolivianos de 2025), o en el año que elijas. Las líneas punteadas son las medianas. Muestra dónde está cada municipio, no por qué: un municipio puede gastar más justamente porque tiene más carencias.</p>
+    <div class="cruce-ctl">
+      <span><label for="cx">Gasto: </label><select id="cx"></select></span>
+      <span><label for="cy">Carencia: </label><select id="cy"></select></span>
+      <span><label for="cp">Período del gasto: </label><select id="cp"><option value="pre">2021-2023, antes del censo (promedio)</option><option value="anio">el año elegido arriba</option></select></span>
+    </div>
+    <p class="lectura-cruce" id="lectura-cruce"></p>
+    <div class="g" id="g-cruce" style="height:440px"></div>
+  </section>
 
-  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto (devengado consolidado 2016-2025); INE, proyecciones de población y censos 2012 y 2024; Ministerio de Educación, SEIE. Clasificación del gasto en niñez: metodología MEFP-UNICEF con ponderadores UNICEF Bolivia 2023. <a href="metodologia.html">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+  <div class="capitulo"><span class="n">7</span><h2>Los datos</h2><p>Para descargar y verificar</p></div>
+  <section class="tarjeta">
+    <button class="btn" id="csv-soc">Descargar indicadores sociales (CSV)</button> <button class="btn" id="csv-gas">Descargar serie del gasto (CSV)</button>
+    <div class="scroll"><table id="tabla"></table></div>
+  </section>
+
+  <footer>Fuentes: INE, Censo de Población y Vivienda 2024 (microdato; las tasas sobre residentes habituales, como los tabulados del INE, que reproducen al registro); Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto 2016-2025 (devengado consolidado); INE, proyecciones de población Rev. 2025; Ministerio de Educación, SEIE. El gasto por niño usa la población proyectada del INE, que corrige la omisión censal; los indicadores sociales, el conteo del censo. Clasificación del gasto: metodología MEFP-UNICEF con ponderadores UNICEF Bolivia 2023. <a href="metodologia.html">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
 </main>
+<script src="lib/echarts.min.js"></script>
+<script src="estilo/comun.js"></script>
+<script src="estilo/desagregacion.js"></script>
 <script>
-const COL={rojo:"#C71E1D",oro:"#EE9B00",turq:"#0A9396",petr:"#005F73"};
-const $=id=>document.getElementById(id);
-const css=v=>getComputedStyle(document.body).getPropertyValue(v).trim();
-const nf=(v,d=0)=>v==null||!isFinite(v)?"s/d":v.toLocaleString("es-BO",{minimumFractionDigits:d,maximumFractionDigits:d});
-const bs=v=>v==null||!isFinite(v)?"s/d":nf(v,0)+" Bs";
-const mm=v=>v==null||!isFinite(v)?"s/d":nf(v,v<10?2:1)+" MM Bs";
-const pc=v=>v==null||!isFinite(v)?"s/d":nf(v,1)+" %";
-function applyTheme(dark,save){document.body.classList.toggle("dark",dark);
-  if(save){try{localStorage.setItem("atlas-tema",dark?"dark":"light");}catch(_){}}}
-(()=>{let p=null;try{p=localStorage.getItem("atlas-tema");}catch(_){}applyTheme(p?p==="dark":matchMedia("(prefers-color-scheme:dark)").matches,false);})();
-const cod=new URLSearchParams(location.search).get("m")||"020105";
-Promise.all([fetch(`perfiles/${cod}.json`).then(r=>{if(!r.ok)throw new Error("sin perfil");return r.json();}),fetch("catalogo.json").then(r=>r.json())])
-.then(([P,CAT])=>{
-  const Y=P.anios,IND={};CAT.grupos.forEach(g=>g.indicadores.forEach(i=>IND[i.key]=i));
-  let yi=Y.length-1;while(yi>0&&!P.dato[yi])yi--;
-  const q=new URLSearchParams(location.search).get("g");if(q&&Y.indexOf(+q)>=0)yi=Y.indexOf(+q);
-  document.title=`${P.nombre} · Atlas del Gasto en Niñez`;
-  $("nombre").textContent=P.nombre;
-  $("kick").textContent=`Perfil municipal · ${P.dpto} · provincia ${P.prov}${P.es_gaioc?" · Autonomía indígena originaria campesina":""}`;
-  const real=(arr)=>arr.map((v,i)=>v==null?null:v*P.deflactor[i]);
-  const charts=[];const mk=id=>{const c=echarts.init($(id),null,{renderer:"canvas"});charts.push(c);return c;};
-  const gComp=mk("g-comp"),gNna=mk("g-nna"),gRub=mk("g-rubro"),gEj=mk("g-ejec"),gFin=mk("g-fin"),gTer=mk("g-ter"),gPob=mk("g-pob"),gMat=mk("g-mat");
-  const base=()=>({textStyle:{fontFamily:"Inter",color:css("--suave")},animationDuration:500,
-    grid:{left:8,right:14,top:38,bottom:8,containLabel:true},
-    tooltip:{trigger:"axis",className:"tt",confine:true,backgroundColor:css("--card"),borderColor:css("--linea"),
-      textStyle:{color:css("--tx"),fontSize:12},extraCssText:"border-radius:0;box-shadow:0 6px 18px rgba(0,0,0,.12)"},
-    legend:{top:0,left:0,itemWidth:12,itemHeight:10,icon:"rect",textStyle:{color:css("--tx"),fontSize:12}}});
-  const ejeX=(data)=>({type:"category",data,axisLine:{lineStyle:{color:css("--linea")}},axisTick:{show:false},axisLabel:{color:css("--suave")}});
-  const ejeY=(fmtr)=>({type:"value",splitLine:{lineStyle:{color:css("--grid")}},axisLabel:{color:css("--suave"),formatter:fmtr}});
-  const barra=(name,data,color,stack)=>({name,type:"bar",stack,data,itemStyle:{color,borderColor:css("--card"),borderWidth:1},barMaxWidth:34,emphasis:{focus:"series"}});
-  const tipMM=(ps)=>ps[0].axisValueLabel+ps.filter(p=>p.value!=null).map(p=>`<br>${p.marker}${p.seriesName}: <b>${mm(p.value)}</b>`).join("");
-  const comp=()=>{const c=P.alc.comp,o=Y.map((_,i)=>["Salud infantil","Deporte estudiantil","Otros"].reduce((s,k)=>s+(c[k][i]||0),0));
-    return [["Alimentación escolar",c["Alimentación escolar"],COL.rojo],["Unidades educativas",c["Unidades educativas"],COL.oro],["Protección",c["Protección"],COL.turq],["Otros",o,css("--ctx")]]
-      .map(([n,a,col])=>barra(n,real(a).map((v,i)=>P.dato[i]?v:null),col,"c"));};
-  function kpis(){const i=yi,a=P.ind,rf=P.ref;
-    const card=(k,v,u,cmp,est)=>`<div class="kpi${est?" est":""}" title="${(IND[k]||{}).desc||""}"><div class="kl">${(IND[k]||{}).label||k}</div><div class="kv">${v}</div><div class="ku">${u}</div><div class="kc">${cmp}</div></div>`;
-    const vs=(v,r,lab)=>v==null||r==null?"":`${lab} <b>${nf(r,0)}</b> · ${v>=r?"▲":"▼"} ${nf(Math.abs(v-r),0)}`;
-    $("kpis").innerHTML=
-      card("a_esp_nna",nf(a.a_esp_nna[i]),"Bs por niño (de 2025)",vs(a.a_esp_nna[i],rf.dpto.a_esp_nna[i],P.dpto)+"<br>"+vs(a.a_esp_nna[i],rf.pais.a_esp_nna[i],"Bolivia"))
-     +card("a_esp_pct",nf(a.a_esp_pct[i],1)+" %","de todo lo que ejecuta la alcaldía","")
-     +card("a_ace_est",nf(a.a_ace_est[i]),"Bs por estudiante fiscal al año",a.a_ace_est[i]!=null?`≈ <b>${nf(a.a_ace_est[i]/200,2)} Bs</b> por día de clase`:"")
-     +card("a_prot_nna",nf(a.a_prot_nna[i]),"Bs por niño (de 2025)",a.a_prot_nna[i]===0?"<b>sin gasto en protección</b> ese año":"")
-     +card("t_esp_nna",nf(a.t_esp_nna[i]),"Bs por niño (de 2025)",vs(a.t_esp_nna[i],rf.pais.t_esp_nna[i],"Bolivia")+`<br>alcaldía: <b>${nf(a.t_alc_pct[i],1)} %</b> del total`,true);}
-  function lede(){const i=yi,a=P.ind,y=Y[i];
-    if(!P.dato[i]){$("lede").innerHTML="";$("aviso").innerHTML=`<div class="aviso">La alcaldía no tiene presupuesto publicado en el Presupuesto Abierto para ${y}. Los indicadores de «todo el gasto en el municipio» sí se muestran: vienen de la gobernación y del nivel central.</div>`;return;}
-    $("aviso").innerHTML="";
-    const e=P.alc.esp[i],c=P.alc.comp,ace=c["Alimentación escolar"][i]||0,rd=P.ref.dpto.a_esp_nna[i],rp=P.ref.pais.a_esp_nna[i],v=a.a_esp_nna[i];
-    $("lede").innerHTML=`En ${y}, la alcaldía gastó <b>${mm(e)}</b> en programas dirigidos a la niñez: <b>${bs(v)}</b> (de 2025) por cada niña, niño o adolescente, `
-      +`frente a ${bs(rd)} del conjunto de las alcaldías de ${P.dpto} y ${bs(rp)} del de todo el país. `
-      +(e>0?`El ${nf(100*ace/e,0)} % fue alimentación escolar. `:"")
-      +`Sumando la gobernación y el nivel central —sobre todo la planilla de los maestros—, el gasto en niñez en el municipio llega a unos <b>${bs(a.t_esp_nna[i])}</b> por niño.`;}
-  function pintar(){const dark=document.body.classList.contains("dark"),i=yi,y=String(Y[i]);
-    document.querySelectorAll(".anio").forEach(e=>e.textContent=y);$("y-val").textContent=y;
-    $("y-prev").disabled=i===0;$("y-next").disabled=i===Y.length-1;
-    $("volver").href=`index.html#i=a_esp_nna&g=${y}&m=${cod}`;
-    kpis();lede();
-    const yl=Y.map(String);
-    gComp.setOption({...base(),tooltip:{...base().tooltip,formatter:tipMM},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v,v<10?1:0)),series:comp()},true);
-    const L=(n,d,col,dash,w)=>({name:n,type:"line",data:d,symbol:"circle",symbolSize:7,showSymbol:true,connectNulls:false,lineStyle:{color:col,width:w||2,type:dash||"solid"},itemStyle:{color:col},emphasis:{focus:"series"}});
-    gNna.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>bs(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
-      series:[L(P.nombre,P.ind.a_esp_nna,COL.rojo,null,2.5),L("Alcaldías de "+P.dpto,P.ref.dpto.a_esp_nna,css("--ctx"),null,2),L("Bolivia",P.ref.pais.a_esp_nna,css("--ref"),"dashed",1.6)]},true);
-    const R=P.alc.rubro,rb=Object.keys(R).map(k=>[k,R[k][i]||0]).filter(x=>x[1]>0).sort((a,b)=>a[1]-b[1]);
-    gRub.setOption({...base(),legend:{show:false},grid:{left:168,right:44,top:8,bottom:24,containLabel:false},tooltip:{...base().tooltip,trigger:"item",formatter:p=>`${p.name}: <b>${mm(p.value)}</b>`},
-      xAxis:{...ejeY(v=>nf(v,1)),type:"value"},yAxis:{type:"category",data:rb.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:css("--linea")}},axisLabel:{color:css("--tx"),fontSize:12}},
-      series:[{type:"bar",data:rb.map(x=>x[1]),itemStyle:{color:COL.turq},barMaxWidth:18,label:{show:true,position:"right",color:css("--suave"),fontSize:11,formatter:p=>nf(p.value,p.value<10?2:1)}}]},true);
-    const li=(P.lineas[Y[i]]||[]);
-    $("t-lineas").innerHTML=li.length?`<tr><th>Línea presupuestaria</th><th>MM Bs</th></tr>`+li.map(l=>`<tr><td>${l[0]}<br><span class="sub">${l[1]}</span></td><td>${nf(l[2],2)}</td></tr>`).join(""):`<tr><td>Sin líneas de gasto específico en ${y}.</td></tr>`;
-    gEj.setOption({...base(),tooltip:{...base().tooltip,formatter:ps=>tipMM(ps)+(()=>{const k=ps[0].dataIndex,v=P.alc.vig[k],d=P.alc.esp[k];return v?`<br>ejecución: <b>${pc(100*d/v)}</b>`:"";})()},
-      xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v,v<10?1:0)),
-      series:[L("Inicial",P.alc.ini.map((v,k)=>P.dato[k]?v:null),css("--ctx"),null,2),L("Vigente",P.alc.vig.map((v,k)=>P.dato[k]?v:null),css("--ref"),"dashed",1.6),L("Devengado",P.alc.esp.map((v,k)=>P.dato[k]?v:null),COL.rojo,null,2.5)]},true);
-    const F=P.alc.fin,tot=Y.map((_,k)=>Object.values(F).reduce((s,a)=>s+(a[k]||0),0));
-    const sh=a=>a.map((v,k)=>tot[k]>0?100*(v||0)/tot[k]:null),otros=Y.map((_,k)=>["Otros del TGN","Crédito y donación","Otros"].reduce((s,n)=>s+((F[n]||[])[k]||0),0));
-    gFin.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>pc(v)},xAxis:ejeX(yl),yAxis:{...ejeY(v=>v+" %"),max:100},
-      series:[barra("Coparticipación",sh(F["Coparticipación"]),COL.rojo,"f"),barra("IDH",sh(F["IDH"]),COL.oro,"f"),barra("Recursos propios",sh(F["Recursos propios"]),COL.turq,"f"),barra("Regalías",sh(F["Regalías"]),COL.petr,"f"),barra("Otros",sh(otros),css("--ctx"),"f")]},true);
-    const T=P.ter,pn=P.pob.pob_0_17,por=a=>real(a).map((v,k)=>pn[k]?1e6*v/pn[k]:null);
-    gTer.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>bs(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
-      series:[barra("Alcaldía",por(T["Alcaldía"]),COL.rojo,"t"),barra("Gobernación",por(T["Gobernación"]),COL.oro,"t"),barra("Nivel central",por(T["Nivel central"]),COL.turq,"t")]},true);
-    const tr=T.repartido[i],tg=T.registrado[i];
-    $("nota-ter").innerHTML=`Gasto específico en niñez de todos los niveles de gobierno, por cada habitante de 0 a 17 años, en bolivianos de 2025. `
-      +`En ${y}, el <b>${nf(100*tr/(tr+tg),0)} %</b> no trae ubicación en el presupuesto y se asignó con una llave de reparto: la planilla docente por la matrícula fiscal de cada nivel, el Juancito Pinto por la de primaria y secundaria, los programas materno-infantiles por la población de 0 a 5 años. <a href="metodologia.html">Cómo se estima</a>.`;
-    const pb=P.pob;
-    gPob.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
-      series:[L("0 a 5 años",pb["0_5"],COL.rojo),L("6 a 11",pb["6_11"],COL.oro),L("12 a 17",pb["12_17"],COL.turq)]},true);
-    const M=P.mat,priv=Y.map((_,k)=>(M.privada_inicial[k]||0)+(M.privada_primaria[k]||0)+(M.privada_secundaria[k]||0));
-    gMat.setOption({...base(),tooltip:{...base().tooltip,valueFormatter:v=>nf(v)},xAxis:ejeX(yl),yAxis:ejeY(v=>nf(v)),
-      series:[barra("Inicial fiscal",M.fiscal_inicial,COL.rojo,"m"),barra("Primaria fiscal",M.fiscal_primaria,COL.oro,"m"),barra("Secundaria fiscal",M.fiscal_secundaria,COL.turq,"m"),barra("Privada",priv,css("--ctx"),"m")]},true);
-    tabla();}
-  const COLS=[["a_esp_nna","Gasto específico por niño (Bs)",0],["a_esp_pct","% del presupuesto",1],["a_ace_est","Alim. escolar por estudiante (Bs)",0],["a_prot_nna","Protección por niño (Bs)",0],["a_ejec","Ejecución (%)",1],["t_esp_nna","Todos los niveles por niño (Bs, estim.)",0],["t_tot_nna","Con indirecto y ampliado (Bs, estim.)",0]];
-  function tabla(){$("tabla").innerHTML=`<tr><th>Gestión</th><th>Gasto específico (MM Bs)</th>${COLS.map(c=>`<th>${c[1]}</th>`).join("")}<th>Población 0-17</th></tr>`
-    +Y.map((y,k)=>`<tr><td>${y}</td><td>${P.dato[k]?nf(P.alc.esp[k],2):"s/d"}</td>${COLS.map(c=>`<td>${nf(P.ind[c[0]][k],c[2])}</td>`).join("")}<td>${nf(P.pob.pob_0_17[k])}</td></tr>`).join("");}
-  $("csv").onclick=()=>{const cab=["gestion","gasto_especifico_mm_bs",...COLS.map(c=>c[0]),"poblacion_0_17"];
-    const filas=Y.map((y,k)=>[y,P.dato[k]?P.alc.esp[k]:"",...COLS.map(c=>P.ind[c[0]][k]??""),P.pob.pob_0_17[k]]);
-    const b=new Blob(["﻿"+[cab,...filas].map(r=>r.join(";")).join("\n")],{type:"text/csv"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`gasto-ninez-${cod}-${P.nombre.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-")}.csv`;a.click();};
-  $("y-prev").onclick=()=>{if(yi>0){yi--;pintar();}};$("y-next").onclick=()=>{if(yi<Y.length-1){yi++;pintar();}};
-  $("tema").onclick=()=>{applyTheme(!document.body.classList.contains("dark"),true);pintar();};
-  addEventListener("resize",()=>charts.forEach(c=>c.resize()));
-  // ECharts mide las leyendas al pintar: si Inter todavía no cargó, las mide con la fuente de reserva y quedan cortadas
-  (document.fonts?document.fonts.ready:Promise.resolve()).then(pintar);
-}).catch(e=>{$("nombre").textContent="Municipio no encontrado";$("lede").textContent="Revisá el código del municipio en la dirección (?m=código INE de 6 dígitos).";console.error(e);});
+(() => {
+const { $, css, nf, bs, mm, pc, val, deCada, base, ejeX, ejeY, barra, linea, alfa } = Atlas;
+const cod = new URLSearchParams(location.search).get("m") || "020105";
+const GRUPOS = [
+  ["Identidad y salud", ["sin_registro", "sin_ci", "sin_seguro", "automedicacion", "dificultad"]],
+  ["Educación", ["cuidado_infantil", "sin_inicial", "fuera_escuela", "atraso_escolar", "sin_primaria", "bachiller"]],
+  ["Trabajo", ["trabaja", "solo_trabaja", "estudia_trabaja", "labores_casa"]],
+  ["Familia", ["unida", "madre_adolescente", "nacimientos_adolescentes", "jefe_o_conyuge", "jefe_sin_primaria"]],
+  ["Vivienda", ["privaciones_2", "sin_agua_mejorada", "sin_saneamiento_mejorado", "sin_electricidad", "cocina_lena", "piso_tierra", "hacinamiento", "sin_internet"]],
+];
+const RASGOS = ["indigena", "lengua_indigena", "nacio_otro_municipio", "migracion_reciente", "hogar_emigrante", "monoparental", "nieto_del_jefe", "privada"];
+const CRUCE_X = [["a_esp_nna", "La alcaldía, por cada niño"], ["a_ace_est", "Alimentación escolar, por estudiante"], ["a_edu_est", "Unidades educativas, por estudiante"],
+  ["a_prot_nna", "Protección, por cada niño"], ["t_esp_nna", "Todos los niveles, por cada niño (estimación)"]];
+const CRUCE_Y = ["privaciones_2", "fuera_escuela", "atraso_escolar", "trabaja", "sin_registro", "sin_agua_mejorada", "sin_saneamiento_mejorado", "unida", "nacimientos_adolescentes"];
+const POCOS = Atlas.POCOS;
+
+Promise.all([
+  fetch(`datos/perfil_social/${cod}.json`).then((r) => { if (!r.ok) throw new Error("sin perfil social"); return r.json(); }),
+  fetch(`datos/gasto/perfiles/${cod}.json`).then((r) => { if (!r.ok) throw new Error("sin perfil de gasto"); return r.json(); }),
+  fetch("datos/catalogo_ind.json").then((r) => r.json()),
+  fetch("datos/municipios.json").then((r) => r.json()),
+  fetch("datos/eh2025.json").then((r) => r.json()),
+  fetch("datos/edsa2023.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+]).then(([S, P, CAT, MUN, EH, EDSA]) => {
+  const FI = {}; CAT.indicadores.forEach((f) => (FI[f.id] = f));
+  const yo = MUN.municipios.find((m) => m.c === cod);
+  const Y = P.anios; let yi = Y.length - 1; while (yi > 0 && !P.dato[yi]) yi--; if (!P.dato[yi]) yi = Y.length - 1;  // sin dato en ningún año: el último
+  { const g = +new URLSearchParams(location.search).get("g"); if (Y.indexOf(g) >= 0) yi = Y.indexOf(g); }  // ?g=2023, como en el atlas anterior
+  const dep = P.dpto;
+  document.title = `${P.nombre} · Atlas de la Niñez y la Adolescencia`;
+  $("nombre").textContent = P.nombre;
+  $("kick").innerHTML = `Perfil municipal · <a href="departamento.html?d=${cod.slice(0, 2)}">${dep}</a> · provincia ${P.prov}${P.es_gaioc ? " · autonomía indígena originaria campesina" : ""}`;
+  document.querySelectorAll(".mun-n").forEach((e) => (e.textContent = P.nombre));
+  document.querySelectorAll(".dep-n").forEach((e) => (e.textContent = dep));
+  const I = (id) => S.ind[id] || {};
+  const pob017 = I("pob").v, pobTot = yo ? yo.t : null;
+  const real = (a) => a.map((v, i) => (v == null ? null : v * P.deflactor[i]));
+  const charts = []; const mk = (id) => { const c = echarts.init($(id), null, { renderer: "canvas" }); charts.push(c); return c; };
+  const DG = Atlas.Desagregar($("desagregado"), { url: `datos/gasto/desagregado/m/${cod}.json`, quien: "la alcaldía", quienTer: `Todo el Estado en ${P.nombre}`, totalEntidad: true,
+    vistas: ["para", "en", "con", "edad", "como", "ter"], anio: yi, alCambiarAnio: (j) => { yi = j; pintar(); },
+    especifico: (a) => (Y.indexOf(a) < 0 ? null : P.ind.a_esp_nna[Y.indexOf(a)]) });
+  const gPir = mk("g-pir"), gTer = mk("g-ter"), gNna = mk("g-nna"), gEj = mk("g-ejec"), gFin = mk("g-fin"), gCru = mk("g-cruce");
+
+  /* ── cifras clave y lectura ─────────────────────────────────────────────────────────────── */
+  const cmp = (v, d, b, u) => `${dep}: <b>${val(d, u)}</b> · Bolivia: <b>${val(b, u)}</b>`;
+  function kpis() {
+    const i = yi, a = P.ind, pv = I("privaciones_2"), tr = I("trabaja");
+    const card = (lab, v, u, c, clase = "", marca = "") => `<div class="kpi ${clase}"><div class="kl">${lab}${marca}</div><div class="kv">${v}</div><div class="ku">${u}</div><div class="kc">${Atlas.juntos(c)}</div></div>`;
+    $("kpis").innerHTML =
+      card("Niñas, niños y adolescentes", nf(pob017), "de 0 a 17 años · Censo 2024", pobTot ? `<b>${pc(100 * pob017 / pobTot)}</b> de sus habitantes` : "")
+      + card("Viven con dos o más carencias en su vivienda", pc(pv.v), `${nf(pv.num)} niñas, niños y adolescentes`, cmp(pv.v, pv.d, pv.b, "%"))
+      + card("Trabajan, de 7 a 17 años", pc(tr.v), `${nf(tr.num)} niñas, niños y adolescentes`, cmp(tr.v, tr.d, tr.b, "%"))
+      + card("La alcaldía gasta por cada uno", bs(a.a_esp_nna[i]), `al año, en ${Y[i]} (Bs de 2025)`, `${dep}: <b>${bs(P.ref.dpto.a_esp_nna[i])}</b> · Bolivia: <b>${bs(P.ref.pais.a_esp_nna[i])}</b>`, "gasto", '<span class="marca-dato dato">dato</span>')
+      + card("Todo el Estado gasta por cada uno", bs(a.t_esp_nna[i]), `al año, en ${Y[i]} (Bs de 2025)`, `la alcaldía gasta el <b>${pc(a.t_alc_pct[i])}</b> · Bolivia: <b>${bs(P.ref.pais.t_esp_nna[i])}</b>`, "gasto", '<span class="marca-dato est">estimación</span>');
+  }
+  function lede() {
+    const i = yi, a = P.ind, y = Y[i], pv = I("privaciones_2"), tr = I("trabaja"), fe = I("fuera_escuela");
+    const partes = [];
+    partes.push(`En ${P.nombre} viven <b>${nf(pob017)} niñas, niños y adolescentes</b>${pobTot ? `, ${pc(100 * pob017 / pobTot, 0)} de sus habitantes` : ""}.`);
+    const dc = deCada(pv.v);
+    if (dc) partes.push(`${dc[0].toUpperCase() + dc.slice(1)} ${dc.startsWith("uno") ? "vive" : "viven"} con dos o más carencias en su casa —agua, baño, luz, piso, cocina a leña o hacinamiento—${pv.v > pv.b ? `, más que en el promedio del país (${pc(pv.b, 0)})` : ""}.`);
+    if (tr.v != null) partes.push(`Trabaja el ${pc(tr.v, 0)} de los que tienen entre 7 y 17 años${fe.v != null ? ` y el ${pc(fe.v, 1)} de los de 6 a 17 no va a la escuela` : ""}.`);
+    if (P.dato[i]) partes.push(`En ${y}, la alcaldía gastó <b>${bs(a.a_esp_nna[i])}</b> por cada uno en programas para la niñez (${dep}: ${bs(P.ref.dpto.a_esp_nna[i])}); sumando la gobernación y el nivel central —sobre todo el sueldo de los maestros—, el Estado gasta unos <b>${bs(a.t_esp_nna[i])}</b> por niño al año.`);
+    $("lede").innerHTML = partes.join(" ");
+    const nunca = !P.dato.some(Boolean);
+    $("aviso").innerHTML = P.dato[i] ? "" : `<div class="aviso">${nunca ? "La alcaldía no tiene presupuesto publicado en el Presupuesto Abierto en ningún año de 2016 a 2025" : `La alcaldía no tiene presupuesto publicado en el Presupuesto Abierto para ${y}`}. Lo que gastan la gobernación y el nivel central en el municipio sí se muestra.</div>`;
+  }
+
+  /* ── 1. pirámide y rasgos ───────────────────────────────────────────────────────────────── */
+  function piramide() {
+    const E = [...Array(20).keys()], M = S.pob.muj, H = S.pob.hom;
+    const cM = css("--mujeres"), cH = css("--hombres");
+    const t1 = M.slice(0, 6).concat(H.slice(0, 6)).reduce((s, v) => s + v, 0), t2 = M.slice(6, 12).concat(H.slice(6, 12)).reduce((s, v) => s + v, 0), t3 = M.slice(12, 18).concat(H.slice(12, 18)).reduce((s, v) => s + v, 0);
+    $("nota-pir").innerHTML = `Personas empadronadas por edad simple y sexo. <b>${nf(t1)}</b> en la primera infancia (0 a 5 años), <b>${nf(t2)}</b> en la niñez (6 a 11) y <b>${nf(t3)}</b> en la adolescencia (12 a 17). Los de 18 y 19, en tono claro, ya no son niños para la ley; se muestran para ver la transición.`;
+    const mx = niceMax(Math.max(...M, ...H) * 1.02, "n");
+    const banda = (a, b, txt, op) => [{ yAxis: String(a), name: txt, itemStyle: { color: alfa(css("--tramo-2"), op) } }, { yAxis: String(b) }];
+    gPir.setOption({ ...base(), legend: { ...base().legend, data: ["Mujeres", "Hombres"] },
+      grid: { left: 6, right: 92, top: 34, bottom: 8, containLabel: true },
+      tooltip: { ...base().tooltip, formatter: (ps) => `${ps[0].axisValue} años<br>` + ps.map((p) => `${p.marker}${p.seriesName}: <b>${nf(Math.abs(p.value))}</b>`).join("<br>") },
+      xAxis: { type: "value", min: -mx, max: mx, splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), formatter: (v) => nf(Math.abs(v)) } },
+      yAxis: { type: "category", data: E.map(String), axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } }, axisLabel: { color: css("--suave"), fontSize: 11, fontFamily: "Figtree" } },
+      series: [
+        { name: "Hombres", type: "bar", stack: "p", barCategoryGap: "22%", data: H.map((v, e) => ({ value: -v, itemStyle: { color: e >= 18 ? alfa(cH, .35) : cH } })), itemStyle: { color: cH },
+          markArea: { silent: true, label: { position: "right", color: css("--suave"), fontSize: 11, distance: 8 },
+            data: [banda(0, 5, "Primera\ninfancia", .07), banda(6, 11, "Niñez", .13), banda(12, 17, "Adolescencia", .07)] } },
+        { name: "Mujeres", type: "bar", stack: "p", data: M.map((v, e) => ({ value: v, itemStyle: { color: e >= 18 ? alfa(cM, .35) : cM } })), itemStyle: { color: cM } },
+      ] }, true);
+  }
+  const niceMax = (x, u) => { if (!(x > 0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(x))); const m = [1, 2, 2.5, 5, 10].find((k) => k * p >= x) * p; return u === "%" ? Math.min(m, 100) : m; };
+  function fila(id, opts = {}) {
+    const f = FI[id], d = I(id); if (!f || !d || d.v == null) return "";
+    const u = f.unidad, ed = f.titular || f.edad, max = niceMax(Math.max(d.v || 0, d.d || 0, d.b || 0) * 1.12, u);
+    const x = (v) => `${Math.max(0, Math.min(100, 100 * v / max))}%`;
+    const poco = d.n != null && d.n < POCOS;
+    const quien = u === "por 1.000" ? `<b>${nf(d.num)}</b> nacimientos en el año` : `<b>${nf(d.num)}</b> ${ed[1] <= 5 ? "niñas y niños" : "niñas, niños y adolescentes"}`;
+    const rk = d.r && !poco ? `&nbsp;· <span class="nw">puesto ${d.r} de ${d.N}</span>` : "";
+    return `<div class="fila" title="${f.definicion.replace(/"/g, "&quot;")}">
+      <div class="nom">${f.nombre}${f.sentido === "logro" ? '<span class="mejor">↑ mejor</span>' : ""}<small>${ed[0]} a ${ed[1]} años${u === "por 1.000" ? " · por cada mil" : ""}</small></div>
+      <div class="val${poco ? " poco" : ""}">${val(d.v, u)}</div>
+      <div class="pista" aria-label="${P.nombre} ${val(d.v, u)}; ${dep} ${val(d.d, u)}; Bolivia ${val(d.b, u)}">
+        <span class="bt" style="left:${x(d.b)}"></span><span class="dt" style="left:${x(d.d)}"></span><span class="m" style="left:${x(d.v)}"></span>
+        <span class="esc" style="left:0">0</span><span class="esc" style="right:0">${nf(max)}${u === "%" ? " %" : ""}</span></div>
+      <div class="cuenta">${poco ? `pocos casos (${nf(d.n)}): tomar con cautela` : quien + rk}</div></div>`;
+  }
+  function rasgos() {
+    const pa = S.pob_area, rur = pa.urb + pa.rur ? 100 * pa.rur / (pa.urb + pa.rur) : null;
+    const filaRural = `<div class="fila"><div class="nom">Viven en el área rural<small>0 a 17 años</small></div><div class="val">${pc(rur)}</div><div class="pista"><span class="m" style="left:${rur}%"></span><span class="esc" style="left:0">0</span><span class="esc" style="right:0">100 %</span></div><div class="cuenta"><b>${nf(pa.rur)}</b> niñas, niños y adolescentes</div></div>`;
+    $("rasgos").innerHTML = filaRural + RASGOS.map((id) => fila(id)).join("");
+  }
+  function comoViven() {
+    $("como-viven").innerHTML = GRUPOS.map(([g, ids]) => `<div class="grupo"><h4>${g}</h4>${ids.map((id) => fila(id)).join("")}</div>`).join("");
+  }
+
+  /* ── 2b. el departamento, según la Encuesta de Hogares 2025 (con su margen de error) ── */
+  const EH_FILAS = [["POB01", "Viven en pobreza (por ingreso)"], ["POB02", "Viven en pobreza extrema"], ["ALI01", "Su hogar pasa inseguridad alimentaria moderada o grave"],
+    ["DEM03", "Viven con su padre y su madre", "logro"], ["TRA02", "Trabajan, de 14 a 17 años"], ["EDU10", "Reciben el desayuno escolar (estudiantes fiscales)", "logro"],
+    ["EDU11", "Cobraron el Bono Juancito Pinto (escolares)", "logro"], ["CUI07", "Inscritos alguna vez al Bono Juana Azurduy (0 a 4 años)", "logro"], ["TIC02", "Usaron internet en los últimos 3 meses (5 a 17)", "logro"]];
+  // EDSA 2023: nutrición, anemia, vacunas, desarrollo infantil, crianza y adolescencia, por departamento
+  const EDSA_FILAS = [["N01", "Desnutrición crónica (menores de 5 años)"], ["N07", "Anemia (6 meses a 4 años)"], ["N06", "Sobrepeso u obesidad (5 a 17 años)"],
+    ["S01", "Vacunación completa (18 a 29 meses)", "logro"], ["E01", "Desarrollo infantil temprano adecuado (2 a 4 años)", "logro"],
+    ["E07", "Disciplina violenta en la crianza (1 a 4 años)"], ["F03", "Adolescentes de 15 a 19 que ya son madres o están embarazadas"], ["F12", "Mujeres de 20 a 24 unidas antes de los 18"]];
+  function ehDep() {
+    const dcod = cod.slice(0, 2), N = {}; EH.indicadores.forEach((x) => (N[x.cod] = x));
+    const filasEH = EH_FILAS.map(([k, nombre, sentido]) => ({ fuente: EH, k, nombre, sentido, etiqueta: "Encuesta de Hogares 2025" }));
+    const filasED = EDSA ? EDSA_FILAS.map(([k, nombre, sentido]) => ({ fuente: EDSA, k, nombre, sentido, etiqueta: "EDSA 2023" })) : [];
+    if (EDSA) EDSA.indicadores.forEach((x) => (N[x.cod] = x));
+    $("eh-dep").innerHTML = filasEH.concat(filasED).map(({ fuente, k, nombre, sentido, etiqueta }) => {
+      const V = fuente.valores[k], dv = V && V.dep[dcod], bv = V && V.nac;
+      if (!dv || !bv || dv.c === "x") return "";
+      const lo = Math.max(0, dv.v - 1.96 * dv.ee), hi = Math.min(100, dv.v + 1.96 * dv.ee);
+      const max = niceMax(Math.max(hi, bv.v) * 1.08, "%"), x = (v) => `${Math.max(0, Math.min(100, 100 * v / max))}%`;
+      return `<div class="fila" title="${(N[k].definicion || "").replace(/"/g, "&quot;")}">
+        <div class="nom">${nombre}${sentido === "logro" ? '<span class="mejor">↑ mejor</span>' : ""}${dv.c === "a" ? '<span class="cautela">cautela</span>' : ""}<small>${N[k].poblacion} · ${etiqueta}</small></div>
+        <div class="val">${pc(dv.v)}</div>
+        <div class="pista"><span class="ic" style="left:${x(lo)};width:calc(${x(hi)} - ${x(lo)})"></span><span class="bt" style="left:${x(bv.v)}"></span><span class="m" style="left:${x(dv.v)}"></span>
+          <span class="esc" style="left:0">0</span><span class="esc" style="right:0">${nf(max)} %</span></div>
+        <div class="cuenta"><span class="nw">entre ${pc(lo, 1)} y ${pc(hi, 1)}</span>&nbsp;· <span class="nw">Bolivia: <b>${pc(bv.v)}</b></span>&nbsp;· <span class="nw">${nf(dv.n)} casos en la muestra</span></div></div>`;
+    }).join("");
+  }
+
+  /* ── 3. los tres bolsillos ──────────────────────────────────────────────────────────────── */
+  const NIV = [["Alcaldía", "--alcaldia", "dato", "Desayuno escolar, mantenimiento y equipamiento de escuelas, defensorías de la niñez, centros infantiles."],
+    ["Gobernación", "--gobernacion", "est", "Servicios departamentales de gestión social (SEDEGES), hospitales del niño, centros de acogida. Parte se reparte con una llave."],
+    ["Nivel central", "--central", "est", "Sueldo de los maestros, bonos Juancito Pinto y Juana Azurduy, programas nacionales de salud. Casi todo se reparte con una llave."]];
+  function bolsillos() {
+    const i = yi, T = P.ter, pn = P.pob.pob_0_17[i], f = P.deflactor[i];
+    const por = (k) => (pn ? 1e6 * (T[k][i] || 0) * f / pn : null);
+    const vals = NIV.map(([k]) => por(k)), tot = vals.reduce((s, v) => s + (v || 0), 0);
+    $("bolsillos").innerHTML = NIV.map(([k, c, nat, q], j) => `<div class="bolsillo" style="--c:var(${c})"><div class="bn">${k}<span class="marca-dato ${nat}">${nat === "dato" ? "dato" : "estimación"}</span></div>
+      <div class="bv">${bs(vals[j])}</div><div class="bu">por niña, niño o adolescente · ${pc(tot ? 100 * vals[j] / tot : null, 1)} del total</div><div class="bq">${q}</div></div>`).join("");
+    $("barra-nino").innerHTML = NIV.map(([k, c], j) => `<span style="width:${tot ? 100 * vals[j] / tot : 0}%;background:var(${c})" title="${k}: ${bs(vals[j])}"></span>`).join("");
+    const tr = T.repartido[i], tg = T.registrado[i];
+    $("nota-bolsillos").innerHTML = `En ${Y[i]}, el Estado gastó unos <b>${bs(tot)}</b> por cada niña, niño o adolescente de ${P.nombre}, sumando los tres niveles de gobierno. Lo de la alcaldía es un dato de su presupuesto; lo de la gobernación y del nivel central es una estimación: el <b>${pc(tr + tg ? 100 * tr / (tr + tg) : null, 0)}</b> no dice en qué municipio se gasta y se repartió con una llave (la planilla docente por la matrícula fiscal, el Juancito Pinto por la de primaria y secundaria, los programas materno-infantiles por la población de 0 a 5 años).`;
+  }
+
+  /* ── 6. cruce gasto × carencia ──────────────────────────────────────────────────────────── */
+  let MAPA = null, CY = {}, cx = "a_esp_nna", cy = "privaciones_2", cp = "pre";
+  // Promedio 2021-2023 (años con dato): el censo es de marzo de 2024, así que el gasto que pudo influir es el anterior
+  const PRE = [2021, 2022, 2023].map((a) => Y.indexOf(a)).filter((k) => k >= 0);
+  const xDe = (serie, i) => { if (cp === "anio") return serie[i];
+    const v = PRE.map((k) => serie[k]).filter((x) => x != null && x > 0); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  $("cx").innerHTML = CRUCE_X.map(([k, t]) => `<option value="${k}">${t}</option>`).join("");
+  $("cy").innerHTML = CRUCE_Y.map((k) => `<option value="${k}">${FI[k].nombre} (${(FI[k].titular || FI[k].edad).join(" a ")} años)</option>`).join("");
+  $("cx").value = cx; $("cy").value = cy;
+  const cargarY = (k) => (CY[k] ? Promise.resolve(CY[k]) : fetch(`datos/ind/${k}.json`).then((r) => r.json()).then((d) => (CY[k] = d)));
+  const cargarMapa = () => (MAPA ? Promise.resolve(MAPA) : fetch("datos/gasto/mapa.json").then((r) => r.json()).then((d) => (MAPA = d)));
+  function cruce() {
+    Promise.all([cargarMapa(), cargarY(cy)]).then(([M, D]) => {
+      const i = yi, fy = FI[cy], u = fy.unidad, idx = {}; MUN.municipios.forEach((m, j) => (idx[m.c] = j));
+      const pts = Object.values(M).map((m) => { const j = idx[m.cod_ine]; const x = xDe(m.s[cx] || [], i), y = D.v[j], n = D.n[j];
+        return { c: m.cod_ine, n: m.nombre, d: m.dpto, x, y, nn: n, ok: x != null && x > 0 && y != null && n >= POCOS }; }).filter((p) => p.ok);
+      const med = (a) => { const s = a.slice().sort((p, q) => p - q); return s[Math.floor(s.length / 2)]; };
+      const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y), mx = med(xs), my = med(ys);
+      const xmax = niceMax(xs.slice().sort((p, q) => p - q)[Math.floor(xs.length * 0.97)], "Bs");
+      const yo2 = pts.find((p) => p.c === cod);
+      /* tamaño = cuántas niñas, niños y adolescentes hay en el universo del indicador (raíz cuadrada: el área es proporcional) */
+      const nmax = Math.max(...pts.map((p) => p.nn || 0), 1), tam = (p, min, max) => min + (max - min) * Math.sqrt((p.nn || 0) / nmax);
+      const grupo = (filtro, color, min, max, z, borde) => ({ type: "scatter", data: pts.filter(filtro).map((p) => ({ value: [Math.min(p.x, xmax), p.y], p,
+          symbol: p.x > xmax ? "triangle" : "circle", symbolSize: tam(p, min, max) })),
+        itemStyle: { color, borderColor: borde || css("--superficie"), borderWidth: 1, opacity: 0.9 }, z,
+        emphasis: { scale: 1.35, itemStyle: { borderColor: css("--tinta"), borderWidth: 1.4, opacity: 1 } } });
+      // los rótulos de los cuadrantes, sobre los puntos de los otros municipios (con un fondo que los deja leer) y debajo del
+      // municipio del perfil, que siempre manda
+      const rot = (txt, pos, fuerte) => ({ type: "text", ...pos, silent: true, z: 3,
+        style: { text: txt, fill: fuerte ? css("--t6") : css("--suave"), font: `${fuerte ? 650 : 500} 11px Figtree`,
+          backgroundColor: Atlas.alfa(css("--superficie"), 0.82), padding: [2, 4] } });
+      const cuad = (a, b) => (gCru.getWidth() < 600 ? `${a},\n${b}` : `${a}, ${b}`);
+      const medTxt = (v, eje) => (eje === "x" ? `mediana ${bs(v)}` : `mediana ${val(v, u)}`);
+      const dark = document.body.classList.contains("dark");
+      const ymaxD = Math.max(...ys), ymax = u === "%" ? Math.min(100, Math.ceil(ymaxD / 10) * 10) : Math.ceil(ymaxD * 1.05);
+      const opc = { ...base(),
+        legend: { ...base().legend, data: [{ name: "Otros municipios", icon: "circle" }, { name: `Municipios de ${dep}`, icon: "circle" }, { name: P.nombre, icon: "circle" }] },
+        grid: { left: 12, right: 30, top: 46, bottom: 30, containLabel: true },
+        tooltip: { ...base().tooltip, trigger: "item", formatter: Atlas.tipItem((q) => { const p = q.data && q.data.p; if (!p) return null; return {
+          titulo: p.n, filas: [
+            { nombre: $("cx").selectedOptions[0].text, valor: bs(p.x), color: q.color, forma: "punto" },
+            { nombre: fy.nombre, valor: val(p.y, u) },
+            { nombre: "Niñas, niños y adolescentes", valor: nf(p.nn) }],
+          pie: `${p.d}${p.x > xmax ? " · su gasto pasa el borde del gráfico (triángulo)" : ""}` }; }) },
+        xAxis: { type: "value", max: xmax, name: "Bolivianos por niño o estudiante (de 2025)", nameLocation: "middle", nameGap: 28,
+          nameTextStyle: { color: css("--suave"), fontSize: 11, fontFamily: "Figtree" }, splitNumber: 4,
+          axisLine: { lineStyle: { color: css("--linea") } }, axisTick: { show: false },
+          splitLine: { lineStyle: { color: css("--grilla") } }, axisLabel: { color: css("--suave"), fontSize: 11, formatter: (v) => nf(v) } },
+        yAxis: { type: "value", max: ymax, interval: u === "%" ? (ymax <= 20 ? 5 : ymax <= 40 ? 10 : ymax <= 80 ? 20 : 25) : undefined, splitNumber: 4, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: css("--grilla") } },
+          axisLabel: { color: css("--suave"), fontSize: 11, formatter: (v) => (u === "%" ? v + " %" : nf(v)) } },
+        // en pantallas angostas cada rótulo va en dos renglones: en uno solo, los dos de arriba (y los de abajo) se pisaban
+        graphic: [rot(cuad("Más carencia", "menos gasto"), { left: 66, top: 54 }, true), rot(cuad("Más carencia", "más gasto"), { right: 40, top: 54 }),
+          rot(cuad("Menos carencia", "menos gasto"), { left: 66, bottom: 58 }), rot(cuad("Menos carencia", "más gasto"), { right: 40, bottom: 58 })],
+        series: [
+          { ...grupo((p) => p.d !== dep, dark ? "#555d47" : "#d8d4c3", 5, 15, 1), name: "Otros municipios",
+            markArea: { silent: true, itemStyle: { color: Atlas.alfa(dark ? "#c5a076" : "#936639", dark ? 0.08 : 0.07) },
+              data: [[{ xAxis: 0, yAxis: my }, { xAxis: mx, yAxis: ymax }]] },
+            markLine: { silent: true, symbol: "none", lineStyle: { color: css("--suave"), type: "solid", width: 1, opacity: 0.55 },
+              label: { color: css("--suave"), fontSize: 10.5, fontFamily: "Figtree" },
+              data: [{ xAxis: mx, label: { formatter: () => medTxt(mx, "x"), position: "end", distance: 4 } },
+                     { yAxis: my, label: { formatter: () => medTxt(my, "y"), position: "insideEndTop" } }] } },
+          { ...grupo((p) => p.d === dep && p.c !== cod, dark ? "#b38653" : "#936639", 6, 17, 2), name: `Municipios de ${dep}` },  // validado: ΔE ≥ 16 con el resto y con el municipio
+          { ...grupo((p) => p.c === cod, css("--foco"), 13, 22, 4, css("--superficie")), name: P.nombre,
+            itemStyle: { color: css("--foco"), borderColor: css("--superficie"), borderWidth: 2.5, opacity: 1 },
+            // su rótulo se aparta de las esquinas: arriba del punto si está abajo de todo, debajo si está arriba de todo, a
+            // la izquierda si está contra el borde derecho (a la derecha tapaba el rótulo del cuadrante)
+            label: { show: true, distance: 8, position: !yo2 ? "right" : yo2.y < 0.22 * ymax ? "top" : yo2.y > 0.8 * ymax ? "bottom" : Math.min(yo2.x, xmax) > 0.7 * xmax ? "left" : "right",
+              formatter: () => `{n|${P.nombre}}\n{v|${yo2 ? bs(yo2.x) + " · " + val(yo2.y, u) : ""}}`,
+              backgroundColor: Atlas.alfa(dark ? "#1f2318" : "#fbfaf6", 0.9), padding: [4, 7], borderColor: css("--linea"), borderWidth: 1,
+              rich: { n: { color: css("--titulo"), fontWeight: 650, fontSize: 12.5, fontFamily: "Figtree", lineHeight: 17 },
+                      v: { color: css("--suave"), fontSize: 11, fontFamily: "Figtree", lineHeight: 15 } } } },
+        ] };
+      gCru.setOption(opc, true);
+      // si el punto del municipio cae sobre el rótulo de un cuadrante (en el celular los cuadrantes son angostos), ese
+      // rótulo pasa al borde de adentro de su cuadrante, junto a la mediana
+      if (yo2) {
+        const W = gCru.getWidth(), Hc = gCru.getHeight(), r = tam(yo2, 13, 22) / 2 + 3;
+        const [px, py] = gCru.convertToPixel({ seriesIndex: 2 }, [Math.min(yo2.x, xmax), yo2.y]);
+        const pyMed = gCru.convertToPixel({ seriesIndex: 0 }, [0, my])[1];
+        let corrio = false;
+        opc.graphic = opc.graphic.map((e) => {
+          const ls = String(e.style.text).split("\n"), w = Math.max(...ls.map((l) => Atlas.anchoTexto(l, e.style.font))) + 8, h = ls.length * 14 + 4;
+          const x0 = e.left != null ? e.left : W - e.right - w, y0 = e.top != null ? e.top : Hc - e.bottom - h;
+          const cx = Math.max(x0, Math.min(px, x0 + w)), cy = Math.max(y0, Math.min(py, y0 + h));
+          if ((cx - px) ** 2 + (cy - py) ** 2 > r * r) return e;
+          corrio = true;
+          const { top, bottom, ...resto } = e;
+          return { ...resto, top: bottom != null ? pyMed + 6 : pyMed - 6 - h };
+        });
+        if (corrio) gCru.setOption(opc, true);
+      }
+      if (yo2) {
+        const masNec = yo2.y > my, masGas = yo2.x > mx;
+        $("lectura-cruce").innerHTML = `${P.nombre} está en el cuadrante de <b>${masNec ? "más" : "menos"} carencia</b> y <b>${masGas ? "más" : "menos"} gasto</b> que la mitad de los municipios: ${val(yo2.y, u)} frente a una mediana de ${val(my, u)}, y ${bs(yo2.x)} frente a ${bs(mx)} ${cp === "pre" ? "(promedio 2021-2023)" : `(${Y[i]})`}.`;
+      } else $("lectura-cruce").textContent = `${P.nombre} no tiene dato de gasto para ese período o tiene pocos casos en este indicador.`;
+    });
+  }
+  $("cx").onchange = () => { cx = $("cx").value; cruce(); };
+  $("cy").onchange = () => { cy = $("cy").value; cruce(); };
+  $("cp").onchange = () => { cp = $("cp").value; cruce(); };
+
+  /* ── gráficos del gasto ─────────────────────────────────────────────────────────────────── */
+  function pintar() {
+    const i = yi, y = String(Y[i]), yl = Y.map(String);
+    document.querySelectorAll(".anio").forEach((e) => (e.textContent = y));
+    $("y-val").textContent = y; $("y-prev").disabled = i === 0; $("y-next").disabled = i === Y.length - 1;
+    kpis(); lede(); bolsillos();
+    const T = P.ter, pn = P.pob.pob_0_17, por = (a) => real(a).map((v, k) => (pn[k] ? 1e6 * v / pn[k] : null));
+    gTer.setOption({ ...base(), tooltip: { ...base().tooltip, valueFormatter: (v) => bs(v) }, xAxis: ejeX(yl), yAxis: ejeY((v) => nf(v)),
+      series: [barra("Alcaldía", por(T["Alcaldía"]), css("--alcaldia"), "t"), barra("Gobernación", por(T["Gobernación"]), css("--gobernacion"), "t"), barra("Nivel central", por(T["Nivel central"]), css("--central"), "t")] }, true);
+    gNna.setOption({ ...base(), tooltip: { ...base().tooltip, valueFormatter: (v) => bs(v) }, xAxis: ejeX(yl), yAxis: ejeY((v) => nf(v)),
+      series: [linea(P.nombre, P.ind.a_esp_nna, css("--foco"), { ancho: 2.5, z: 3 }), linea(dep, P.ref.dpto.a_esp_nna, css("--dpto")), linea("Bolivia", P.ref.pais.a_esp_nna, css("--bolivia"), { trazo: "dashed", ancho: 1.6 })] }, true);
+    const tipMM = (ps) => ps[0].axisValueLabel + ps.filter((p) => p.value != null).map((p) => `<br>${p.marker}${p.seriesName}: <b>${mm(p.value)}</b>`).join("");
+    if (DG) DG.anio(i);
+    gEj.setOption({ ...base(), tooltip: { ...base().tooltip, formatter: (ps) => tipMM(ps) + (() => { const k = ps[0].dataIndex, v = P.alc.vig[k], d = P.alc.esp[k]; return v ? `<br>se gastó el <b>${pc(100 * d / v)}</b> del presupuesto final` : ""; })() },
+      xAxis: ejeX(yl), yAxis: ejeY((v) => nf(v, v < 10 ? 1 : 0)),
+      series: [linea("Inicial (aprobado)", P.alc.ini.map((v, k) => (P.dato[k] ? v : null)), css("--o3")), linea("Final (vigente)", P.alc.vig.map((v, k) => (P.dato[k] ? v : null)), css("--bolivia"), { trazo: "dashed", ancho: 1.6 }), linea("Gastado (devengado)", P.alc.esp.map((v, k) => (P.dato[k] ? v : null)), css("--alcaldia"), { ancho: 2.5, z: 3 })] }, true);
+    const F = P.alc.fin, tot = Y.map((_, k) => Object.values(F).reduce((s, a) => s + (a[k] || 0), 0));
+    const sh = (a) => a.map((v, k) => (tot[k] > 0 ? 100 * (v || 0) / tot[k] : null));
+    // «Otros del TGN» va aparte: es plata del Tesoro que le transfiere el nivel central (sobre todo la UPRE) y paga buena
+    // parte de lo que la alcaldía invierte en escuelas; dentro de «Otros» no se veía
+    const otr = Y.map((_, k) => ["Regalías", "Crédito y donación", "Otros"].reduce((s, n) => s + ((F[n] || [])[k] || 0), 0));
+    gFin.setOption({ ...base(), tooltip: { ...base().tooltip, valueFormatter: (v) => pc(v) }, xAxis: ejeX(yl), yAxis: { ...ejeY((v) => v + " %"), max: 100 },
+      series: [barra("Coparticipación", sh(F["Coparticipación"]), css("--o7"), "f"), barra("IDH", sh(F["IDH"]), css("--o5"), "f"), barra("Recursos propios", sh(F["Recursos propios"]), css("--o3"), "f"),
+        barra("Transferencias del nivel central", sh(F["Otros del TGN"] || Y.map(() => 0)), css("--o6"), "f"), barra("Otros", sh(otr), css("--otros"), "f")] }, true);
+    cruce(); tabla();
+  }
+  function tabla() {
+    const filas = GRUPOS.flatMap(([g, ids]) => ids).concat(RASGOS).filter((id) => FI[id] && I(id).v != null);
+    $("tabla").innerHTML = `<tr><th>Indicador (Censo 2024)</th><th>Edades</th><th>${P.nombre}</th><th>${dep}</th><th>Bolivia</th><th>Casos</th></tr>`
+      + filas.map((id) => { const f = FI[id], d = I(id), ed = f.titular || f.edad; return `<tr><td>${f.nombre}</td><td class="num">${ed[0]}-${ed[1]}</td><td class="num">${val(d.v, f.unidad)}</td><td class="num">${val(d.d, f.unidad)}</td><td class="num">${val(d.b, f.unidad)}</td><td class="num">${nf(d.num)}</td></tr>`; }).join("");
+  }
+  const descargar = (nombre, cab, filas) => { const b = new Blob(["﻿" + [cab, ...filas].map((r) => r.join(";")).join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = nombre; a.click(); };
+  const slug = P.nombre.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-");
+  $("csv-soc").onclick = () => descargar(`ninez-${cod}-${slug}-censo2024.csv`, ["indicador", "nombre", "edad_desde", "edad_hasta", "unidad", "municipio", "departamento", "bolivia", "casos", "denominador"],
+    Object.keys(S.ind).filter((id) => FI[id]).map((id) => { const f = FI[id], d = I(id), ed = f.titular || f.edad; return [id, f.nombre, ed[0], ed[1], f.unidad, d.v ?? "", d.d ?? "", d.b ?? "", d.num ?? "", d.n ?? ""]; }));
+  $("csv-gas").onclick = () => descargar(`gasto-ninez-${cod}-${slug}.csv`, ["gestion", "alcaldia_mm_bs", "alcaldia_por_nino_bs2025", "todos_los_niveles_por_nino_bs2025", "poblacion_0_17"],
+    Y.map((y, k) => [y, P.dato[k] ? P.alc.esp[k] : "", P.ind.a_esp_nna[k] ?? "", P.ind.t_esp_nna[k] ?? "", P.pob.pob_0_17[k]]));
+  $("y-prev").onclick = () => { if (yi > 0) { yi--; pintar(); } };
+  $("y-next").onclick = () => { if (yi < Y.length - 1) { yi++; pintar(); } };
+  $("tema").onclick = () => { Atlas.aplicarTema(!document.body.classList.contains("dark"), true); piramide(); pintar(); DG.repintar(); };
+  addEventListener("resize", () => { charts.forEach((c) => c.resize()); DG.resize(); });
+  Atlas.listo(() => { rasgos(); comoViven(); ehDep(); piramide(); pintar(); });
+}).catch((e) => { $("nombre").textContent = "Municipio no encontrado"; $("lede").innerHTML = 'Revisá el código del municipio en la dirección (?m=código INE de 6 dígitos) o <a href="index.html">buscalo por su nombre</a>.'; console.error(e); });
+})();
 </script>
 </body>
 </html>

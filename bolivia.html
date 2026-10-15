@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bolivia · Atlas de la Niñez y la Adolescencia</title>
+<meta name="description" content="Cuánto gasta el Estado boliviano —alcaldías, gobernaciones y nivel central— en las niñas, niños y adolescentes: serie 2016-2025, por nivel, por niño, presupuesto y gasto, en qué y con qué se paga, y los nueve departamentos.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,50&family=Figtree:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect width='30' height='30' fill='%23582f0e'/%3E%3Crect x='5' y='15' width='5.5' height='9' fill='%23b6ad90'/%3E%3Crect x='12.25' y='10' width='5.5' height='14' fill='%23c2a77f'/%3E%3Crect x='19.5' y='5' width='5.5' height='19' fill='%23f5f2ea'/%3E%3Crect x='3' y='25' width='24' height='2.2' fill='%23a4ac86'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="estilo/identidad.css">
+<style>
+/* componentes del perfil municipal (mismo molde) */
+.ley { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--suave); margin: 0 0 6px }
+.ley i { display: inline-block; vertical-align: -1px; margin-right: 5px }
+.bolsillos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--linea); border: 1px solid var(--linea); margin: 4px 0 16px }
+.bolsillo { background: var(--superficie); padding: 14px 16px 12px; border-top: 4px solid var(--c) }
+.bolsillo .bn { font-weight: 600; font-size: 14px }
+.bolsillo .bv { font-family: var(--fm); font-size: 26px; font-weight: 600; color: var(--titulo); margin: 6px 0 0; line-height: 1.1 }
+.bolsillo .bu { font-size: 12px; color: var(--suave) }
+.barra-niño { display: flex; height: 14px; margin: 2px 0 6px; background: var(--grilla) }
+.barra-niño span { display: block; height: 100% }
+/* propios de esta página */
+.que { list-style: none; margin: 9px 0 0; padding: 7px 0 0; border-top: 1px solid var(--grilla); font-size: 12.5px; color: var(--suave); line-height: 1.45 }
+.que li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px }
+.que b { font-family: var(--fm); font-weight: 600; color: var(--tinta); white-space: nowrap }
+.tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 6px 0 10px }
+.tres .g { height: 236px }
+.tres .gt b { font-weight: 700 }
+.sw { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: 0 }
+.ley .gs { width: 13px; height: 10px; background: linear-gradient(90deg, var(--alcaldia) 0 34%, var(--gobernacion) 34% 67%, var(--central) 67%) }
+.ley .sg { width: 12px; height: 10px; border: 1px dashed var(--suave) }
+.ley .li { width: 15px; height: 0; border-top: 2px solid var(--o4); vertical-align: 3px }
+tr.tot td { font-weight: 600; border-top: 1px solid var(--linea) }
+td a { font-weight: 500 }
+.como { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 10px 22px; font-size: 14px; max-width: 66rem; margin: 14px 0 6px }
+.como dt { font-weight: 600; color: var(--titulo) }
+.como dd { margin: 0 }
+@media (max-width: 1000px) { .bolsillos, .tres { grid-template-columns: 1fr } }
+@media (max-width: 640px) { .como { grid-template-columns: 1fr; gap: 2px } .como dd { margin-bottom: 10px } }
+@media (max-width: 640px) { .op { display: none } table th, table td { padding: 6px 4px } table th { white-space: normal; vertical-align: bottom; font-size: 10.5px; letter-spacing: .02em }
+  table td:first-child { white-space: normal } }
+@media (max-width: 560px) { .capitulo h2 { flex: 1 1 0; min-width: 0 } .capitulo p { flex-basis: 100% } }
+</style>
+</head>
+<body>
+<header id="top">
+  <a class="marca" href="index.html" aria-label="Atlas de la Niñez y la Adolescencia, inicio">
+    <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4.5" y="15" width="6" height="9.5" style="fill:var(--tramo-1)"/><rect x="12" y="10" width="6" height="14.5" style="fill:var(--tramo-2)"/><rect x="19.5" y="4.5" width="6" height="20" style="fill:var(--tramo-3)"/><rect x="2.5" y="25.5" width="25" height="2.4" style="fill:var(--o5)"/></svg>
+    <div><div class="t-h">Atlas de la Niñez y la Adolescencia</div><div class="t-n">Bolivia · todo el Estado</div></div>
+  </a>
+  <div class="sp"></div>
+  <nav aria-label="Secciones"><a href="index.html">Inicio</a><a href="mapa.html">Mapa del gasto</a><a href="indicadores.html">Indicadores</a><a href="bolivia.html" aria-current="page">Bolivia</a><a href="metodologia.html">Metodología</a></nav>
+  <div class="yr" title="Año del gasto"><button id="y-prev" aria-label="Año anterior">‹</button><div class="yv" id="y-val">—</div><button id="y-next" aria-label="Año siguiente">›</button></div>
+  <button class="tema" id="tema" aria-label="Cambiar entre tema claro y oscuro">◐</button>
+</header>
+<main>
+  <div class="kick">Bolivia · todo el Estado</div>
+  <h1>Cuánto gasta el Estado en las niñas, niños y adolescentes</h1>
+  <p class="lede" id="lede"></p>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="capitulo"><span class="n">1</span><h2>Quién lo gasta</h2><p>Alcaldías, gobernaciones y nivel central · programas sólo para la niñez</p></div>
+  <section class="tarjeta">
+    <h3>Los tres bolsillos del Estado, <span class="anio"></span></h3>
+    <p class="nota" id="nota-bolsillos"></p>
+    <div class="barra-niño" id="barra-nino" aria-hidden="true"></div>
+    <div class="bolsillos" id="bolsillos"></div>
+    <div class="dos">
+      <div><div class="gt">Millones de bolivianos de 2025, según quién los gasta</div><div class="g" id="g-nivel"></div></div>
+      <div><div class="gt">Por cada niña, niño o adolescente (bolivianos de 2025)</div><div class="g" id="g-nna"></div></div>
+    </div>
+  </section>
+
+  <div class="capitulo"><span class="n">2</span><h2>Presupuesto y gasto</h2><p>Lo aprobado, lo modificado y lo gastado, en cada nivel</p></div>
+  <section class="tarjeta">
+    <p class="nota">El presupuesto final es el aprobado al empezar el año más las modificaciones que tuvo; lo gastado es lo que llegó a ejecutarse (el bien o el servicio se recibió y se debe pagar). Millones de bolivianos de cada año; cada nivel con su escala.</p>
+    <div class="ley"><span><i class="gs"></i>Gastado</span><span><i class="sg"></i>Presupuesto final que quedó sin gastar</span><span><i class="li"></i>Presupuesto inicial (aprobado)</span></div>
+    <div class="tres">
+      <div><div class="gt" id="gt-ej-alcaldia"></div><div class="g" id="g-ej-alcaldia"></div></div>
+      <div><div class="gt" id="gt-ej-gobernacion"></div><div class="g" id="g-ej-gobernacion"></div></div>
+      <div><div class="gt" id="gt-ej-central"></div><div class="g" id="g-ej-central"></div></div>
+    </div>
+    <div class="gt">Presupuesto y gasto en programas para la niñez, <span class="anio"></span> (millones de bolivianos del año)</div>
+    <div class="scroll"><table id="t-presu"></table></div>
+  </section>
+
+  <div class="capitulo"><span class="n">3</span><h2>En qué se gasta</h2><p>Categorías del catálogo UDAPE-UNICEF</p></div>
+  <section class="tarjeta">
+    <h3>Los programas, por categoría, <span class="anio"></span></h3>
+    <p class="nota">Millones de bolivianos del año. Cada barra suma los programas dirigidos sólo a la niñez y la parte que les corresponde de los programas para la madre y el niño, para la familia o para toda la población —salud, agua, deporte—, según la metodología de UNICEF Bolivia (2023).</p>
+    <div class="g" id="g-cat" style="height:360px"></div>
+  </section>
+  <section class="tarjeta">
+    <h3>El gasto del nivel central en la niñez, abierto paso a paso, <span class="anio"></span></h3>
+    <p class="nota">Ministerios, direcciones departamentales de educación y entidades descentralizadas. Elegí la pregunta y andá abriendo: cada clic baja un nivel, hasta la línea del presupuesto. Empieza por «¿Para quién?», el tramo de edad al que va cada programa: por «¿Para qué?», casi todo es un solo bloque —la educación, y dentro de ella el sueldo de los maestros— hasta tres niveles más abajo. «Sólo específico» son los programas dirigidos únicamente a niñas, niños y adolescentes (sobre todo la planilla docente y el Bono Juancito Pinto); «con indirecto y ampliado» suma la parte que les llega del subsidio prenatal, el Juana Azurduy y la salud y el agua para toda la población. Las líneas de menos de Bs 200 mil (el 0,5 % del gasto) se juntan en «otras líneas menores».</p>
+    <div id="desagregado"></div>
+  </section>
+
+  <div class="capitulo"><span class="n">4</span><h2>Con qué se paga</h2><p>Fuentes del gasto de alcaldías y gobernaciones</p></div>
+  <section class="tarjeta">
+    <p class="nota">Parte del gasto en programas para la niñez pagada con cada fuente, en % de cada año. Las tres fuentes más grandes de cada nivel en todo el período van con color; las demás, juntas. «Transferencias del nivel central» es plata del Tesoro (sin coparticipación ni IDH) que el nivel central gira a alcaldías y gobernaciones: en las alcaldías llega sobre todo de la Unidad de Proyectos Especiales (UPRE, Ministerio de la Presidencia; el programa «Bolivia Cambia, Evo Cumple» hasta 2019) y paga buena parte de lo que invierten en escuelas, en los últimos años la mayor parte. El gasto se cuenta en la alcaldía, que es quien lo ejecuta. En las gobernaciones viene sobre todo del Tesoro y del Ministerio de Salud.</p>
+    <div class="dos">
+      <div><div class="gt">Alcaldías</div><div class="g" id="g-fin-a"></div></div>
+      <div><div class="gt">Gobernaciones</div><div class="g" id="g-fin-g"></div></div>
+    </div>
+  </section>
+
+  <div class="capitulo"><span class="n">5</span><h2>Los nueve departamentos</h2><p>Todo el Estado en cada departamento, por niño</p></div>
+  <section class="tarjeta">
+    <h3>Cuánto gasta el Estado por cada niña, niño o adolescente, <span class="anio"></span></h3>
+    <p class="nota" id="nota-dep"></p>
+    <div class="g" id="g-dep" style="height:390px"></div>
+    <div class="gt" style="margin-top:6px">Por cada niña, niño o adolescente en <span class="anio"></span> (bolivianos de 2025)</div>
+    <div class="scroll"><table id="t-dep"></table></div>
+  </section>
+
+  <div class="capitulo"><span class="n">6</span><h2>Los datos</h2><p>Para descargar y verificar</p></div>
+  <section class="tarjeta">
+    <button class="btn" id="csv-serie">Descargar la serie nacional (CSV)</button> <button class="btn" id="csv-dep">Descargar los departamentos (CSV)</button>
+    <dl class="como">
+      <dt>Qué se cuenta</dt><dd>Cada línea del presupuesto se clasifica con reglas explícitas. Los programas dirigidos sólo a la niñez —educación inicial, primaria y secundaria, desayuno escolar, defensorías y protección, salud infantil, Bono Juancito Pinto, juegos estudiantiles— cuentan completos. Los programas para la madre y el niño o para la familia (Bono Juana Azurduy, subsidio prenatal y de lactancia) y los que son para toda la población pero también llegan a la niñez (salud general, agua y saneamiento, deporte y cultura) cuentan en parte, con los ponderadores de UNICEF Bolivia (2023).</dd>
+      <dt>Sin contar dos veces</dt><dd>Se descartan los activos financieros, la deuda y las transferencias entre entidades públicas: cada boliviano se cuenta en la entidad que lo gasta. Los bonos a las personas sí se cuentan. No entran las empresas municipales, la educación superior y técnica, la de adultos, la seguridad social ni las universidades.</dd>
+      <dt>Dato y estimación</dt><dd>Todo lo que se ve para Bolivia es dato del presupuesto. Por departamento, lo de alcaldías y gobernaciones es dato, y la planilla de cada Dirección Departamental de Educación también; los bonos y programas nacionales que no tienen ubicación se reparten con una llave (matrícula fiscal o población), y eso es estimación.</dd>
+      <dt>Por niño y en qué precios</dt><dd>El gasto se divide entre la población de 0 a 17 años a mitad de año (proyecciones del INE), no entre los beneficiarios: dice cuánto se gasta por cada niño, no a cuántos llega. Las series están en bolivianos de 2025, con el índice de precios al consumidor promedio de cada año.</dd>
+    </dl>
+    <p class="nota">El documento completo —reglas de clasificación, partidas, llaves de reparto, variables e indicadores— está en <a href="metodologia.html">Metodología</a>.</p>
+  </section>
+
+  <footer>Fuentes: Ministerio de Economía y Finanzas Públicas, Presupuesto Abierto 2016-2025 (devengado consolidado); INE, proyecciones de población (Rev. 2020 y Rev. 2025), producto interno bruto e índice de precios al consumidor; Ministerio de Educación, SEIE (matrícula, para la llave de reparto). Referencias: MEFP, UNICEF y Red Parlamentaria por la Niñez (2017), <i>Presupuesto público para niñas, niños y adolescentes en Bolivia</i>; UNICEF Bolivia (2023), <i>Marco conceptual y metodología de estimación</i>; CEPAL (2012), <i>Gasto público dirigido a la niñez en América Latina y el Caribe</i>. <a href="metodologia.html">Metodología</a> · Centro de Estudios <a href="https://populi.org.bo" target="_blank" rel="noopener">POPULI</a>.</footer>
+</main>
+<script src="lib/echarts.min.js"></script>
+<script src="estilo/comun.js"></script>
+<script src="estilo/desagregacion.js"></script>
+<script>
+(() => {
+const { $, css, nf, base, ejeX, ejeY, barra, linea } = Atlas;
+// las cifras nunca se cortan entre el número y su unidad
+const NB = String.fromCharCode(160);
+const pc = (v, d) => Atlas.pc(v, d).replace(" %", NB + "%"), bs = (v) => Atlas.bs(v).replace("Bs ", "Bs" + NB), mm = (v) => Atlas.mm(v).replace(/ /g, NB);
+const NIV = [["alcaldia", "Alcaldías", "--alcaldia"], ["gobernacion", "Gobernaciones", "--gobernacion"], ["central", "Nivel central", "--central"]];
+// nombres en lenguaje llano (sólo rótulos: las cifras salen de datos/bolivia.json)
+const SUB = { "Educación regular: docencia y gestión por nivel (DDE)": "Sueldo de los maestros y gestión de las escuelas",
+  "Gestión educativa no atribuible a un nivel (prorrateada)": "Gestión del sistema educativo", "Unidades educativas: infraestructura, equipamiento y servicios": "Escuelas: obras, equipos y servicios",
+  "Alimentación complementaria escolar": "Desayuno escolar", "Programa de defensa y protección de NNA": "Protección de la niñez",
+  "Protección, cuidado y primera infancia (fuera del programa 26)": "Cuidado y primera infancia", "Salud infantil (hospitales del niño, vacunas, nutrición)": "Salud infantil",
+  "Juegos estudiantiles y olimpiadas": "Juegos estudiantiles", "Bono Familia (por estudiante, pandemia)": "Bono Familia (pandemia)" };
+const CATL = { "Protección de la niñez y adolescencia": "Protección", "Transferencias condicionadas": "Bonos" };
+// «Otros del TGN» de alcaldías y gobernaciones: plata del Tesoro que les transfiere el nivel central (en las alcaldías,
+// sobre todo la Unidad de Proyectos Especiales, UPRE; ver 81 y la metodología)
+const FINL = { "Coparticipación": "Coparticipación tributaria", "Otros del TGN": "Transferencias del nivel central" };
+const DDE = "Educación regular: docencia y gestión por nivel (DDE)";
+// lo que el nivel central gasta sin ubicación, dicho en una frase
+const REPARTO = { "Bono Juancito Pinto": "el Bono Juancito Pinto", "Bono Familia (por estudiante, pandemia)": "el Bono Familia",
+  "Unidades educativas: infraestructura, equipamiento y servicios": "obras y equipos para escuelas", "Salud infantil (hospitales del niño, vacunas, nutrición)": "programas nacionales de salud infantil",
+  "Gestión educativa no atribuible a un nivel (prorrateada)": "la gestión del sistema educativo", "Juegos estudiantiles y olimpiadas": "los juegos estudiantiles" };
+const suma = (a) => a.reduce((s, v) => s + (v || 0), 0);
+/* una leyenda de ECharts que no entra en una fila baja el gráfico en vez de pisarlo */
+const medir = (() => { const cx = document.createElement("canvas").getContext("2d"); return (t) => { cx.font = "12px Figtree"; return cx.measureText(t).width; }; })();
+const angosto = (chart) => chart.getWidth() < 520;
+const ejeH = (chart, fmt) => { const e = { ...ejeY(fmt), splitNumber: 4 }; e.axisLabel = { ...e.axisLabel, show: !angosto(chart) }; return e; };
+const catH = (chart, data) => ({ type: "category", data, axisTick: { show: false }, axisLine: { lineStyle: { color: css("--linea") } },
+  axisLabel: { color: css("--tinta"), fontSize: 12, width: angosto(chart) ? 104 : 220, overflow: "break", lineHeight: 14 } });
+const pintarCon = (chart, opt) => {
+  const nombres = opt.legend && opt.legend.data ? opt.legend.data : (opt.series || []).filter((s) => s.name).map((s) => s.name).filter((n, j, a) => a.indexOf(n) === j);
+  let filas = 1, x = 0; const ancho = chart.getWidth() - 4;
+  nombres.forEach((n) => { const w = 12 + 5 + medir(n) + 10; if (x > 0 && x + w > ancho) { filas++; x = w; } else x += w; });
+  const g = opt.grid || base().grid; opt.grid = { ...g, top: (g.top == null ? 40 : g.top) + (filas - 1) * 22 };
+  chart.setOption(opt, true);
+};
+
+fetch("datos/bolivia.json").then((r) => r.json()).then((B) => {
+  const Y = B.anios, D = B.deflactor, yl = Y.map(String); let yi = Y.length - 1;
+  const porN = (v, k) => (v == null || !B.pob_0_17[k] ? null : 1e6 * v * D[k] / B.pob_0_17[k]);
+  const real = (a) => a.map((v, k) => (v == null ? null : v * D[k]));
+  const charts = []; const mk = (id) => { const c = echarts.init($(id), null, { renderer: "canvas" }); charts.push(c); return c; };
+  const DG = Atlas.Desagregar($("desagregado"), { url: "datos/gasto/desagregado/central.json", quien: "el nivel central", totalEntidad: false,
+    vistas: ["para", "en", "con", "edad", "como", "ent"], anio: yi, alCambiarAnio: (j) => { yi = j; pintar(); },
+    // abre en «¿Para quién?»: por «¿Para qué?» el primer nivel es un solo bloque (Educación, del 88 al 97 % según el año)
+    // y los dos siguientes también; por tramo de edad se reparte de entrada (niñez, adolescencia, primera infancia)
+    vistaInicial: "edad", fuenteNombres: { "Otros del TGN": "Tesoro General de la Nación" },
+    especifico: (a) => (Y.indexOf(a) < 0 ? null : porN(B.nivel.central.dev[Y.indexOf(a)], Y.indexOf(a))) });
+  const gNiv = mk("g-nivel"), gNna = mk("g-nna"), gCat = mk("g-cat"), gFa = mk("g-fin-a"), gFg = mk("g-fin-g"), gDep = mk("g-dep");
+  const gEj = Object.fromEntries(NIV.map(([n]) => [n, mk(`g-ej-${n}`)]));
+  const ejec = (n, k) => (B.nivel[n].vig[k] ? 100 * B.nivel[n].dev[k] / B.nivel[n].vig[k] : null);
+
+  /* ── cifras clave y lectura ─────────────────────────────────────────────────────────────── */
+  function kpis() {
+    const i = yi, y = Y[i], esp = B.esp[i], l2 = B.l2[i], pn = porN(esp, i), pt = porN(esp + l2, i), p0 = porN(B.esp[0], 0);
+    const gg = B.gasto_gob_general[i], pib = B.pib[i], vig = suma(NIV.map(([n]) => B.nivel[n].vig[i])), dev = suma(NIV.map(([n]) => B.nivel[n].dev[i]));
+    const dato = '<span class="marca-dato dato">dato</span>';
+    const card = (lab, v, u, c, clase = "", marca = "") => `<div class="kpi ${clase}"><div class="kl">${lab}${marca}</div><div class="kv">${v}</div><div class="ku">${u}</div><div class="kc">${Atlas.juntos(c)}</div></div>`;
+    const peso = (x) => `<b>${pc(100 * x / gg)}</b> del gasto del Estado${pib ? ` · <b>${pc(100 * x / pib)}</b> del PIB` : ""}`;
+    $("kpis").innerHTML =
+      card("El Estado gastó en programas sólo para la niñez", nf(esp), `millones de bolivianos de ${y}`, peso(esp), "gasto", dato)
+      + card("Por cada niña, niño o adolescente", bs(pn), "al año, en bolivianos de 2025", i ? `${Y[0]}: <b>${bs(p0)}</b> · ${pn >= p0 ? "sube" : "baja"} el <b>${pc(100 * Math.abs(pn / p0 - 1), 0)}</b>` : "primer año de la serie", "gasto", dato)
+      + card("Sumando lo que les llega de programas para todos", bs(pt), "por cada uno, en bolivianos de 2025", peso(esp + l2), "gasto")
+      + card("Qué parte del presupuesto se gastó", pc(100 * dev / vig), "del presupuesto final de los programas para la niñez", NIV.map(([n, l]) => `${l.toLowerCase()}: <b>${pc(ejec(n, i), 0)}</b>`).join(" · "), "gasto")
+      + card("Niñas, niños y adolescentes", nf(B.pob_0_17[i]), `de 0 a 17 años, a mitad de ${y} (INE)`, `<b>${pc(100 * B.pob_0_17[i] / B.total[i])}</b> de la población`);
+  }
+  function lede() {
+    const i = yi, y = Y[i], esp = B.esp[i], pn = porN(esp, i), p0 = porN(B.esp[0], 0), pt = porN(esp + B.l2[i], i), pib = B.pib[i];
+    const sh = (n) => 100 * B.nivel[n].dev[i] / esp, dde = (B.sub.central[DDE] || [])[i];
+    $("lede").innerHTML = `En ${y}, el Estado boliviano gastó <b>Bs ${nf(esp)} millones</b> en programas dirigidos sólo a las niñas, niños y adolescentes: <b>${bs(pn)}</b> por cada uno de los ${nf(B.pob_0_17[i] / 1e6, 2)} millones que tienen de 0 a 17 años${i ? `, ${pn >= p0 ? "más" : "menos"} que los ${bs(p0)} de ${Y[0]}` : ""} (en bolivianos de 2025). `
+      + `El nivel central gasta el ${pc(sh("central"), 0)}${dde ? ` —el ${pc(100 * dde / B.nivel.central.dev[i], 0)} de eso es el sueldo de los maestros y la gestión de las escuelas—` : ""}; las alcaldías, el ${pc(sh("alcaldia"), 0)}, y las gobernaciones, el ${pc(sh("gobernacion"), 1)}. `
+      + `Sumando la parte que les llega de programas para todos —salud, agua, deporte—, son <b>${bs(pt)}</b> por niño al año${pib ? `, el ${pc(100 * (esp + B.l2[i]) / pib)} del PIB` : ""}.`;
+  }
+
+  /* ── 1. los tres bolsillos ──────────────────────────────────────────────────────────────── */
+  function bolsillos() {
+    const i = yi, vals = NIV.map(([n]) => porN(B.nivel[n].dev[i], i)), tot = suma(vals);
+    $("bolsillos").innerHTML = NIV.map(([n, l, c], j) => {
+      const S = B.sub[n], tl = B.nivel[n].dev[i];
+      const top = Object.keys(S).map((k) => [k, S[k][i] || 0]).filter((x) => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      return `<div class="bolsillo" style="--c:var(${c})"><div class="bn">${l}<span class="marca-dato dato">dato</span></div>
+        <div class="bv">${bs(vals[j])}</div><div class="bu">por niña, niño o adolescente · ${pc(100 * vals[j] / tot)} del total</div>
+        <ul class="que" aria-label="En qué se va">${top.map(([k, v]) => { const p = 100 * v / tl; return `<li><span>${SUB[k] || k}</span><b>${pc(p, p < 10 ? 1 : 0)}</b></li>`; }).join("")}</ul></div>`;
+    }).join("");
+    $("barra-nino").innerHTML = NIV.map(([n, l, c], j) => `<span style="width:${100 * vals[j] / tot}%;background:var(${c})" title="${l}: ${bs(vals[j])}"></span>`).join("");
+    $("nota-bolsillos").innerHTML = `En ${Y[i]}, el Estado gastó <b>${bs(tot)}</b> por cada niña, niño o adolescente en programas dirigidos sólo a ellos. Cada boliviano se cuenta una vez, en el nivel de gobierno que lo gasta: lo que una entidad pública le transfiere a otra no se suma dos veces. Debajo de cada cifra, en qué se va lo que gasta cada nivel.`;
+  }
+
+  /* ── gráficos ───────────────────────────────────────────────────────────────────────────── */
+  const tipSuma = (fmt) => (ps) => ps[0].axisValueLabel + ps.filter((p) => p.value != null).map((p) => `<br>${p.marker}${p.seriesName}: <b>${fmt(p.value)}</b>`).join("")
+    + `<br>Total: <b>${fmt(suma(ps.map((p) => p.value)))}</b>`;
+  function series() {
+    gNiv.setOption({ ...base(), tooltip: { ...base().tooltip, formatter: tipSuma(mm) }, xAxis: ejeX(yl), yAxis: ejeY((v) => nf(v)),
+      series: NIV.map(([n, l, c]) => barra(l, real(B.nivel[n].dev), css(c), "n")) }, true);
+    pintarCon(gNna, { ...base(), tooltip: { ...base().tooltip, valueFormatter: (v) => bs(v) }, xAxis: ejeX(yl), yAxis: { ...ejeY((v) => nf(v)), min: 0 },
+      series: [linea("Sólo programas para la niñez", Y.map((_, k) => porN(B.esp[k], k)), css("--o6"), { ancho: 2.5, z: 3 }),
+        linea("Con programas para todos", Y.map((_, k) => porN(B.esp[k] + B.l2[k], k)), css("--o4"), { trazo: "dashed", ancho: 1.8 })] });
+  }
+
+  /* ── 2. presupuesto y gasto ─────────────────────────────────────────────────────────────── */
+  function presupuesto() {
+    const i = yi;
+    NIV.forEach(([n, l, c]) => {
+      const N = B.nivel[n], sin = N.vig.map((v, k) => Math.max(0, v - N.dev[k]));
+      $(`gt-ej-${n}`).innerHTML = `<span class="sw" style="background:var(${c})"></span>${l} · se gastó el <b>${pc(ejec(n, i), 0)}</b> en ${Y[i]}`;
+      gEj[n].setOption({ ...base(), legend: { show: false }, grid: { left: 6, right: 10, top: 12, bottom: 6, containLabel: true },
+        tooltip: { ...base().tooltip, formatter: (ps) => { const k = ps[0].dataIndex; return `${l}, ${Y[k]}<br>Presupuesto inicial: <b>${mm(N.ini[k])}</b><br>Presupuesto final: <b>${mm(N.vig[k])}</b><br>Gastado: <b>${mm(N.dev[k])}</b><br>se gastó el <b>${pc(ejec(n, k))}</b>`; } },
+        xAxis: { ...ejeX(yl), axisLabel: { ...ejeX(yl).axisLabel, formatter: (v) => "’" + v.slice(2), fontSize: 11 } }, yAxis: { ...ejeY((v) => nf(v)), splitNumber: 4 },
+        series: [{ ...barra("Gastado", N.dev, css(c), "p"), barMaxWidth: 22 },
+          { name: "Sin gastar", type: "bar", stack: "p", data: sin, barMaxWidth: 22, itemStyle: { color: "rgba(0,0,0,0)", borderColor: css("--suave"), borderWidth: 1, borderType: [3, 2] }, emphasis: { disabled: true } },
+          { ...linea("Presupuesto inicial", N.ini, css("--o4"), { punto: 4, ancho: 1.5 }), z: 4 }] }, true);
+    });
+    const fila = (l, ini, vig, dev, cls = "") => `<tr class="${cls}"><td>${l}</td><td class="num op">${nf(ini, 1)}</td><td class="num">${nf(vig, 1)}</td><td class="num">${nf(dev, 1)}</td><td class="num">${pc(vig ? 100 * dev / vig : null)}</td><td class="num op">${nf(vig - dev, 1)}</td></tr>`;
+    const T = (k) => suma(NIV.map(([n]) => B.nivel[n][k][i]));
+    $("t-presu").innerHTML = `<tr><th>Nivel</th><th class="op">Presupuesto inicial</th><th>Presupuesto final</th><th>Gastado</th><th>Se gastó</th><th class="op">Quedó sin gastar</th></tr>`
+      + NIV.map(([n, l]) => fila(l, B.nivel[n].ini[i], B.nivel[n].vig[i], B.nivel[n].dev[i])).join("") + fila("Todo el Estado", T("ini"), T("vig"), T("dev"), "tot");
+  }
+
+  /* ── 3. en qué se gasta ─────────────────────────────────────────────────────────────────── */
+  function categorias() {
+    const i = yi, C = B.categoria;
+    const cats = Object.keys(C).map((k) => ({ k, e: C[k].esp[i] || 0, l: C[k].l2[i] || 0 })).filter((x) => x.e + x.l > 0).sort((a, b) => a.e + a.l - (b.e + b.l));
+    const lab = { show: true, position: "right", color: css("--suave"), fontSize: 11, fontFamily: "Figtree", formatter: (p) => nf(cats[p.dataIndex].e + cats[p.dataIndex].l) };
+    pintarCon(gCat, { ...base(), grid: { left: 14, right: 58, top: 34, bottom: 8, containLabel: true },
+      tooltip: { ...base().tooltip, axisPointer: { type: "shadow", shadowStyle: { color: Atlas.alfa(css("--grilla"), 0.5) } },
+        formatter: (ps) => { const c = cats[ps[0].dataIndex]; return `<b>${c.k}</b>` + ps.map((p) => `<br>${p.marker}${p.seriesName}: <b>${mm(p.value)}</b>`).join("") + `<br>Total: <b>${mm(c.e + c.l)}</b>`; } },
+      xAxis: ejeH(gCat, (v) => nf(v)), yAxis: catH(gCat, cats.map((c) => CATL[c.k] || c.k)),
+      series: [{ ...barra("Sólo para la niñez", cats.map((c) => c.e), css("--o6"), "c"), barMaxWidth: 20 },
+        { ...barra("Su parte de programas para todos", cats.map((c) => c.l), css("--o3"), "c"), barMaxWidth: 20, label: lab }] });
+  }
+
+  /* ── 4. con qué se paga ─────────────────────────────────────────────────────────────────── */
+  function fuentes(chart, F) {
+    const tot = Y.map((_, k) => suma(Object.values(F).map((a) => a[k]))), sh = (a) => a.map((v, k) => (tot[k] > 0 ? 100 * (v || 0) / tot[k] : null));
+    const top = Object.keys(F).sort((a, b) => suma(F[b]) - suma(F[a])).slice(0, 3), resto = Object.keys(F).filter((k) => !top.includes(k));
+    const otros = Y.map((_, k) => suma(resto.map((r) => F[r][k])));
+    pintarCon(chart, { ...base(), tooltip: { ...base().tooltip, valueFormatter: (v) => pc(v) }, xAxis: ejeX(yl), yAxis: { ...ejeY((v) => v + " %"), max: 100 },
+      series: top.map((k, j) => barra(FINL[k] || k, sh(F[k]), css(["--o7", "--o5", "--o3"][j]), "f")).concat(barra("Otras fuentes", sh(otros), css("--otros"), "f")) });
+  }
+
+  /* ── 5. departamentos ───────────────────────────────────────────────────────────────────── */
+  function departamentos() {
+    const i = yi, f = (d) => 1e6 * D[i] / d.pob_0_17[i];
+    const deps = B.departamentos.map((d) => { const k = f(d), a = d.ter.alcaldia[i] * k, g = d.ter.gobernacion[i] * k, c = d.ter.central[i] * k;
+      return { d, a, g, c, t: a + g + c, l2: d.ter_l2[i] * k, p: d.pob_0_17[i], est: 100 * d.central_rep[i] / d.ter.central[i] }; });
+    const asc = deps.slice().sort((x, y) => x.t - y.t), est = deps.map((x) => x.est);
+    const rs = B.central_rep_sub, rep = Object.keys(rs).map((k) => [k, rs[k][i] || 0]).filter((x) => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 2);
+    $("nota-dep").innerHTML = `Bolivianos de 2025 por cada habitante de 0 a 17 años. Lo de las alcaldías y la gobernación es dato de sus presupuestos; lo del nivel central también, porque la planilla de los maestros la paga la Dirección Departamental de Educación, que tiene departamento. Sólo lo que no tiene ubicación —sobre todo ${rep.map(([k]) => REPARTO[k] || (SUB[k] || k).toLowerCase()).join(" y ")}— se reparte con una llave: entre el <b>${pc(Math.min(...est))}</b> y el <b>${pc(Math.max(...est))}</b> de lo que gasta el nivel central en cada departamento es estimación. Tocá un departamento para ver su perfil.`;
+    const lab = { show: true, position: "right", color: css("--suave"), fontSize: 11, fontFamily: "Figtree", formatter: (p) => nf(asc[p.dataIndex].t) };
+    gDep.setOption({ ...base(), grid: { left: 14, right: 58, top: 34, bottom: 8, containLabel: true },
+      tooltip: { ...base().tooltip, axisPointer: { type: "shadow", shadowStyle: { color: Atlas.alfa(css("--grilla"), 0.5) } },
+        formatter: (ps) => { const x = asc[ps[0].dataIndex]; return `<b>${x.d.nombre}</b>` + ps.map((p) => `<br>${p.marker}${p.seriesName}: <b>${bs(p.value)}</b>`).join("") + `<br>Todos los niveles: <b>${bs(x.t)}</b>`; } },
+      xAxis: ejeH(gDep, (v) => nf(v)), yAxis: catH(gDep, asc.map((x) => x.d.nombre)),
+      series: [{ ...barra("Alcaldías", asc.map((x) => x.a), css("--alcaldia"), "d"), barMaxWidth: 24, cursor: "pointer" },
+        { ...barra("Gobernación", asc.map((x) => x.g), css("--gobernacion"), "d"), barMaxWidth: 24, cursor: "pointer" },
+        { ...barra("Nivel central", asc.map((x) => x.c), css("--central"), "d"), barMaxWidth: 24, cursor: "pointer", rotuloPila: lab }] }, true);
+    gDep.off("click"); gDep.on("click", (p) => { location.href = `departamento.html?d=${asc[p.dataIndex].d.cod}`; });
+    const b = { a: porN(B.nivel.alcaldia.dev[i], i), g: porN(B.nivel.gobernacion.dev[i], i), c: porN(B.nivel.central.dev[i], i), t: porN(B.esp[i], i), l2: porN(B.l2[i], i), p: B.pob_0_17[i] };
+    const tr = (x, nom, cls = "") => `<tr class="${cls}"><td>${nom}</td><td class="num">${nf(x.t)}</td><td class="num op">${nf(x.a)}</td><td class="num">${nf(x.g)}</td><td class="num op">${nf(x.c)}</td><td class="num op">${nf(x.t + x.l2)}</td><td class="num">${nf(x.p)}</td></tr>`;
+    $("t-dep").innerHTML = `<tr><th>Departamento</th><th>Todos los niveles</th><th class="op">Alcaldías</th><th>Gobernación</th><th class="op">Nivel central</th><th class="op">Sumando programas para todos</th><th>Niñas, niños y adolescentes</th></tr>`
+      + asc.slice().reverse().map((x) => tr(x, `<a href="departamento.html?d=${x.d.cod}">${x.d.nombre}</a>`)).join("") + tr(b, "Bolivia", "tot");
+  }
+
+  /* ── datos ──────────────────────────────────────────────────────────────────────────────── */
+  const descargar = (nombre, cab, filas) => { const b = new Blob(["﻿" + [cab, ...filas].map((r) => r.join(";")).join("\n")], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = nombre; a.click(); };
+  const r1 = (v) => (v == null ? "" : Math.round(v * 10) / 10);
+  $("csv-serie").onclick = () => descargar("gasto-ninez-bolivia-2016-2025.csv",
+    ["gestion", "alcaldias_gastado_mm_bs", "gobernaciones_gastado_mm_bs", "nivel_central_gastado_mm_bs", "total_gastado_mm_bs",
+      "alcaldias_presupuesto_final_mm_bs", "gobernaciones_presupuesto_final_mm_bs", "nivel_central_presupuesto_final_mm_bs",
+      "programas_para_todos_parte_ninez_mm_bs", "poblacion_0_17", "por_nino_bs2025", "con_programas_para_todos_por_nino_bs2025", "pib_mm_bs", "gasto_estado_mm_bs", "deflactor_a_2025"],
+    Y.map((y, k) => [y, ...NIV.map(([n]) => B.nivel[n].dev[k]), B.esp[k], ...NIV.map(([n]) => B.nivel[n].vig[k]), B.l2[k], B.pob_0_17[k],
+      r1(porN(B.esp[k], k)), r1(porN(B.esp[k] + B.l2[k], k)), B.pib[k] ?? "", B.gasto_gob_general[k], D[k]]));
+  $("csv-dep").onclick = () => descargar("gasto-ninez-departamentos-2016-2025.csv",
+    ["gestion", "cod", "departamento", "alcaldias_mm_bs", "gobernacion_mm_bs", "nivel_central_mm_bs", "nivel_central_repartido_con_llave_mm_bs", "programas_para_todos_parte_ninez_mm_bs", "poblacion_0_17", "todos_los_niveles_por_nino_bs2025"],
+    B.departamentos.flatMap((d) => Y.map((y, k) => [y, d.cod, d.nombre, d.ter.alcaldia[k], d.ter.gobernacion[k], d.ter.central[k], d.central_rep[k], d.ter_l2[k], d.pob_0_17[k],
+      r1(1e6 * (d.ter.alcaldia[k] + d.ter.gobernacion[k] + d.ter.central[k]) * D[k] / d.pob_0_17[k])])));
+
+  function pintar() {
+    const i = yi;
+    document.querySelectorAll(".anio").forEach((e) => (e.textContent = Y[i]));
+    $("y-val").textContent = Y[i]; $("y-prev").disabled = i === 0; $("y-next").disabled = i === Y.length - 1;
+    kpis(); lede(); bolsillos(); series(); presupuesto(); categorias(); DG.anio(i);
+    fuentes(gFa, B.fin.alcaldia); fuentes(gFg, B.fin.gobernacion); departamentos();
+  }
+  $("y-prev").onclick = () => { if (yi > 0) { yi--; pintar(); } };
+  $("y-next").onclick = () => { if (yi < Y.length - 1) { yi++; pintar(); } };
+  $("tema").onclick = () => { Atlas.aplicarTema(!document.body.classList.contains("dark"), true); pintar(); DG.repintar(); };
+  let espera = null;
+  addEventListener("resize", () => { charts.forEach((c) => c.resize()); DG.resize(); clearTimeout(espera); espera = setTimeout(pintar, 200); });
+  Atlas.listo(pintar);
+}).catch((e) => { $("lede").textContent = "No se pudieron cargar los datos de Bolivia (datos/bolivia.json)."; console.error(e); });
+})();
+</script>
+</body>
+</html>
